@@ -1,0 +1,71 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Type should be one of the following:
+# * feat: A new feature (triggers minor version bump)
+# * fix: A bug fix (triggers patch version bump)
+# * perf: A performance improvement (triggers patch version bump)
+# * refactor: Code refactoring (triggers patch version bump)
+# * docs: Documentation changes (no version bump)
+# * style: Code style changes (no version bump)
+# * test: Adding or updating tests (no version bump)
+# * build: Build system changes (no version bump)
+# * ci: CI/CD changes (no version bump)
+# * chore: Maintenance tasks (no version bump)
+# * revert: Reverting changes (triggers patch version bump)
+
+# Scope should be one of the following (optional):
+# * core: Core orchestration logic
+# * engines: Test engine implementations
+# * healing: Self-healing algorithms
+# * config: Configuration management
+# * api: REST API endpoints
+# * observability: Metrics and monitoring
+# * types: TypeScript type definitions
+# * utils: Shared utilities
+# * docker: Docker configuration
+# * docs: Documentation
+# * tests: Test files
+
+# Subject should be:
+# * Written in lowercase
+# * No period at the end
+# * Maximum 50 characters
+# * Imperative mood ("add feature" not "added feature")
+
+# Body should be:
+# * Written in lowercase
+# * Explain what and why, not how
+# * Wrap at 72 characters
+# * Leave blank line between body and footer
+
+# Footer should be:
+# * Reference issues: "Fixes #123" or "Closes #456"
+# * Breaking changes: "BREAKING CHANGE: description"
+# * Co-authored-by: for multiple authors
+
+# Examples:
+# feat(engines): add playwright e2e test engine
+#
+# Implements the Playwright test engine as the first concrete test engine.
+# Includes basic test execution, result collection, and integration with
+# the plugin architecture. Focuses on E2E testing capabilities.
+#
+# Closes #123
+
+# fix(healing): resolve locator recovery timeout issue
+#
+# Fixes timeout issue in locator recovery strategies where healing
+# actions would hang indefinitely. Adds proper timeout handling
+# and fallback mechanisms.
+#
+# Fixes #456
+
+# docs(api): update REST API documentation
+#
+# Updates API documentation to reflect new endpoints for test
+# execution and healing statistics. Includes examples and
+# response formats.

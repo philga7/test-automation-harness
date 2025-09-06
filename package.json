@@ -1,0 +1,47 @@
+{
+  "name": "test-automation-harness",
+  "version": "1.0.0",
+  "description": "A comprehensive TypeScript/Node.js test automation platform with AI-powered self-healing capabilities",
+  "main": "dist/index.js",
+  "bin": {
+    "test-harness": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"Linting not configured yet\"",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "test-automation",
+    "self-healing",
+    "playwright",
+    "jest",
+    "k6",
+    "owasp-zap",
+    "typescript",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.5",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.1",
+    "semantic-release": "^24.2.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
