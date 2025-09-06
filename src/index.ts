@@ -55,21 +55,23 @@ app.use((req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`🚀 Self-Healing Test Automation Harness started on port ${PORT}`);
   logger.info(`📊 Health check available at: http://localhost:${PORT}/health`);
   logger.info(`🔧 API status at: http://localhost:${PORT}/api/status`);
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received, shutting down gracefully');
-  process.exit(0);
-});
+const gracefulShutdown = () => {
+  logger.info('Shutting down gracefully');
+  server.close(() => {
+    logger.info('Server closed');
+    process.exit(0);
+  });
+};
 
-process.on('SIGINT', () => {
-  logger.info('SIGINT received, shutting down gracefully');
-  process.exit(0);
-});
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
 export default app;
+export { server };
