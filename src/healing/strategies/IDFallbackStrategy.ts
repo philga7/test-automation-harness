@@ -52,8 +52,9 @@ export interface IDFallbackConfig {
  */
 export class IDFallbackStrategy extends HealingStrategy {
   private config: IDFallbackConfig;
+  private delay: number;
   
-  constructor(config: Partial<IDFallbackConfig> = {}) {
+  constructor(config: Partial<IDFallbackConfig> = {}, delay: number = 50) {
     super(
       'id-fallback',
       '1.0.0',
@@ -70,6 +71,7 @@ export class IDFallbackStrategy extends HealingStrategy {
       ...config
     };
     
+    this.delay = delay;
     logger.info('IDFallbackStrategy initialized', { config: this.config });
   }
   
@@ -432,7 +434,9 @@ export class IDFallbackStrategy extends HealingStrategy {
     // For now, we'll simulate with some logic based on selector patterns
     
     // Simulate some delay
-    await new Promise(resolve => setTimeout(resolve, 50));
+    if (this.delay > 0) {
+      await new Promise(resolve => setTimeout(resolve, this.delay));
+    }
     
     // Simulate success for certain patterns (for demo purposes)
     if (selector.includes('btn') || selector.includes('button')) {

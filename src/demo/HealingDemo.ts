@@ -48,7 +48,7 @@ export class HealingDemo {
       numberOfFailures: 10,
       verbose: true,
       showMetrics: true,
-      delayBetweenAttempts: 100,
+      delayBetweenAttempts: 0,
       ...config
     };
     
@@ -104,8 +104,8 @@ export class HealingDemo {
    * Register all healing strategies
    */
   private registerStrategies(): void {
-    // Register simple locator strategy
-    const locatorStrategy = new SimpleLocatorStrategy();
+    // Register simple locator strategy with no delay for demo
+    const locatorStrategy = new SimpleLocatorStrategy(0);
     this.healingEngine.registerStrategy(locatorStrategy);
     
     console.log('📋 Registered healing strategies:');
@@ -203,7 +203,9 @@ export class HealingDemo {
         
         // Add delay between attempts
         if (i < failures.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, this.config.delayBetweenAttempts));
+          if (this.config.delayBetweenAttempts > 0) {
+            await new Promise(resolve => setTimeout(resolve, this.config.delayBetweenAttempts));
+          }
         }
         
       } catch (error) {

@@ -32,6 +32,40 @@ A central plugin registry provides:
 
 ## Architecture Components
 
+### Core Classes
+
+#### HealingEngine
+The main orchestrator for the self-healing system that manages multiple healing strategies and coordinates the healing process.
+
+```typescript
+class HealingEngine {
+  constructor(config?: HealingEngineConfig)
+  registerStrategy(strategy: IHealingStrategy): void
+  heal(failure: TestFailure, context: HealingContext): Promise<HealingResult>
+  getStatistics(): HealingStatistics
+  resetStatistics(): void
+  getRegisteredStrategies(): IHealingStrategy[]
+}
+```
+
+**Key Features:**
+- Strategy registration and management
+- Confidence-based strategy selection
+- Comprehensive metrics tracking
+- Success rate monitoring
+- Error handling and recovery
+
+**Configuration:**
+```typescript
+interface HealingEngineConfig {
+  maxAttempts: number;           // Maximum healing attempts per failure
+  minConfidenceThreshold: number; // Minimum confidence to accept healing
+  strategyTimeout: number;       // Timeout for individual strategies
+  enableMetrics: boolean;        // Enable metrics collection
+  enableDetailedLogging: boolean; // Enable detailed logging
+}
+```
+
 ### Core Interfaces
 
 #### ITestEngine
@@ -122,6 +156,35 @@ abstract class HealingStrategy implements IHealingStrategy {
 - Healing action creation helpers
 - Statistics tracking
 - Error handling
+
+#### Available Healing Strategies
+
+The system includes several built-in healing strategies:
+
+**SimpleLocatorStrategy**
+- Basic locator recovery with wait and retry mechanisms
+- Supports `element_not_found` and `timeout` failure types
+- Configuration: wait timeout, retry attempts, alternative selectors
+
+**IDFallbackStrategy**
+- ID-based element location with fuzzy matching
+- Supports `element_not_found` and `timeout` failure types
+- Configuration: fuzzy matching, ID extraction, alternative selectors
+
+**CSSFallbackStrategy**
+- CSS selector alternatives and wildcard matching
+- Supports `element_not_found` and `timeout` failure types
+- Configuration: wildcard matching, attribute fallback, structural selectors
+
+**XPathFallbackStrategy**
+- XPath expression recovery and alternatives
+- Supports `element_not_found` and `timeout` failure types
+- Configuration: text-based, attribute-based, positional, structural XPath
+
+**NeighborAnalysisStrategy**
+- Contextual element analysis using nearby elements
+- Supports `element_not_found` and `timeout` failure types
+- Configuration: sibling analysis, parent-child analysis, contextual analysis
 
 #### PluginRegistry
 ```typescript
@@ -276,6 +339,53 @@ interface HealingResult {
 }
 ```
 
+#### HealingContext
+```typescript
+interface HealingContext {
+  systemState: SystemState;
+  userPreferences: UserPreferences;
+  availableStrategies: string[];
+  previousAttempts: HealingAttempt[];
+  testEnvironment: string;
+}
+```
+
+#### HealingStatistics
+```typescript
+interface HealingStatistics {
+  totalAttempts: number;
+  successfulAttempts: number;
+  failedAttempts: number;
+  successRate: number;
+  averageConfidence: number;
+  averageDuration: number;
+  successRateByStrategy: Record<string, number>;
+  successRateByFailureType: Record<string, number>;
+}
+```
+
+#### HealingAction
+```typescript
+interface HealingAction {
+  type: HealingActionType;
+  description: string;
+  metadata: Record<string, any>;
+  status: 'success' | 'failure' | 'pending';
+  message?: string;
+}
+```
+
+#### HealingActionType
+```typescript
+type HealingActionType = 
+  | 'retry'
+  | 'update_selector'
+  | 'fallback_strategy'
+  | 'wait_for_element'
+  | 'increase_timeout'
+  | 'alternative_approach';
+```
+
 ## Configuration
 
 ### Engine Configuration
@@ -376,16 +486,59 @@ class CustomTestEngine extends TestEngine {
 ### Creating a Custom Healing Strategy
 ```typescript
 class CustomHealingStrategy extends HealingStrategy {
-  constructor() {
+  constructor(config: Partial<CustomConfig> = {}) {
     super('custom-healing', '1.0.0', ['timeout', 'network_error']);
+    
+    this.config = {
+      customOption: true,
+      customTimeout: 5000,
+      ...config
+    };
   }
 
   protected async doHeal(failure: TestFailure, context: HealingContext): Promise<HealingResult> {
-    // Custom healing logic
+    try {
+      // Custom healing logic
+      const actions = [];
+      
+      // Try custom approach
+      const success = await this.tryCustomApproach(failure, context);
+      
+      if (success) {
+        actions.push(this.createHealingAction(
+          'custom_action',
+          'Applied custom healing approach',
+          { approach: 'custom' },
+          'success'
+        ));
+        
+        return this.createSuccessResult(actions, 0.8, 'Custom healing successful');
+      }
+      
+      return this.createFailureResult('Custom healing failed');
+    } catch (error) {
+      return this.createFailureResult(`Custom healing error: ${error}`);
+    }
   }
 
   protected async doCalculateConfidence(failure: TestFailure, context: HealingContext): Promise<number> {
+    let confidence = 0.5; // Base confidence
+    
     // Custom confidence calculation
+    if (failure.type === 'timeout') {
+      confidence += 0.2;
+    }
+    
+    if (failure.message.includes('custom-pattern')) {
+      confidence += 0.3;
+    }
+    
+    return Math.min(1, Math.max(0, confidence));
+  }
+
+  private async tryCustomApproach(failure: TestFailure, context: HealingContext): Promise<boolean> {
+    // Implement custom healing logic
+    return true; // Simplified for example
   }
 }
 ```
@@ -395,10 +548,16 @@ class CustomHealingStrategy extends HealingStrategy {
 // Setup
 const registry = new PluginRegistry();
 const factory = new TestEngineFactory(registry);
+const healingEngine = new HealingEngine();
 
 // Register plugins
 factory.registerEngineConstructor('custom-engine', CustomTestEngine);
 registry.registerHealingStrategy(new CustomHealingStrategy());
+
+// Register healing strategies
+healingEngine.registerStrategy(new SimpleLocatorStrategy());
+healingEngine.registerStrategy(new IDFallbackStrategy());
+healingEngine.registerStrategy(new CustomHealingStrategy());
 
 // Create and use engine
 const engine = await factory.createEngine({
@@ -408,6 +567,14 @@ const engine = await factory.createEngine({
 });
 
 const result = await engine.execute(testConfig);
+
+// Use healing engine
+if (result.status === 'failed') {
+  const healingResult = await healingEngine.heal(result.failures[0], healingContext);
+  if (healingResult.success) {
+    console.log(`Healing successful with ${healingResult.confidence} confidence`);
+  }
+}
 ```
 
 ## Future Enhancements
@@ -418,12 +585,19 @@ const result = await engine.execute(testConfig);
 3. **Plugin Sandboxing**: Isolated execution environments for plugins
 4. **Plugin Metrics**: Built-in performance and usage metrics
 5. **Plugin Marketplace**: Central repository for community plugins
+6. **Advanced Healing**: Machine learning-based healing strategies
+7. **Cross-Test Learning**: Learn from healing patterns across tests
+8. **Dynamic Strategy Loading**: Load strategies at runtime
 
 ### Extension Points
 1. **Custom Plugin Types**: Support for new plugin categories
 2. **Advanced Healing**: Machine learning-based healing strategies
 3. **Distributed Execution**: Multi-node plugin execution
 4. **Plugin Composition**: Combine multiple plugins for complex workflows
+5. **Healing Strategy Composition**: Combine multiple strategies for complex scenarios
+6. **External Strategy Sources**: Load strategies from external sources
+7. **Integration Hooks**: Add hooks for external system integration
+8. **Advanced Analytics**: Custom metrics collection and analysis
 
 ## Troubleshooting
 
@@ -444,6 +618,16 @@ const result = await engine.execute(testConfig);
 - **Cause**: Low confidence thresholds or unsupported failure types
 - **Solution**: Adjust confidence thresholds or implement appropriate healing strategies
 
+#### Strategy Registration Issues
+- **Symptom**: Strategies not being used for healing
+- **Cause**: Strategy not registered or doesn't support failure type
+- **Solution**: Verify strategy registration and supported failure types
+
+#### Low Healing Success Rate
+- **Symptom**: Low overall healing success rate
+- **Cause**: Strategies not well-suited for failure types or high confidence thresholds
+- **Solution**: Add more appropriate strategies or lower confidence thresholds
+
 #### Performance Issues
 - **Symptom**: Slow plugin execution
 - **Cause**: Resource-intensive operations or inefficient implementations
@@ -454,7 +638,24 @@ const result = await engine.execute(testConfig);
 2. **Check Plugin Health**: Use health status to identify issues
 3. **Monitor Statistics**: Track plugin performance and success rates
 4. **Test in Isolation**: Test plugins individually to isolate issues
+5. **Enable Detailed Healing Logging**: Set `enableDetailedLogging: true` for healing engine
+6. **Monitor Healing Statistics**: Track healing success rates and performance
+7. **Test Strategies Individually**: Test each healing strategy in isolation
+8. **Review Confidence Scores**: Check if confidence calculations are appropriate
 
 ## Conclusion
 
 The plugin architecture provides a solid foundation for the Self-Healing Test Automation Harness. It enables flexibility, extensibility, and maintainability while ensuring consistent behavior across all plugin types. The architecture is designed to grow with the system and support future enhancements while maintaining backward compatibility.
+
+The addition of the comprehensive self-healing engine with multiple strategies, confidence scoring, and metrics tracking significantly enhances the system's ability to automatically recover from test failures. The healing engine's modular design allows for easy extension and customization, while its comprehensive monitoring capabilities provide visibility into healing effectiveness and system performance.
+
+Key benefits of the enhanced architecture include:
+
+1. **Automatic Failure Recovery**: The healing engine automatically attempts to recover from test failures using multiple strategies
+2. **Confidence-Based Selection**: Strategies are selected based on confidence scores, ensuring the most appropriate approach is used
+3. **Comprehensive Metrics**: Detailed statistics and metrics provide insights into healing performance
+4. **Extensible Design**: New healing strategies can be easily added and integrated
+5. **Robust Error Handling**: Graceful error handling ensures the system remains stable even when healing fails
+6. **Performance Monitoring**: Built-in performance tracking helps optimize healing effectiveness
+
+The architecture continues to evolve to support advanced features like machine learning-based healing, cross-test learning, and dynamic strategy loading, ensuring it remains at the forefront of test automation innovation.

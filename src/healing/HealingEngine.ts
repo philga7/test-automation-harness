@@ -431,9 +431,12 @@ export class HealingEngine {
   
   private createTimeoutPromise(timeout: number): Promise<HealingResult> {
     return new Promise((_, reject) => {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         reject(new Error(`Strategy timeout after ${timeout}ms`));
       }, timeout);
+      
+      // Mark timeout as not keeping the process alive
+      timeoutId.unref();
     });
   }
 }

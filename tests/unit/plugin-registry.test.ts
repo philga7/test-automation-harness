@@ -20,7 +20,7 @@ describe('PluginRegistry', () => {
 
   beforeEach(() => {
     registry = new PluginRegistry();
-    testEngine = new HelloWorldEngine();
+    testEngine = new HelloWorldEngine(0); // No delay for tests
     healingStrategy = new SimpleHealingStrategy();
     
     // Mock configuration provider

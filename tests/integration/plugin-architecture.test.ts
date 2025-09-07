@@ -43,7 +43,7 @@ describe('Plugin Architecture Integration', () => {
 
   describe('Plugin Registry Integration', () => {
     it('should register and retrieve plugins correctly', () => {
-      const engine = new HelloWorldEngine();
+      const engine = new HelloWorldEngine(0); // No delay for tests
       const strategy = new SimpleHealingStrategy();
 
       registry.registerTestEngine(engine);
@@ -57,7 +57,7 @@ describe('Plugin Architecture Integration', () => {
     });
 
     it('should provide correct statistics', () => {
-      const engine = new HelloWorldEngine();
+      const engine = new HelloWorldEngine(0); // No delay for tests
       const strategy = new SimpleHealingStrategy();
 
       registry.registerTestEngine(engine);
@@ -232,7 +232,7 @@ describe('Plugin Architecture Integration', () => {
 
   describe('Plugin Lifecycle Management', () => {
     it('should handle plugin lifecycle correctly', async () => {
-      const engine = new HelloWorldEngine();
+      const engine = new HelloWorldEngine(0); // No delay for tests
       const strategy = new SimpleHealingStrategy();
 
       // Register plugins
@@ -276,7 +276,7 @@ describe('Plugin Architecture Integration', () => {
     });
 
     it('should handle healing failures gracefully', async () => {
-      const engine = new HelloWorldEngine();
+      const engine = new HelloWorldEngine(0); // No delay for tests
       await engine.initialize({
         engine: 'hello-world',
         version: '1.0.0',

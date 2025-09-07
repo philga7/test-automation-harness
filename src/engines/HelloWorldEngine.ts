@@ -28,9 +28,11 @@ export class HelloWorldEngine extends TestEngine {
   private testCounter: number = 0;
   private successCount: number = 0;
   private failureCount: number = 0;
+  private delay: number = 100; // Default delay for demo purposes
   
-  constructor() {
+  constructor(delay: number = 100) {
     super('hello-world', '1.0.0', 'unit', true);
+    this.delay = delay;
     logger.info('Created HelloWorldEngine');
   }
   
@@ -41,7 +43,9 @@ export class HelloWorldEngine extends TestEngine {
     logger.info('Initializing HelloWorldEngine');
     
     // Simulate initialization delay
-    await new Promise(resolve => setTimeout(resolve, 100));
+    if (this.delay > 0) {
+      await new Promise(resolve => setTimeout(resolve, this.delay));
+    }
     
     // Reset counters
     this.testCounter = 0;
@@ -62,7 +66,9 @@ export class HelloWorldEngine extends TestEngine {
     
     try {
       // Simulate test execution delay
-      await new Promise(resolve => setTimeout(resolve, 200));
+      if (this.delay > 0) {
+        await new Promise(resolve => setTimeout(resolve, this.delay * 2));
+      }
       
       // Simple test logic - check if test name contains "fail"
       if (config.name.toLowerCase().includes('fail')) {
@@ -108,7 +114,9 @@ export class HelloWorldEngine extends TestEngine {
     
     try {
       // Simulate healing delay
-      await new Promise(resolve => setTimeout(resolve, 150));
+      if (this.delay > 0) {
+        await new Promise(resolve => setTimeout(resolve, this.delay * 1.5));
+      }
       
       const actions: HealingAction[] = [];
       let success = false;
@@ -262,7 +270,9 @@ export class HelloWorldEngine extends TestEngine {
     logger.info('Cleaning up HelloWorldEngine');
     
     // Simulate cleanup delay
-    await new Promise(resolve => setTimeout(resolve, 50));
+    if (this.delay > 0) {
+      await new Promise(resolve => setTimeout(resolve, this.delay / 2));
+    }
     
     // Reset counters
     this.testCounter = 0;

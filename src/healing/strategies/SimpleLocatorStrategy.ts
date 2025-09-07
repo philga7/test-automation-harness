@@ -21,12 +21,15 @@ import { logger } from '../../utils/logger';
  * and demonstrates the healing architecture.
  */
 export class SimpleLocatorStrategy extends HealingStrategy {
-  constructor() {
+  private delay: number;
+
+  constructor(delay: number = 100) {
     super(
       'simple-locator',
       '1.0.0',
       ['element_not_found', 'timeout']
     );
+    this.delay = delay;
     logger.info('Created SimpleLocatorStrategy');
   }
   
@@ -163,7 +166,9 @@ export class SimpleLocatorStrategy extends HealingStrategy {
     ));
     
     // Simulate healing delay
-    await new Promise(resolve => setTimeout(resolve, 100));
+    if (this.delay > 0) {
+      await new Promise(resolve => setTimeout(resolve, this.delay));
+    }
     
     return {
       success: true,
@@ -189,7 +194,9 @@ export class SimpleLocatorStrategy extends HealingStrategy {
     ));
     
     // Simulate healing delay
-    await new Promise(resolve => setTimeout(resolve, 100));
+    if (this.delay > 0) {
+      await new Promise(resolve => setTimeout(resolve, this.delay));
+    }
     
     return {
       success: true,
