@@ -1,0 +1,117 @@
+# Production Environment Configuration
+# This file overrides default.yaml settings for production environment
+
+app:
+  debug: false
+  environment: "production"
+
+api:
+  port: 8080
+  timeout: 60000
+  retries: 3
+  cors:
+    origins:
+      - "https://example.com"
+      - "https://api.example.com"
+  rateLimit:
+    max: 50
+    windowMs: 600000  # 10 minutes
+
+engines:
+  playwright:
+    headless: true
+    timeout: 60000
+    retries: 2
+    options:
+      slowMo: 0
+      devtools: false
+      trace: "on"
+      screenshot: "only-on-failure"
+      video: "retain-on-failure"
+
+  jest:
+    timeout: 20000
+    retries: 2
+    coverage: false
+    watch: false
+
+  k6:
+    vus: 50
+    duration: "120s"
+    timeout: 180000
+    stages:
+      - duration: "30s"
+        target: 25
+      - duration: "60s"
+        target: 50
+      - duration: "30s"
+        target: 0
+
+  zap:
+    timeout: 300000
+    retries: 1
+
+healing:
+  confidenceThreshold: 0.8
+  maxRetries: 2
+  strategies:
+    selectorHealing: true
+    waitHealing: true
+    assertionHealing: true
+    navigationHealing: false  # Disable in production for stability
+  fallbackStrategies:
+    id: true
+    css: true
+    xpath: false  # Disable XPath in production for performance
+    neighbor: true
+
+observability:
+  logging:
+    level: "warn"
+    format: "json"
+    file: "/var/log/test-harness/production.log"
+  metrics:
+    enabled: true
+    interval: 30000
+  tracing:
+    enabled: true
+    endpoint: "http://jaeger-production:14268"
+
+database:
+  enabled: true
+  type: "postgresql"
+  connection:
+    host: "prod-db.example.com"
+    port: 5432
+    database: "test_harness_production"
+    username: "test_harness"
+    password: "${DB_PASSWORD}"
+  migrations:
+    enabled: true
+    path: "./migrations"
+
+security:
+  enabled: true
+  authentication:
+    enabled: true
+    type: "jwt"
+    secret: "${JWT_SECRET}"
+  encryption:
+    enabled: true
+    algorithm: "aes-256-gcm"
+    key: "${ENCRYPTION_KEY}"
+
+orchestration:
+  parallel: true
+  maxConcurrency: 20
+  timeout: 900000  # 15 minutes
+  retryPolicy:
+    enabled: true
+    maxRetries: 1
+    backoffMultiplier: 3
+  reporting:
+    enabled: true
+    formats:
+      - "json"
+      - "html"
+    outputDir: "/var/reports/test-harness"

@@ -1,0 +1,120 @@
+# Development Environment Configuration
+# This file overrides default.yaml settings for development environment
+
+app:
+  debug: true
+  environment: "development"
+
+api:
+  port: 3000
+  cors:
+    origins:
+      - "http://localhost:3000"
+      - "http://localhost:3001"
+      - "http://localhost:8080"
+      - "http://127.0.0.1:3000"
+
+engines:
+  playwright:
+    headless: false
+    devtools: true
+    slowMo: 100
+    options:
+      slowMo: 100
+      devtools: true
+      trace: "on-first-retry"
+      screenshot: "only-on-failure"
+      video: "retain-on-failure"
+
+  jest:
+    watch: true
+    coverage: true
+    verbose: true
+    options:
+      verbose: true
+      clearMocks: true
+      restoreMocks: true
+
+  k6:
+    vus: 5
+    duration: "10s"
+    stages:
+      - duration: "5s"
+        target: 2
+      - duration: "5s"
+        target: 5
+      - duration: "5s"
+        target: 0
+
+healing:
+  confidenceThreshold: 0.5
+  maxRetries: 5
+  strategies:
+    selectorHealing: true
+    waitHealing: true
+    assertionHealing: true
+    navigationHealing: true
+  fallbackStrategies:
+    id: true
+    css: true
+    xpath: true
+    neighbor: true
+
+observability:
+  logging:
+    level: "debug"
+    format: "text"
+    file: "./logs/dev-test-harness.log"
+  metrics:
+    enabled: true
+    interval: 2000
+  tracing:
+    enabled: true
+    endpoint: "http://localhost:14268"
+
+database:
+  enabled: true
+  type: "sqlite"
+  connection:
+    filename: "./data/dev-test-harness.db"
+  migrations:
+    enabled: true
+    path: "./migrations"
+
+orchestration:
+  parallel: false  # Run tests sequentially in development for easier debugging
+  maxConcurrency: 1
+  timeout: 600000  # 10 minutes for development
+  retryPolicy:
+    enabled: true
+    maxRetries: 3
+    backoffMultiplier: 1.5
+  reporting:
+    enabled: true
+    formats:
+      - "json"
+      - "html"
+      - "junit"
+    outputDir: "./reports/dev"
+
+# Development-specific environment variables
+environments:
+  development:
+    variables:
+      NODE_ENV: "development"
+      LOG_LEVEL: "debug"
+      PLAYWRIGHT_HEADLESS: "false"
+      JEST_WATCH: "true"
+      HEALING_CONFIDENCE_THRESHOLD: "0.5"
+    overrides:
+      app:
+        debug: true
+      engines:
+        playwright:
+          headless: false
+          devtools: true
+        jest:
+          watch: true
+      healing:
+        confidenceThreshold: 0.5
+        maxRetries: 5
