@@ -15,7 +15,7 @@ describe('HelloWorldEngine', () => {
   let config: EngineConfig;
 
   beforeEach(() => {
-    engine = new HelloWorldEngine();
+    engine = new HelloWorldEngine(0); // No delay for tests
     config = {
       engine: 'hello-world',
       version: '1.0.0',
@@ -109,7 +109,7 @@ describe('HelloWorldEngine', () => {
       expect(result.status).toBe('passed');
       expect(result.output).toContain('Hello World!');
       expect(result.errors).toHaveLength(0);
-      expect(result.duration).toBeGreaterThan(0);
+      expect(result.duration).toBeGreaterThanOrEqual(0);
     });
 
     it('should execute a failing test', async () => {
@@ -459,7 +459,7 @@ describe('HelloWorldEngine', () => {
       expect(health.status).toBe('healthy');
       expect(health.message).toContain('HelloWorldEngine is healthy');
       expect(health.metrics).toBeDefined();
-      expect(health.metrics.uptime).toBeGreaterThan(0);
+      expect(health.metrics.uptime).toBeGreaterThanOrEqual(0);
       expect(health.metrics.memoryUsage).toBeGreaterThan(0);
       expect(health.timestamp).toBeInstanceOf(Date);
     });

@@ -9,6 +9,7 @@
 import { runPluginArchitectureDemo } from './PluginArchitectureDemo';
 import { runConfigurationDemo } from './ConfigurationDemo';
 import { runIntegratedDemo } from './IntegratedDemo';
+import { runHealingDemo } from './HealingDemo';
 import { logger } from '../utils/logger';
 
 /**
@@ -35,6 +36,11 @@ async function main(): Promise<void> {
     console.log('=' .repeat(60));
     await runIntegratedDemo();
     
+    // Demo 4: Self-Healing Engine
+    console.log('\n🔧 DEMO 4: Self-Healing Engine');
+    console.log('=' .repeat(60));
+    await runHealingDemo();
+    
     console.log('\n' + '=' .repeat(60));
     console.log('🎉 All demos completed successfully!');
     console.log('\n💡 System Status:');
@@ -42,6 +48,7 @@ async function main(): Promise<void> {
     console.log('  ✅ Plugin Architecture: Ready');
     console.log('  ✅ Self-Healing Foundation: Ready');
     console.log('  ✅ Integrated System: Ready');
+    console.log('  ✅ Self-Healing Engine: Ready');
     console.log('\n🚀 The complete system is ready for development!');
     
   } catch (error) {
