@@ -1,10 +1,13 @@
 {
   "repositoryUrl": "https://github.com/philga7/test-automation-harness",
   "branches": [
-    "main",
+    {
+      "name": "main",
+      "prerelease": "alpha"
+    },
     {
       "name": "beta",
-      "prerelease": true
+      "prerelease": "beta"
     }
   ],
   "plugins": [

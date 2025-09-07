@@ -1,5 +1,8 @@
 name: Release
 
+# TODO: When we have a deployable app with actual test engines (Playwright, Jest, k6, OWASP ZAP),
+#       remove the pre-release configuration and use standard semantic-release for production releases.
+
 on:
   push:
     branches:
@@ -36,7 +39,17 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Run linting
+        run: npm run lint
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+
+      - name: Upload release artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: dist/

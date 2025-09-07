@@ -1,5 +1,7 @@
 # Self-Healing Test Automation Harness
 
+> **🚧 ALPHA RELEASE** - This is the Plugin Architecture Foundation. The actual test engines (Playwright, Jest, k6, OWASP ZAP) are not yet implemented.
+
 A comprehensive TypeScript/Node.js test automation platform that orchestrates multiple test types (unit, e2e, performance, security) with AI-powered self-healing capabilities.
 
 ## 🚀 Features
@@ -103,16 +105,49 @@ The harness follows a plugin-based architecture with:
 - **Configuration System**: YAML-based test and environment configuration
 - **Observability Layer**: Metrics collection and reporting
 
+### 🔌 Plugin Architecture
+
+The system is built on a robust plugin architecture that supports:
+
+- **Dynamic Plugin Registration**: Plugins can be registered and discovered at runtime
+- **Factory Pattern**: Test engines are created through a factory system
+- **Dependency Injection**: Clean dependency management with a DI container
+- **Interface-Based Design**: All plugins implement well-defined interfaces
+- **Lifecycle Management**: Proper initialization and cleanup of plugin resources
+
+#### Core Components
+
+- **`ITestEngine`**: Interface for all test engines (Playwright, Jest, k6, OWASP ZAP)
+- **`IHealingStrategy`**: Interface for self-healing algorithms
+- **`PluginRegistry`**: Central registry for plugin management
+- **`TestEngineFactory`**: Factory for creating and configuring test engines
+- **`DependencyContainer`**: Simple dependency injection container
+
+#### Demo the Architecture
+
+```bash
+# Run the plugin architecture demo
+npx ts-node src/demo/run-demo.ts
+```
+
+This demo shows:
+- Plugin registration and discovery
+- Test engine creation and execution
+- Self-healing capabilities
+- Complete lifecycle management
+
 ## 🎯 Roadmap
 
 - [x] Project foundation and build system
-- [ ] Plugin architecture implementation
+- [x] Plugin architecture implementation
 - [ ] Configuration management system
 - [ ] Playwright E2E test engine
 - [ ] Basic self-healing engine
 - [ ] REST API implementation
 - [ ] Docker containerization
 - [ ] Observability and reporting
+
+> **📝 Note**: Once we have deployable test engines, we'll need to update the release workflow to move from alpha pre-releases to production releases.
 
 ## 📄 License
 
