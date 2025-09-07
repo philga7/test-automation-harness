@@ -130,7 +130,7 @@ describe('HealingEngine Integration', () => {
       expect(result).toBeDefined();
       expect(result.metadata).toBeDefined();
       expect(result.metadata['strategy']).toBeDefined();
-      expect(['simple-locator', 'id-fallback']).toContain(result.metadata.strategy);
+      expect(['simple-locator', 'id-fallback']).toContain(result.metadata['strategy']);
     });
 
     it('should track statistics across multiple strategies', async () => {
@@ -530,26 +530,26 @@ describe('HealingEngine Integration', () => {
 
       const invalidContext: HealingContext = {
         systemState: {
+          load: -1,
           resources: {
-            memory: { used: -1, total: 0, percentage: 0 },
-            cpu: { used: -1, total: 0, percentage: 0 },
-            disk: { used: -1, total: 0, percentage: 0 }
+            memory: -1,
+            cpu: -1,
+            disk: -1
           },
-          network: { latency: -1, bandwidth: -1 },
-          load: { activeTests: -1, queuedTests: -1 }
+          activeTests: -1,
+          queueLength: -1
         },
         userPreferences: {
           preferredStrategies: ['simple-locator', 'id-fallback'],
           riskTolerance: 'medium',
           notifications: {
+            onHealingAttempt: true,
             onHealingSuccess: true,
-            onHealingFailure: true,
-            onConfidenceLow: true
+            onHealingFailure: true
           }
         },
         availableStrategies: ['simple-locator', 'id-fallback'],
-        previousAttempts: [],
-        testEnvironment: 'test'
+        previousAttempts: []
       };
 
       // This might cause an error, but should not crash the engine
