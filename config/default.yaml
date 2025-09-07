@@ -1,0 +1,202 @@
+# Default Configuration for Self-Healing Test Automation Harness
+# This file contains the base configuration that applies to all environments
+
+app:
+  name: "test-automation-harness"
+  version: "0.1.0"
+  environment: "development"
+  debug: false
+
+api:
+  enabled: true
+  port: 3000
+  timeout: 30000
+  retries: 3
+  cors:
+    enabled: true
+    origins:
+      - "http://localhost:3000"
+      - "http://localhost:3001"
+  rateLimit:
+    enabled: true
+    windowMs: 900000  # 15 minutes
+    max: 100
+
+engines:
+  playwright:
+    enabled: true
+    timeout: 30000
+    retries: 3
+    headless: true
+    browser: "chromium"
+    viewport:
+      width: 1280
+      height: 720
+    baseUrl: "http://localhost:3000"
+    options:
+      slowMo: 0
+      devtools: false
+
+  jest:
+    enabled: true
+    timeout: 10000
+    retries: 2
+    testMatch:
+      - "**/*.test.ts"
+      - "**/*.spec.ts"
+    coverage: true
+    watch: false
+    options:
+      verbose: true
+      clearMocks: true
+
+  k6:
+    enabled: true
+    timeout: 60000
+    retries: 1
+    vus: 10
+    duration: "30s"
+    stages:
+      - duration: "10s"
+        target: 5
+      - duration: "20s"
+        target: 10
+      - duration: "10s"
+        target: 0
+
+  zap:
+    enabled: true
+    timeout: 120000
+    retries: 1
+    apiKey: ""
+    context: "default"
+    policy: "Default Policy"
+    target: "http://localhost:3000"
+
+healing:
+  enabled: true
+  confidenceThreshold: 0.6
+  maxRetries: 3
+  strategies:
+    selectorHealing: true
+    waitHealing: true
+    assertionHealing: true
+    navigationHealing: true
+  fallbackStrategies:
+    id: true
+    css: true
+    xpath: true
+    neighbor: true
+
+observability:
+  enabled: true
+  metrics:
+    enabled: true
+    endpoint: "http://localhost:9090"
+    interval: 5000
+  logging:
+    level: "info"
+    format: "text"
+    file: "./logs/test-harness.log"
+  tracing:
+    enabled: false
+    endpoint: "http://localhost:14268"
+
+database:
+  enabled: false
+  type: "sqlite"
+  connection:
+    filename: "./data/test-harness.db"
+  migrations:
+    enabled: true
+    path: "./migrations"
+
+security:
+  enabled: false
+  authentication:
+    enabled: false
+    type: "none"
+    secret: ""
+  encryption:
+    enabled: false
+    algorithm: "aes-256-gcm"
+    key: ""
+
+orchestration:
+  parallel: true
+  maxConcurrency: 5
+  timeout: 300000  # 5 minutes
+  retryPolicy:
+    enabled: true
+    maxRetries: 2
+    backoffMultiplier: 2
+  reporting:
+    enabled: true
+    formats:
+      - "json"
+      - "html"
+    outputDir: "./reports"
+
+environments:
+  development:
+    name: "development"
+    description: "Local development environment"
+    variables:
+      NODE_ENV: "development"
+      LOG_LEVEL: "debug"
+    overrides:
+      app:
+        debug: true
+      observability:
+        logging:
+          level: "debug"
+      engines:
+        playwright:
+          headless: false
+          devtools: true
+
+  staging:
+    name: "staging"
+    description: "Staging environment for testing"
+    variables:
+      NODE_ENV: "staging"
+      LOG_LEVEL: "info"
+    overrides:
+      app:
+        debug: false
+      api:
+        port: 3001
+      engines:
+        playwright:
+          headless: true
+        k6:
+          vus: 20
+          duration: "60s"
+
+  production:
+    name: "production"
+    description: "Production environment"
+    variables:
+      NODE_ENV: "production"
+      LOG_LEVEL: "warn"
+    overrides:
+      app:
+        debug: false
+      api:
+        port: 8080
+        rateLimit:
+          max: 50
+      engines:
+        playwright:
+          headless: true
+        k6:
+          vus: 50
+          duration: "120s"
+      healing:
+        confidenceThreshold: 0.8
+        maxRetries: 2
+      security:
+        enabled: true
+        authentication:
+          enabled: true
+          type: "jwt"
