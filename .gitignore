@@ -95,18 +95,34 @@ public
 tmp/
 temp/
 
-# Test results
+# Test results and artifacts
 test-results/
 playwright-report/
 test-results.xml
+
+# Comprehensive test artifacts directory
+artifacts/
+screenshots/
+videos/
+traces/
+reports/
+logs/
+
+# Playwright specific artifacts
+*.png
+*.webm
+*.mp4
+*.zip
+*.har
+*.trace
+
+# Test coverage and reports
+coverage/
+.nyc_output/
+*.lcov
 
 # Docker
 .dockerignore
 
 # Kubernetes
 *.kubeconfig
-
-# Test artifacts
-screenshots/
-videos/
-traces/

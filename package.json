@@ -17,6 +17,13 @@
     "test:coverage": "jest --coverage",
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests/integration",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
+    "test:e2e:report": "npx playwright show-report artifacts/reports/html",
+    "artifacts:clean": "rm -rf artifacts/*",
+    "artifacts:clean-screenshots": "rm -rf artifacts/screenshots/*",
+    "artifacts:clean-videos": "rm -rf artifacts/videos/*",
+    "artifacts:clean-traces": "rm -rf artifacts/traces/*",
     "lint": "echo \"Linting not configured yet\"",
     "type-check": "tsc --noEmit"
   },
@@ -36,9 +43,11 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "@playwright/test": "^1.55.0",
     "@types/js-yaml": "^4.0.9",
     "express": "^5.1.0",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "playwright": "^1.55.0"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
