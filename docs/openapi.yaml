@@ -1,0 +1,1286 @@
+openapi: 3.0.3
+info:
+  title: Self-Healing Test Automation Harness API
+  description: |
+    A comprehensive REST API for managing test execution, monitoring results, and configuring self-healing capabilities.
+    
+    ## Features
+    - **Test Orchestration**: Execute and manage multiple types of tests (unit, e2e, performance, security)
+    - **Self-Healing**: AI-powered test recovery and adaptation
+    - **Unified Reporting**: Comprehensive test results and analytics
+    - **Plugin Architecture**: Extensible test engine support
+    - **Real-time Monitoring**: Live test execution status and progress tracking
+    
+    ## Authentication
+    Currently, the API operates without authentication for development purposes. In production, API key authentication will be implemented.
+  version: 1.0.0
+  contact:
+    name: Test Automation Harness Support
+    email: support@test-automation-harness.com
+    url: https://github.com/your-org/test-automation-harness
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.test-automation-harness.com
+    description: Production server
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Get system health status
+      description: Returns the current health status of the system
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-06T15:30:00.000Z"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  uptime:
+                    type: number
+                    example: 3600
+                  environment:
+                    type: string
+                    example: development
+
+  /api/status:
+    get:
+      summary: Get API status information
+      description: Returns detailed information about the API status and available features
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: API status information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Self-Healing Test Automation Harness API"
+                  status:
+                    type: string
+                    example: running
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  features:
+                    type: object
+                    properties:
+                      testOrchestration:
+                        type: string
+                        example: available
+                      selfHealing:
+                        type: string
+                        example: available
+                      unifiedReporting:
+                        type: string
+                        example: available
+                      pluginArchitecture:
+                        type: string
+                        example: available
+                  endpoints:
+                    type: object
+                    properties:
+                      tests:
+                        type: string
+                        example: "/api/v1/tests"
+                      results:
+                        type: string
+                        example: "/api/v1/results"
+                      healing:
+                        type: string
+                        example: "/api/v1/healing"
+                      engines:
+                        type: string
+                        example: "/api/v1/engines"
+                      health:
+                        type: string
+                        example: "/health"
+                      docs:
+                        type: string
+                        example: "/api/docs"
+
+  /api/v1/tests/execute:
+    post:
+      summary: Execute a new test
+      description: Start execution of a new test with the specified configuration
+      tags:
+        - Test Execution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestConfig'
+            examples:
+              playwright_test:
+                summary: Playwright E2E Test
+                value:
+                  name: "Login Test"
+                  description: "Test user login functionality"
+                  engine: "playwright"
+                  config:
+                    url: "https://example.com"
+                    timeout: 30000
+                    browser: "chromium"
+                    headless: true
+                  options:
+                    timeout: 30000
+                    retries: 2
+                    parallel: false
+                    healing: true
+              jest_test:
+                summary: Jest Unit Test
+                value:
+                  name: "User Service Test"
+                  description: "Test user service functionality"
+                  engine: "jest"
+                  config:
+                    testFile: "user.service.test.js"
+                    timeout: 10000
+                  options:
+                    timeout: 10000
+                    retries: 1
+                    parallel: true
+                    healing: false
+      responses:
+        '202':
+          description: Test execution started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                message: "Test execution started successfully"
+                data:
+                  testId: "test_Login_Test_abc123"
+                  status: "accepted"
+                  message: "Test execution started"
+                  estimatedDuration: 30000
+                statusCode: 202
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/tests/{id}/status:
+    get:
+      summary: Get test execution status
+      description: Get the current status of a test execution
+      tags:
+        - Test Execution
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Test ID
+          schema:
+            type: string
+            example: "test_Login_Test_abc123"
+      responses:
+        '200':
+          description: Test status information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  testId: "test_Login_Test_abc123"
+                  status: "running"
+                  startTime: "2025-01-06T15:30:00.000Z"
+                  endTime: null
+                  duration: 0
+                  progress: 45
+                  healingAttempts: 0
+                  errors: 0
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/tests/{id}/result:
+    get:
+      summary: Get complete test result
+      description: Get the complete result of a test execution
+      tags:
+        - Test Execution
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Test ID
+          schema:
+            type: string
+            example: "test_Login_Test_abc123"
+        - name: includeArtifacts
+          in: query
+          description: Include test artifacts
+          schema:
+            type: boolean
+            default: false
+        - name: includeHealingAttempts
+          in: query
+          description: Include healing attempts
+          schema:
+            type: boolean
+            default: true
+        - name: includeMetrics
+          in: query
+          description: Include performance metrics
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Complete test result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  testId: "test_Login_Test_abc123"
+                  status: "passed"
+                  startTime: "2025-01-06T15:30:00.000Z"
+                  endTime: "2025-01-06T15:30:30.000Z"
+                  duration: 30000
+                  engine: "playwright"
+                  config: {}
+                  results:
+                    passed: 5
+                    failed: 0
+                    skipped: 0
+                    total: 5
+                  artifacts: {}
+                  healingAttempts: []
+                  metrics: {}
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/tests/{id}/cancel:
+    post:
+      summary: Cancel a running test
+      description: Cancel the execution of a running test
+      tags:
+        - Test Execution
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Test ID
+          schema:
+            type: string
+            example: "test_Login_Test_abc123"
+      responses:
+        '200':
+          description: Test cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  testId: "test_Login_Test_abc123"
+                  status: "cancelled"
+                  message: "Test execution cancelled"
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/tests/queue:
+    get:
+      summary: Get test execution queue status
+      description: Get the current status of the test execution queue
+      tags:
+        - Test Execution
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/SortByParam'
+      responses:
+        '200':
+          description: Test queue status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  queue:
+                    - testId: "test_123"
+                      name: "Test Name"
+                      engine: "playwright"
+                      status: "queued"
+                      createdAt: "2025-01-06T15:30:00.000Z"
+                  running: 2
+                  completed: 15
+                  failed: 1
+                  total: 18
+                  pagination:
+                    page: 1
+                    limit: 10
+                    total: 18
+                    totalPages: 2
+                    hasNext: true
+                    hasPrev: false
+
+  /api/v1/tests/engines:
+    get:
+      summary: Get available test engines
+      description: Get list of available test engines
+      tags:
+        - Test Execution
+      parameters:
+        - name: testType
+          in: query
+          description: Filter by test type
+          schema:
+            type: string
+            enum: [unit, e2e, performance, security]
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [enabled, disabled]
+        - name: supportsHealing
+          in: query
+          description: Filter by healing support
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Available test engines
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  - name: "playwright"
+                    version: "1.40.0"
+                    type: "e2e"
+                    enabled: true
+                    supportsHealing: true
+                    capabilities: ["web", "mobile", "api"]
+                    config: {}
+
+  /api/v1/results:
+    get:
+      summary: Get test results with filtering and pagination
+      description: Get test results with various filtering and pagination options
+      tags:
+        - Test Results
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/SortByParam'
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [passed, failed, skipped, running]
+        - name: engine
+          in: query
+          description: Filter by engine name
+          schema:
+            type: string
+        - name: testName
+          in: query
+          description: Filter by test name
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Filter by start date
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: Filter by end date
+          schema:
+            type: string
+            format: date-time
+        - name: includeArtifacts
+          in: query
+          description: Include artifacts
+          schema:
+            type: boolean
+            default: false
+        - name: includeHealingAttempts
+          in: query
+          description: Include healing attempts
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Test results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  results:
+                    - testId: "test_123"
+                      name: "Login Test"
+                      status: "passed"
+                      engine: "playwright"
+                      startTime: "2025-01-06T15:30:00.000Z"
+                      endTime: "2025-01-06T15:30:30.000Z"
+                      duration: 30000
+                      results:
+                        passed: 5
+                        failed: 0
+                        skipped: 0
+                        total: 5
+                  pagination:
+                    page: 1
+                    limit: 10
+                    total: 25
+                    totalPages: 3
+                    hasNext: true
+                    hasPrev: false
+
+  /api/v1/results/{id}:
+    get:
+      summary: Get specific test result by ID
+      description: Get detailed information about a specific test result
+      tags:
+        - Test Results
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Test result ID
+          schema:
+            type: string
+            example: "test_123"
+      responses:
+        '200':
+          description: Test result details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  testId: "test_123"
+                  name: "Login Test"
+                  status: "passed"
+                  engine: "playwright"
+                  startTime: "2025-01-06T15:30:00.000Z"
+                  endTime: "2025-01-06T15:30:30.000Z"
+                  duration: 30000
+                  config: {}
+                  results:
+                    passed: 5
+                    failed: 0
+                    skipped: 0
+                    total: 5
+                  artifacts: {}
+                  healingAttempts: []
+                  metrics: {}
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/results/summary:
+    get:
+      summary: Get test results summary and statistics
+      description: Get summary statistics for test results
+      tags:
+        - Test Results
+      parameters:
+        - name: startDate
+          in: query
+          description: Filter by start date
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: Filter by end date
+          schema:
+            type: string
+            format: date-time
+        - name: engine
+          in: query
+          description: Filter by engine name
+          schema:
+            type: string
+        - name: groupBy
+          in: query
+          description: Group results by field
+          schema:
+            type: string
+            enum: [engine, status, date]
+      responses:
+        '200':
+          description: Test results summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  total: 100
+                  passed: 85
+                  failed: 10
+                  skipped: 5
+                  running: 0
+                  successRate: 0.85
+                  avgDuration: 25000
+                  totalDuration: 2500000
+                  byEngine:
+                    playwright:
+                      total: 50
+                      passed: 45
+                      failed: 5
+                    jest:
+                      total: 30
+                      passed: 25
+                      failed: 5
+                    k6:
+                      total: 20
+                      passed: 15
+                      failed: 0
+                  byStatus:
+                    passed: 85
+                    failed: 10
+                    skipped: 5
+
+  /api/v1/healing/strategies:
+    get:
+      summary: Get available healing strategies
+      description: Get list of available healing strategies
+      tags:
+        - Healing Management
+      parameters:
+        - name: failureType
+          in: query
+          description: Filter by failure type
+          schema:
+            type: string
+        - name: enabled
+          in: query
+          description: Filter by enabled status
+          schema:
+            type: boolean
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Available healing strategies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  - id: "css-fallback"
+                    name: "CSS Fallback Strategy"
+                    description: "Falls back to alternative CSS selectors"
+                    failureTypes: ["element_not_found", "timeout"]
+                    enabled: true
+                    confidence: 0.8
+                    config: {}
+
+  /api/v1/healing/attempts:
+    get:
+      summary: Get healing attempts with filtering and pagination
+      description: Get healing attempts with various filtering and pagination options
+      tags:
+        - Healing Management
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/SortByParam'
+        - name: testId
+          in: query
+          description: Filter by test ID
+          schema:
+            type: string
+        - name: strategy
+          in: query
+          description: Filter by strategy name
+          schema:
+            type: string
+        - name: success
+          in: query
+          description: Filter by success status
+          schema:
+            type: boolean
+        - name: minConfidence
+          in: query
+          description: Minimum confidence threshold
+          schema:
+            type: number
+            minimum: 0
+            maximum: 1
+        - name: startDate
+          in: query
+          description: Filter by start date
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: Filter by end date
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Healing attempts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  attempts:
+                    - id: "attempt_123"
+                      testId: "test_123"
+                      strategy: "css-fallback"
+                      failureType: "element_not_found"
+                      success: true
+                      confidence: 0.8
+                      duration: 1500
+                      timestamp: "2025-01-06T15:30:00.000Z"
+                      changes:
+                        selector: "button.submit"
+                        newSelector: "input[type='submit']"
+                  pagination:
+                    page: 1
+                    limit: 10
+                    total: 50
+                    totalPages: 5
+                    hasNext: true
+                    hasPrev: false
+
+  /api/v1/healing/statistics:
+    get:
+      summary: Get healing statistics and metrics
+      description: Get comprehensive healing statistics and metrics
+      tags:
+        - Healing Management
+      parameters:
+        - name: startDate
+          in: query
+          description: Filter by start date
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: Filter by end date
+          schema:
+            type: string
+            format: date-time
+        - name: groupBy
+          in: query
+          description: Group by field
+          schema:
+            type: string
+            enum: [strategy, failureType, testId]
+        - name: minConfidence
+          in: query
+          description: Minimum confidence threshold
+          schema:
+            type: number
+            minimum: 0
+            maximum: 1
+      responses:
+        '200':
+          description: Healing statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  totalAttempts: 1000
+                  successfulAttempts: 800
+                  failedAttempts: 200
+                  successRate: 0.8
+                  avgConfidence: 0.75
+                  avgDuration: 2000
+                  strategies:
+                    - name: "css-fallback"
+                      attempts: 500
+                      successful: 400
+                      successRate: 0.8
+                      avgConfidence: 0.75
+                  byFailureType:
+                    element_not_found:
+                      attempts: 600
+                      successful: 480
+                    timeout:
+                      attempts: 400
+                      successful: 320
+
+  /api/v1/engines:
+    get:
+      summary: Get all available test engines
+      description: Get list of all available test engines with filtering options
+      tags:
+        - Engine Management
+      parameters:
+        - name: testType
+          in: query
+          description: Filter by test type
+          schema:
+            type: string
+            enum: [unit, e2e, performance, security]
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [enabled, disabled]
+        - name: supportsHealing
+          in: query
+          description: Filter by healing support
+          schema:
+            type: boolean
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/SortByParam'
+      responses:
+        '200':
+          description: Available test engines
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  - id: "playwright-1.40.0"
+                    name: "playwright"
+                    version: "1.40.0"
+                    type: "e2e"
+                    enabled: true
+                    supportsHealing: true
+                    config:
+                      browser: "chromium"
+                      headless: true
+                      timeout: 30000
+                    capabilities: ["web", "mobile", "api"]
+                    createdAt: "2025-01-06T15:30:00.000Z"
+                    updatedAt: "2025-01-06T15:30:00.000Z"
+                pagination:
+                  page: 1
+                  limit: 10
+                  total: 5
+                  totalPages: 1
+                  hasNext: false
+                  hasPrev: false
+
+  /api/v1/engines/{id}:
+    get:
+      summary: Get specific test engine details
+      description: Get detailed information about a specific test engine
+      tags:
+        - Engine Management
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Engine ID
+          schema:
+            type: string
+            example: "playwright-1.40.0"
+      responses:
+        '200':
+          description: Engine details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  id: "playwright-1.40.0"
+                  name: "playwright"
+                  version: "1.40.0"
+                  type: "e2e"
+                  enabled: true
+                  supportsHealing: true
+                  config: {}
+                  capabilities: ["web", "mobile", "api"]
+                  statistics:
+                    totalTests: 100
+                    successfulTests: 85
+                    failedTests: 15
+                    successRate: 0.85
+                    avgDuration: 25000
+                  createdAt: "2025-01-06T15:30:00.000Z"
+                  updatedAt: "2025-01-06T15:30:00.000Z"
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/engines/{id}/health:
+    get:
+      summary: Get test engine health status
+      description: Get the current health status of a specific test engine
+      tags:
+        - Engine Management
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Engine ID
+          schema:
+            type: string
+            example: "playwright-1.40.0"
+      responses:
+        '200':
+          description: Engine health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                success: true
+                data:
+                  engineId: "playwright-1.40.0"
+                  status: "healthy"
+                  lastCheck: "2025-01-06T15:30:00.000Z"
+                  uptime: 3600
+                  version: "1.40.0"
+                  capabilities: ["web", "mobile", "api"]
+                  resources:
+                    memory: "512MB"
+                    cpu: "2 cores"
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication (currently optional in development)
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      description: Items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    SortParam:
+      name: sort
+      in: query
+      description: Sort order
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+    SortByParam:
+      name: sortBy
+      in: query
+      description: Sort field
+      schema:
+        type: string
+        default: createdAt
+
+  schemas:
+    TestConfig:
+      type: object
+      required:
+        - name
+        - engine
+        - config
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Test name
+          example: "Login Test"
+        description:
+          type: string
+          maxLength: 1000
+          description: Test description
+          example: "Test user login functionality"
+        engine:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Test engine name
+          example: "playwright"
+        config:
+          type: object
+          description: Engine-specific configuration
+          additionalProperties: true
+          example:
+            url: "https://example.com"
+            timeout: 30000
+            browser: "chromium"
+            headless: true
+        options:
+          type: object
+          properties:
+            timeout:
+              type: integer
+              minimum: 1000
+              maximum: 300000
+              default: 30000
+              description: Test timeout in milliseconds
+            retries:
+              type: integer
+              minimum: 0
+              maximum: 5
+              default: 0
+              description: Number of retries on failure
+            parallel:
+              type: boolean
+              default: false
+              description: Whether to run tests in parallel
+            healing:
+              type: boolean
+              default: true
+              description: Whether to enable self-healing
+          description: Test execution options
+
+    TestResult:
+      type: object
+      properties:
+        testId:
+          type: string
+          description: Unique test identifier
+          example: "test_Login_Test_abc123"
+        name:
+          type: string
+          description: Test name
+          example: "Login Test"
+        status:
+          type: string
+          enum: [passed, failed, skipped, running, cancelled]
+          description: Test execution status
+          example: "passed"
+        engine:
+          type: string
+          description: Test engine used
+          example: "playwright"
+        startTime:
+          type: string
+          format: date-time
+          description: Test start time
+          example: "2025-01-06T15:30:00.000Z"
+        endTime:
+          type: string
+          format: date-time
+          description: Test end time
+          example: "2025-01-06T15:30:30.000Z"
+        duration:
+          type: integer
+          description: Test duration in milliseconds
+          example: 30000
+        config:
+          type: object
+          description: Test configuration used
+        results:
+          type: object
+          properties:
+            passed:
+              type: integer
+              description: Number of passed tests
+            failed:
+              type: integer
+              description: Number of failed tests
+            skipped:
+              type: integer
+              description: Number of skipped tests
+            total:
+              type: integer
+              description: Total number of tests
+          description: Test execution results
+        artifacts:
+          type: object
+          description: Test artifacts (screenshots, logs, etc.)
+        healingAttempts:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealingAttempt'
+          description: Healing attempts made during test execution
+        metrics:
+          type: object
+          description: Performance metrics
+
+    HealingAttempt:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique healing attempt identifier
+          example: "attempt_123"
+        testId:
+          type: string
+          description: Test ID
+          example: "test_123"
+        strategy:
+          type: string
+          description: Healing strategy used
+          example: "css-fallback"
+        failureType:
+          type: string
+          description: Type of failure that triggered healing
+          example: "element_not_found"
+        success:
+          type: boolean
+          description: Whether the healing attempt was successful
+          example: true
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence score of the healing attempt
+          example: 0.8
+        duration:
+          type: integer
+          description: Healing attempt duration in milliseconds
+          example: 1500
+        timestamp:
+          type: string
+          format: date-time
+          description: When the healing attempt was made
+          example: "2025-01-06T15:30:00.000Z"
+        changes:
+          type: object
+          additionalProperties: true
+          description: Changes made during healing
+          example:
+            selector: "button.submit"
+            newSelector: "input[type='submit']"
+
+    Engine:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique engine identifier
+          example: "playwright-1.40.0"
+        name:
+          type: string
+          description: Engine name
+          example: "playwright"
+        version:
+          type: string
+          description: Engine version
+          example: "1.40.0"
+        type:
+          type: string
+          enum: [unit, e2e, performance, security]
+          description: Test type supported by engine
+          example: "e2e"
+        enabled:
+          type: boolean
+          description: Whether the engine is enabled
+          example: true
+        supportsHealing:
+          type: boolean
+          description: Whether the engine supports self-healing
+          example: true
+        config:
+          type: object
+          description: Engine configuration
+        capabilities:
+          type: array
+          items:
+            type: string
+          description: Engine capabilities
+          example: ["web", "mobile", "api"]
+        createdAt:
+          type: string
+          format: date-time
+          description: When the engine was created
+          example: "2025-01-06T15:30:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the engine was last updated
+          example: "2025-01-06T15:30:00.000Z"
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          description: Success message
+          example: "Operation completed successfully"
+        data:
+          type: object
+          description: Response data
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2025-01-06T15:30:00.000Z"
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 200
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              description: Error type
+              example: "ValidationError"
+            message:
+              type: string
+              description: Error message
+              example: "Request validation failed"
+            statusCode:
+              type: integer
+              description: HTTP status code
+              example: 400
+            requestId:
+              type: string
+              description: Request identifier
+              example: "req_abc123"
+            details:
+              type: string
+              description: Additional error details
+              example: "Field 'name' is required"
+            field:
+              type: string
+              description: Field that caused the error (for validation errors)
+              example: "name"
+            value:
+              type: string
+              description: Invalid value (for validation errors)
+              example: ""
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+          example: "2025-01-06T15:30:00.000Z"
+
+  responses:
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              type: "ValidationError"
+              message: "Request validation failed"
+              statusCode: 400
+              requestId: "req_abc123"
+              details: "Field 'name' is required"
+              field: "name"
+              value: ""
+            timestamp: "2025-01-06T15:30:00.000Z"
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              type: "NotFoundError"
+              message: "Resource not found"
+              statusCode: 404
+              requestId: "req_abc123"
+            timestamp: "2025-01-06T15:30:00.000Z"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              type: "InternalServerError"
+              message: "Internal server error"
+              statusCode: 500
+              requestId: "req_abc123"
+            timestamp: "2025-01-06T15:30:00.000Z"
+
+tags:
+  - name: Health
+    description: Health and status endpoints
+  - name: Test Execution
+    description: Test execution and management
+  - name: Test Results
+    description: Test results and reporting
+  - name: Healing Management
+    description: Self-healing strategies and attempts
+  - name: Engine Management
+    description: Test engine management
