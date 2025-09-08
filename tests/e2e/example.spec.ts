@@ -90,16 +90,19 @@ test('should handle network requests', async ({ page }) => {
  * Error handling test
  */
 test('should handle 404 errors gracefully', async ({ page }) => {
-  // Navigate to a non-existent page
-  const response = await page.goto('https://httpbin.org/status/404');
+  // Use a more reliable approach - navigate to a page that doesn't exist
+  // We'll use example.com with a non-existent path
+  const response = await page.goto('https://example.com/non-existent-page-404', { 
+    waitUntil: 'domcontentloaded' 
+  });
   
   // Verify 404 status
   expect(response?.status()).toBe(404);
   
-  // Wait for page to load and check for any content
-  await page.waitForLoadState('networkidle');
+  // Wait for page to load
+  await page.waitForLoadState('domcontentloaded');
   
-  // Check if there's any content in the body (httpbin might return empty body for 404)
+  // Check if there's any content in the body
   const bodyContent = await page.textContent('body');
   console.log('Body content:', bodyContent);
   

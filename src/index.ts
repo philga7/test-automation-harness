@@ -5,73 +5,42 @@
  * Main application entry point
  */
 
-import express from 'express';
 import { logger } from './utils/logger';
+import { startServer } from './api/server';
 
-const app = express();
-const PORT = process.env['PORT'] || 3000;
+/**
+ * Main application entry point
+ */
+async function main(): Promise<void> {
+  try {
+    logger.info('Starting Self-Healing Test Automation Harness...');
+    
+    // Start the API server
+    await startServer();
+    
+  } catch (error) {
+    logger.error('Failed to start application:', error);
+    process.exit(1);
+  }
+}
 
-// Basic middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Health check endpoint
-app.get('/health', (_req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    version: process.env['npm_package_version'] || '1.0.0'
-  });
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error);
+  process.exit(1);
 });
 
-// API routes placeholder
-app.get('/api/status', (_req, res) => {
-  res.json({
-    message: 'Self-Healing Test Automation Harness API',
-    status: 'running',
-    features: {
-      testOrchestration: 'planned',
-      selfHealing: 'planned',
-      unifiedReporting: 'planned'
-    }
-  });
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
 });
 
-// Error handling middleware
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  logger.error('Unhandled error:', err);
-  res.status(500).json({ 
-    error: 'Internal server error',
-    message: process.env['NODE_ENV'] === 'development' ? err.message : 'Something went wrong'
+// Start the application
+if (require.main === module) {
+  main().catch((error) => {
+    logger.error('Application startup failed:', error);
+    process.exit(1);
   });
-});
+}
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ 
-    error: 'Not found',
-    path: req.originalUrl 
-  });
-});
-
-// Start server
-const server = app.listen(PORT, () => {
-  logger.info(`🚀 Self-Healing Test Automation Harness started on port ${PORT}`);
-  logger.info(`📊 Health check available at: http://localhost:${PORT}/health`);
-  logger.info(`🔧 API status at: http://localhost:${PORT}/api/status`);
-});
-
-// Graceful shutdown
-const gracefulShutdown = () => {
-  logger.info('Shutting down gracefully');
-  server.close(() => {
-    logger.info('Server closed');
-    process.exit(0);
-  });
-};
-
-process.on('SIGTERM', gracefulShutdown);
-process.on('SIGINT', gracefulShutdown);
-
-export default app;
-export { server };
+export default main;
