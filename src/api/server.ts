@@ -12,7 +12,7 @@ import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { logger } from '../utils/logger';
 
-// Import route handlers
+// Import route handlers  
 import testExecutionRoutes from './routes/testExecution';
 import resultsRoutes from './routes/results';
 import healingRoutes from './routes/healing';
@@ -160,9 +160,10 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
     res.status(404).json({
       error: 'Not found',
       message: `API endpoint not found: ${req.originalUrl}`,
+      path: req.originalUrl,
       availableEndpoints: [
         '/api/v1/tests',
-        '/api/v1/results',
+        '/api/v1/results', 
         '/api/v1/healing',
         '/api/v1/engines',
         '/api/status',
@@ -179,6 +180,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
     res.status(404).json({
       error: 'Not found',
       message: `Route not found: ${req.originalUrl}`,
+      path: req.originalUrl,
       suggestion: 'Try /api/status for API information or /health for system status',
     });
   });
