@@ -17,6 +17,7 @@ import testExecutionRoutes from './routes/testExecution';
 import resultsRoutes from './routes/results';
 import healingRoutes from './routes/healing';
 import enginesRoutes from './routes/engines';
+import observabilityRoutes from './routes/observability';
 
 // Import middleware
 import { errorHandlerMiddleware } from './middleware/errorHandler';
@@ -120,6 +121,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
   app.use('/api/v1/results', resultsRoutes);
   app.use('/api/v1/healing', healingRoutes);
   app.use('/api/v1/engines', enginesRoutes);
+  app.use('/api/v1/observability', observabilityRoutes);
 
   // API status endpoint
   app.get('/api/status', (_req: Request, res: Response) => {
@@ -138,6 +140,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
         results: '/api/v1/results',
         healing: '/api/v1/healing',
         engines: '/api/v1/engines',
+        observability: '/api/v1/observability',
         health: '/health',
         docs: config.enableSwagger ? '/api/docs' : 'disabled',
       },
@@ -156,7 +159,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
   }
 
   // 404 handler for API routes
-  app.use('/api/*', (req: Request, res: Response) => {
+  app.use('/api', (req: Request, res: Response) => {
     res.status(404).json({
       error: 'Not found',
       message: `API endpoint not found: ${req.originalUrl}`,
@@ -166,6 +169,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
         '/api/v1/results', 
         '/api/v1/healing',
         '/api/v1/engines',
+        '/api/v1/observability',
         '/api/status',
         '/health',
       ],
@@ -176,7 +180,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
   app.use(errorHandlerMiddleware);
 
   // 404 handler for non-API routes
-  app.use('*', (req: Request, res: Response) => {
+  app.use((req: Request, res: Response) => {
     res.status(404).json({
       error: 'Not found',
       message: `Route not found: ${req.originalUrl}`,

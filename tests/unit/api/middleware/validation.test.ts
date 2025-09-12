@@ -118,7 +118,7 @@ describe('API Validation Middleware', () => {
       const middleware = requestValidationMiddleware({ query: schemaWithDefaults });
       middleware(mockRequest as Request, mockResponse as Response, mockNext);
       
-      expect(mockRequest.query).toEqual({
+      expect((mockRequest as any).validatedQuery).toEqual({
         page: 1,
         limit: 10,
         sort: 'desc'
