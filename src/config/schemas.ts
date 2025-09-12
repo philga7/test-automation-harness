@@ -66,15 +66,34 @@ export interface ObservabilityConfig {
     enabled: boolean;
     endpoint?: string;
     interval: number;
+    retention: number; // days
+    exportFormat: 'prometheus' | 'json' | 'opentelemetry';
   };
   logging: {
     level: 'debug' | 'info' | 'warn' | 'error';
     format: 'json' | 'text';
     file?: string;
+    maxFileSize: string;
+    maxFiles: number;
+    includeStackTrace: boolean;
   };
   tracing: {
     enabled: boolean;
     endpoint?: string;
+    sampleRate: number;
+    serviceName: string;
+  };
+  health: {
+    enabled: boolean;
+    interval: number;
+    timeout: number;
+  };
+  reporting: {
+    enabled: boolean;
+    schedule: string; // cron expression
+    formats: ('json' | 'html' | 'pdf')[];
+    outputDir: string;
+    retention: number; // days
   };
 }
 
@@ -267,13 +286,32 @@ export const DEFAULT_CONFIG: Partial<AppConfig> = {
     metrics: {
       enabled: true,
       interval: 5000,
+      retention: 7,
+      exportFormat: 'json' as const,
     },
     logging: {
-      level: 'info',
-      format: 'text',
+      level: 'info' as const,
+      format: 'text' as const,
+      maxFileSize: '10MB',
+      maxFiles: 5,
+      includeStackTrace: true,
     },
     tracing: {
       enabled: false,
+      sampleRate: 0.1,
+      serviceName: 'test-automation-harness',
+    },
+    health: {
+      enabled: true,
+      interval: 30000,
+      timeout: 5000,
+    },
+    reporting: {
+      enabled: true,
+      schedule: '0 0 * * *',
+      formats: ['json', 'html'] as const,
+      outputDir: './reports',
+      retention: 30,
     },
   },
   database: {

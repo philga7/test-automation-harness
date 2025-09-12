@@ -58,7 +58,8 @@ export function requestValidationMiddleware(options: ValidationOptions) {
         if (error) {
           errors.push(`Query validation failed: ${error.details.map(d => d.message).join(', ')}`);
         } else {
-          req.query = value; // Use validated and sanitized query
+          // Store validated query in a custom property since req.query is read-only
+          (req as any).validatedQuery = value;
         }
       }
 

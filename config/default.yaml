@@ -94,13 +94,32 @@ observability:
     enabled: true
     endpoint: "http://localhost:9090"
     interval: 5000
+    retention: 7
+    exportFormat: "json"
   logging:
     level: "info"
     format: "text"
-    file: "./logs/test-harness.log"
+    file: "./artifacts/logs/test-harness.log"
+    maxFileSize: "10MB"
+    maxFiles: 5
+    includeStackTrace: true
   tracing:
     enabled: false
     endpoint: "http://localhost:14268"
+    sampleRate: 0.1
+    serviceName: "test-automation-harness"
+  health:
+    enabled: true
+    interval: 30000
+    timeout: 5000
+  reporting:
+    enabled: true
+    schedule: "0 0 * * *"
+    formats:
+      - "json"
+      - "html"
+    outputDir: "./artifacts/reports"
+    retention: 30
 
 database:
   enabled: false
