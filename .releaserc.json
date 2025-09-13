@@ -1,7 +1,12 @@
 {
   "repositoryUrl": "https://github.com/philga7/test-automation-harness",
   "branches": [
-    "main"
+    "main",
+    {
+      "name": "develop",
+      "prerelease": true,
+      "channel": "alpha"
+    }
   ],
   "plugins": [
     "@semantic-release/commit-analyzer",

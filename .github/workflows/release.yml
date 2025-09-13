@@ -7,13 +7,14 @@ on:
   push:
     branches:
       - main
+      - develop
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    # Only run on main branch
-    if: github.ref == 'refs/heads/main'
+    # Run on main and develop branches
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
 
     permissions:
       contents: write
