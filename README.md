@@ -13,6 +13,7 @@ A comprehensive TypeScript/Node.js test automation platform that orchestrates mu
 - **Organized Artifacts**: Centralized test artifacts management
 - **Docker Ready**: Containerized deployment in under 10 minutes
 - **Observability**: OpenTelemetry integration with comprehensive metrics
+- **API Integration Service**: Modern JavaScript client library for seamless frontend integration
 
 ## 📋 Prerequisites
 

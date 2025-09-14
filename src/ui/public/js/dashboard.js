@@ -1,12 +1,20 @@
 /**
  * Self-Healing Test Automation Harness - Dashboard JavaScript
  * Handles navigation, data loading, and interactive functionality
+ * 
+ * Updated to use the new ApiService for all API communications
  */
 
 class Dashboard {
     constructor() {
         this.currentSection = 'overview';
         this.refreshInterval = null;
+        this.apiService = new ApiService({
+            baseUrl: '',
+            timeout: 30000,
+            retryAttempts: 3,
+            enableLogging: true
+        });
         this.init();
     }
 
@@ -101,10 +109,7 @@ class Dashboard {
 
     async loadSystemStatus() {
         try {
-            const response = await fetch('/health');
-            if (!response.ok) throw new Error('Health check failed');
-            
-            const data = await response.json();
+            const data = await this.apiService.getSystemStatus();
             
             this.updateElement('system-status', data.status || 'Unknown');
             this.updateElement('system-version', data.version || 'Unknown');
@@ -115,15 +120,13 @@ class Dashboard {
             this.updateElement('system-status', 'Error');
             this.updateElement('system-version', 'Error');
             this.updateElement('system-uptime', 'Error');
+            this.showNotification('Failed to load system status', 'error');
         }
     }
 
     async loadApiStatus() {
         try {
-            const response = await fetch('/api/status');
-            if (!response.ok) throw new Error('API status check failed');
-            
-            const data = await response.json();
+            const data = await this.apiService.getApiStatus();
             
             if (data.features) {
                 const engineCount = Object.keys(data.features).length;
@@ -135,37 +138,34 @@ class Dashboard {
         } catch (error) {
             console.error('Failed to load API status:', error);
             this.updateElement('engines-count', 'Error');
+            this.showNotification('Failed to load API status', 'error');
         }
     }
 
     async loadHealingStats() {
         try {
-            const response = await fetch('/api/v1/healing');
-            if (!response.ok) throw new Error('Healing stats check failed');
-            
-            const data = await response.json();
+            const data = await this.apiService.getHealingStatistics();
             
             this.updateElement('healing-rate', data.successRate ? (data.successRate * 100).toFixed(1) + '%' : 'Loading...');
-            this.updateElement('total-healing-actions', data.totalActions || '0');
-            this.updateElement('successful-healing', data.successfulActions || '0');
-            this.updateElement('failed-healing', data.failedActions || '0');
+            this.updateElement('total-healing-actions', data.totalAttempts || '0');
+            this.updateElement('successful-healing', data.successfulAttempts || '0');
+            this.updateElement('failed-healing', data.failedAttempts || '0');
         } catch (error) {
             console.error('Failed to load healing stats:', error);
             this.updateElement('healing-rate', 'Error');
+            this.showNotification('Failed to load healing statistics', 'error');
         }
     }
 
     async loadTestResults() {
         try {
-            const response = await fetch('/api/v1/results');
-            if (!response.ok) throw new Error('Test results check failed');
+            const data = await this.apiService.getTestResultsSummary();
             
-            const data = await response.json();
-            
-            this.updateElement('tests-executed', data.totalTests || '0');
-            this.updateElement('active-tests', data.activeTests || '0');
+            this.updateElement('tests-executed', data.total || '0');
+            this.updateElement('active-tests', data.running || '0');
         } catch (error) {
             console.error('Failed to load test results:', error);
+            this.showNotification('Failed to load test results', 'error');
         }
     }
 
@@ -177,23 +177,13 @@ class Dashboard {
             button.textContent = 'Running...';
             button.disabled = true;
             
-            const response = await fetch('/api/v1/tests', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    type: testType,
-                    timestamp: new Date().toISOString()
-                })
-            });
-
-            if (!response.ok) throw new Error('Test execution failed');
+            // Create test configuration based on test type
+            const testConfig = this.createTestConfig(testType);
             
-            const result = await response.json();
+            const result = await this.apiService.executeTest(testConfig);
             
             // Show success message
-            this.showNotification(`Tests executed successfully! Task ID: ${result.taskId}`, 'success');
+            this.showNotification(`Tests executed successfully! Test ID: ${result.data.testId}`, 'success');
             
             // Refresh data
             await this.loadTestResults();
@@ -201,10 +191,85 @@ class Dashboard {
             
         } catch (error) {
             console.error('Test execution failed:', error);
-            this.showNotification('Test execution failed. Please try again.', 'error');
+            this.showNotification(`Test execution failed: ${error.message}`, 'error');
         } finally {
             button.textContent = originalText;
             button.disabled = false;
+        }
+    }
+
+    /**
+     * Create test configuration based on test type
+     * @param {string} testType - Type of test to execute
+     * @returns {Object} Test configuration
+     */
+    createTestConfig(testType) {
+        const baseConfig = {
+            name: `${testType.charAt(0).toUpperCase() + testType.slice(1)} Test Suite`,
+            description: `Automated ${testType} test execution from dashboard`,
+            options: {
+                timeout: 30000,
+                retries: 2,
+                parallel: false,
+                healing: true
+            }
+        };
+
+        switch (testType) {
+            case 'e2e':
+                return {
+                    ...baseConfig,
+                    engine: 'playwright',
+                    config: {
+                        url: 'https://example.com',
+                        browser: 'chromium',
+                        headless: true,
+                        timeout: 30000
+                    }
+                };
+            case 'unit':
+                return {
+                    ...baseConfig,
+                    engine: 'jest',
+                    config: {
+                        testEnvironment: 'node',
+                        timeout: 5000,
+                        maxWorkers: 2,
+                        coverage: true
+                    }
+                };
+            case 'performance':
+                return {
+                    ...baseConfig,
+                    engine: 'k6',
+                    config: {
+                        vus: 10,
+                        duration: '30s',
+                        thresholds: {
+                            http_req_duration: ['p(95)<200']
+                        }
+                    }
+                };
+            case 'security':
+                return {
+                    ...baseConfig,
+                    engine: 'owasp-zap',
+                    config: {
+                        proxy: 'http://localhost:8080',
+                        context: 'default',
+                        policy: 'API'
+                    }
+                };
+            default:
+                return {
+                    ...baseConfig,
+                    engine: 'playwright',
+                    config: {
+                        url: 'https://example.com',
+                        browser: 'chromium',
+                        headless: true
+                    }
+                };
         }
     }
 
