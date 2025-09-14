@@ -10,6 +10,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
 import { logger } from '../utils/logger';
 
 // Import route handlers  
@@ -105,6 +106,31 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
   // Request logging middleware
   app.use(requestLoggingMiddleware);
 
+  // Static file serving for UI dashboard
+  const publicPath = path.join(__dirname, '../ui/public');
+  app.use('/static', express.static(publicPath, {
+    maxAge: '1d', // Cache static assets for 1 day
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, path) => {
+      // Security headers for static assets
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('X-Frame-Options', 'DENY');
+      
+      // Cache control for different file types
+      if (path.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      } else if (path.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/)) {
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+      }
+    }
+  }));
+
+  // Serve main dashboard HTML file
+  app.get('/', (_req: Request, res: Response) => {
+    res.sendFile(path.join(publicPath, 'index.html'));
+  });
+
   // Health check endpoint (before API routes)
   app.get('/health', (_req: Request, res: Response) => {
     res.json({
@@ -181,12 +207,18 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
 
   // 404 handler for non-API routes
   app.use((req: Request, res: Response) => {
-    res.status(404).json({
-      error: 'Not found',
-      message: `Route not found: ${req.originalUrl}`,
-      path: req.originalUrl,
-      suggestion: 'Try /api/status for API information or /health for system status',
-    });
+    // If request is for a static asset that doesn't exist, return 404
+    if (req.path.startsWith('/static/')) {
+      res.status(404).json({
+        error: 'Static file not found',
+        message: `Static asset not found: ${req.originalUrl}`,
+        path: req.originalUrl,
+      });
+      return;
+    }
+    
+    // For all other routes, serve the main dashboard (SPA fallback)
+    res.sendFile(path.join(publicPath, 'index.html'));
   });
 
   return app;
@@ -202,6 +234,8 @@ export async function startServer(config: ServerConfig = DEFAULT_CONFIG): Promis
     const server = app.listen(config.port, config.host, () => {
       logger.info(`🚀 Self-Healing Test Automation Harness API started`);
       logger.info(`📡 Server running on http://${config.host}:${config.port}`);
+      logger.info(`🌐 Web Dashboard: http://${config.host}:${config.port}/`);
+      logger.info(`📁 Static assets: http://${config.host}:${config.port}/static/`);
       logger.info(`📊 Health check: http://${config.host}:${config.port}/health`);
       logger.info(`🔧 API status: http://${config.host}:${config.port}/api/status`);
       
