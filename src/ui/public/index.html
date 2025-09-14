@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Self-Healing Test Automation Harness - Unified Test Orchestration with AI-Powered Self-Healing">
+    <meta name="keywords" content="test automation, self-healing, AI, testing, orchestration">
+    <meta name="author" content="Self-Healing Test Automation Harness">
+    <title>Self-Healing Test Automation Harness - Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>🧪 Test Automation Harness</h1>
+            </div>
+            <ul class="nav-menu" role="menubar">
+                <li role="none"><a href="#overview" role="menuitem" class="nav-link active">Overview</a></li>
+                <li role="none"><a href="#execution" role="menuitem" class="nav-link">Execution</a></li>
+                <li role="none"><a href="#results" role="menuitem" class="nav-link">Results</a></li>
+                <li role="none"><a href="#healing" role="menuitem" class="nav-link">Healing</a></li>
+                <li role="none"><a href="#settings" role="menuitem" class="nav-link">Settings</a></li>
+            </ul>
+            <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- System Overview Section -->
+            <section id="overview" class="dashboard-section active" aria-labelledby="overview-heading">
+                <header class="section-header">
+                    <h2 id="overview-heading">System Overview</h2>
+                    <p class="section-description">Real-time system status and health monitoring</p>
+                </header>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="card-header">
+                            <h3>
+                                <span class="status-indicator" aria-label="System status indicator"></span>
+                                System Status
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-label">Status:</span>
+                                <span class="metric-value" id="system-status">Loading...</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Version:</span>
+                                <span class="metric-value" id="system-version">Loading...</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Uptime:</span>
+                                <span class="metric-value" id="system-uptime">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="card-header">
+                            <h3>
+                                <span class="status-indicator" aria-label="Test engines status indicator"></span>
+                                Test Engines
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-label">Available Engines:</span>
+                                <span class="metric-value" id="engines-count">Loading...</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Active Tests:</span>
+                                <span class="metric-value" id="active-tests">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Healing Success Rate:</span>
+                                <span class="metric-value" id="healing-rate">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="card-header">
+                            <h3>
+                                <span class="status-indicator" aria-label="Recent activity indicator"></span>
+                                Recent Activity
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-label">Tests Executed:</span>
+                                <span class="metric-value" id="tests-executed">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Healing Actions:</span>
+                                <span class="metric-value" id="healing-actions">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Last Update:</span>
+                                <span class="metric-value" id="last-update">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Test Execution Section -->
+            <section id="execution" class="dashboard-section" aria-labelledby="execution-heading">
+                <header class="section-header">
+                    <h2 id="execution-heading">Test Execution</h2>
+                    <p class="section-description">Configure and execute test suites across multiple engines</p>
+                </header>
+                
+                <div class="execution-grid">
+                    <div class="execution-card">
+                        <h3>Quick Actions</h3>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="run-all-tests">Run All Tests</button>
+                            <button class="btn btn-secondary" id="run-unit-tests">Unit Tests</button>
+                            <button class="btn btn-secondary" id="run-e2e-tests">E2E Tests</button>
+                            <button class="btn btn-secondary" id="run-performance-tests">Performance Tests</button>
+                        </div>
+                    </div>
+                    
+                    <div class="execution-card">
+                        <h3>Test Configuration</h3>
+                        <div class="config-placeholder">
+                            <p>Test configuration options will be available here</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results" class="dashboard-section" aria-labelledby="results-heading">
+                <header class="section-header">
+                    <h2 id="results-heading">Test Results</h2>
+                    <p class="section-description">View detailed test execution results and analytics</p>
+                </header>
+                
+                <div class="results-grid">
+                    <div class="results-card">
+                        <h3>Latest Results</h3>
+                        <div class="results-placeholder">
+                            <p>Test results will be displayed here</p>
+                        </div>
+                    </div>
+                    
+                    <div class="results-card">
+                        <h3>Test History</h3>
+                        <div class="history-placeholder">
+                            <p>Test execution history will be shown here</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Healing Section -->
+            <section id="healing" class="dashboard-section" aria-labelledby="healing-heading">
+                <header class="section-header">
+                    <h2 id="healing-heading">Self-Healing Statistics</h2>
+                    <p class="section-description">Monitor AI-powered healing actions and success rates</p>
+                </header>
+                
+                <div class="healing-grid">
+                    <div class="healing-card">
+                        <h3>Healing Actions</h3>
+                        <div class="healing-stats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="total-healing-actions">0</span>
+                                <span class="stat-label">Total Actions</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="successful-healing">0</span>
+                                <span class="stat-label">Successful</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="failed-healing">0</span>
+                                <span class="stat-label">Failed</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="healing-card">
+                        <h3>Healing Strategies</h3>
+                        <div class="strategies-placeholder">
+                            <p>Available healing strategies will be listed here</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="dashboard-section" aria-labelledby="settings-heading">
+                <header class="section-header">
+                    <h2 id="settings-heading">Settings</h2>
+                    <p class="section-description">Configure system settings and preferences</p>
+                </header>
+                
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>General Settings</h3>
+                        <div class="settings-placeholder">
+                            <p>General configuration options will be available here</p>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <h3>Engine Configuration</h3>
+                        <div class="engine-settings-placeholder">
+                            <p>Test engine configuration will be shown here</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <p>🚀 Self-Healing Test Automation Harness v1.0.0 | Built with ❤️ for reliable testing</p>
+            <div class="footer-links">
+                <a href="/api/docs" aria-label="API Documentation">API Docs</a>
+                <a href="/health" aria-label="System Health">Health Check</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

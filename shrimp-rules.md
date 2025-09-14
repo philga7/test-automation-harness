@@ -32,6 +32,8 @@ src/
 ├── api/            # REST API endpoints
 ├── observability/  # Metrics, logging, and monitoring
 ├── types/          # TypeScript type definitions
+├── ui/             # Web dashboard and UI components
+│   └── public/     # Static assets (HTML, CSS, JS)
 └── utils/          # Shared utilities and helpers
 ```
 
@@ -356,6 +358,154 @@ class ConfigManager {
 }
 ```
 
+## UI/Dashboard Standards
+
+### Dashboard Architecture
+```typescript
+// ALWAYS use semantic HTML structure with proper ARIA labels
+interface DashboardStructure {
+  navigation: NavigationComponent;
+  sections: DashboardSection[];
+  realTimeUpdates: RealTimeDataService;
+  responsiveDesign: ResponsiveLayout;
+}
+
+// ALWAYS implement mobile-first responsive design
+class DashboardLayout {
+  private breakpoints = {
+    mobile: '480px',
+    tablet: '768px',
+    desktop: '1200px'
+  };
+  
+  private gridSystem = {
+    mobile: '1fr',
+    tablet: 'repeat(2, 1fr)',
+    desktop: 'repeat(3, 1fr)'
+  };
+}
+```
+
+### UI Component Standards
+```typescript
+// ALWAYS use glassmorphism design patterns
+:root {
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --background-glass: rgba(255, 255, 255, 0.1);
+  --border-glass: rgba(255, 255, 255, 0.2);
+  --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+// ALWAYS implement proper accessibility
+.navbar {
+  role: 'navigation';
+  'aria-label': 'Main navigation';
+}
+
+.nav-link {
+  role: 'menuitem';
+  'aria-current': 'page'; // when active
+}
+```
+
+### Real-Time Data Integration
+```typescript
+// ALWAYS provide real-time updates with auto-refresh
+class DashboardDataService {
+  private refreshInterval = 30000; // 30 seconds
+  private visibilityApi = new VisibilityAPI();
+  
+  async loadSystemStatus(): Promise<SystemStatus> {
+    try {
+      const response = await fetch('/health');
+      return await response.json();
+    } catch (error) {
+      this.showNotification('Failed to load system status', 'error');
+      throw error;
+    }
+  }
+  
+  startAutoRefresh(): void {
+    this.refreshInterval = setInterval(() => {
+      if (!this.visibilityApi.isHidden()) {
+        this.refreshAllData();
+      }
+    }, this.refreshInterval);
+  }
+}
+```
+
+### Navigation and Routing
+```typescript
+// ALWAYS implement single-page application navigation
+class DashboardNavigation {
+  private sections: Map<string, DashboardSection> = new Map();
+  private currentSection: string = 'overview';
+  
+  showSection(sectionId: string): void {
+    // Hide all sections
+    this.sections.forEach(section => section.hide());
+    
+    // Show target section
+    const targetSection = this.sections.get(sectionId);
+    if (targetSection) {
+      targetSection.show();
+      this.currentSection = sectionId;
+      this.updateActiveNavLink(sectionId);
+    }
+  }
+  
+  private updateActiveNavLink(sectionId: string): void {
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${sectionId}`) {
+        link.classList.add('active');
+      }
+    });
+  }
+}
+```
+
+### Error Handling and User Feedback
+```typescript
+// ALWAYS provide user feedback for all actions
+class NotificationService {
+  showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info'): void {
+    const notification = this.createNotificationElement(message, type);
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 5000);
+  }
+  
+  private createNotificationElement(message: string, type: string): HTMLElement {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    // Apply glassmorphism styling
+    Object.assign(notification.style, {
+      position: 'fixed',
+      top: '20px',
+      right: '20px',
+      padding: '1rem 1.5rem',
+      borderRadius: '8px',
+      background: 'var(--background-glass)',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid var(--border-glass)',
+      color: 'white',
+      zIndex: '10000'
+    });
+    
+    return notification;
+  }
+}
+```
+
 ## UI/UX Standards
 
 ### API Response Format
@@ -495,6 +645,10 @@ class Logger {
 - **NEVER** commit sensitive configuration data
 - **NEVER** bypass the plugin architecture
 - **NEVER** implement healing strategies without fallbacks
+- **NEVER** hardcode API endpoints in frontend code
+- **NEVER** skip accessibility features in UI components
+- **NEVER** ignore mobile responsiveness in dashboard design
+- **NEVER** implement UI without proper error handling and user feedback
 
 ### Security Considerations
 - **NEVER** expose sensitive configuration in logs
