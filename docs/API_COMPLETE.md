@@ -851,7 +851,155 @@ curl "http://localhost:3000/api/v1/healing/statistics?startDate=2025-01-01&endDa
 curl "http://localhost:3000/api/v1/engines/playwright-1.40.0/health"
 ```
 
-### JavaScript Example
+### JavaScript Example (Using ApiService)
+
+The Self-Healing Test Automation Harness provides a comprehensive JavaScript client library for easy integration:
+
+```javascript
+// Initialize the API service
+const apiService = new ApiService({
+  baseUrl: 'http://localhost:3000',
+  timeout: 30000,
+  retryAttempts: 3,
+  enableLogging: true
+});
+
+// Execute a test
+try {
+  const result = await apiService.executeTest({
+    name: 'Login Test',
+    description: 'Test user login functionality',
+    engine: 'playwright',
+    config: {
+      url: 'https://example.com',
+      browser: 'chromium',
+      headless: true,
+      timeout: 30000
+    },
+    options: {
+      timeout: 30000,
+      retries: 2,
+      parallel: false,
+      healing: true
+    }
+  });
+  
+  console.log('Test started:', result.data.testId);
+  
+  // Monitor test status
+  const status = await apiService.getTestStatus(result.data.testId);
+  console.log('Test status:', status.data.status);
+  
+  // Get final results
+  const finalResult = await apiService.getTestResult(result.data.testId);
+  console.log('Test completed:', finalResult.data.status);
+  
+} catch (error) {
+  console.error('Test execution failed:', error.message);
+}
+```
+
+### Advanced JavaScript Examples
+
+#### Dashboard Integration
+```javascript
+class TestDashboard {
+  constructor() {
+    this.apiService = new ApiService({
+      baseUrl: '',
+      timeout: 30000,
+      retryAttempts: 3,
+      enableLogging: true
+    });
+  }
+  
+  async loadSystemStatus() {
+    try {
+      const data = await this.apiService.getSystemStatus();
+      this.updateElement('system-status', data.status);
+      this.updateElement('system-version', data.version);
+    } catch (error) {
+      this.showNotification('Failed to load system status', 'error');
+    }
+  }
+  
+  async loadHealingStats() {
+    try {
+      const data = await this.apiService.getHealingStatistics();
+      this.updateElement('healing-rate', `${(data.successRate * 100).toFixed(1)}%`);
+      this.updateElement('total-healing-actions', data.totalAttempts);
+    } catch (error) {
+      this.showNotification('Failed to load healing statistics', 'error');
+    }
+  }
+  
+  async executeTests(testType) {
+    try {
+      const testConfig = this.createTestConfig(testType);
+      const result = await this.apiService.executeTest(testConfig);
+      this.showNotification(`Tests executed successfully! Test ID: ${result.data.testId}`, 'success');
+    } catch (error) {
+      this.showNotification(`Test execution failed: ${error.message}`, 'error');
+    }
+  }
+}
+```
+
+#### Batch Operations
+```javascript
+// Execute multiple tests in batch
+const batchTests = [
+  {
+    name: 'Login Test',
+    engine: 'playwright',
+    config: { url: 'https://example.com/login' }
+  },
+  {
+    name: 'Registration Test',
+    engine: 'playwright',
+    config: { url: 'https://example.com/register' }
+  }
+];
+
+const batchResult = await apiService.executeBatchTests(batchTests, {
+  parallel: true,
+  stopOnFailure: false,
+  timeout: 60000
+});
+
+console.log('Batch execution started:', batchResult.data.batchId);
+```
+
+#### Error Handling
+```javascript
+// Comprehensive error handling
+try {
+  const result = await apiService.executeTest(testConfig);
+} catch (error) {
+  if (error instanceof ApiError) {
+    switch (error.statusCode) {
+      case 400:
+        console.error('Validation error:', error.details);
+        break;
+      case 404:
+        console.error('Resource not found:', error.message);
+        break;
+      case 429:
+        console.error('Rate limit exceeded:', error.message);
+        break;
+      case 500:
+        console.error('Server error:', error.message);
+        break;
+      default:
+        console.error('Unknown error:', error.message);
+    }
+  } else {
+    console.error('Network or other error:', error.message);
+  }
+}
+```
+
+### Raw JavaScript Example (Without ApiService)
 ```javascript
 const response = await fetch('http://localhost:3000/api/v1/tests/execute', {
   method: 'POST',
