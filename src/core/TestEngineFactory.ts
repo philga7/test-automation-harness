@@ -215,6 +215,15 @@ export class TestEngineFactory {
           policy: 'default',
         };
         break;
+        
+      case 'app-analysis':
+        baseConfig.settings = {
+          timeout: 30000,
+          analysisDepth: 'comprehensive',
+          outputFormat: 'json',
+          includeScreenshots: true,
+        };
+        break;
     }
     
     return baseConfig;
@@ -295,6 +304,23 @@ export class TestEngineFactory {
       case 'zap':
         if (config.settings['timeout'] && config.settings['timeout'] < 30000) {
           errors.push('ZAP timeout should be at least 30000ms');
+        }
+        break;
+        
+      case 'app-analysis':
+        if (!config.settings['analysisDepth']) {
+          errors.push('Analysis depth is required for App Analysis engine');
+        } else {
+          const validDepths = ['basic', 'comprehensive', 'detailed'];
+          if (!validDepths.includes(config.settings['analysisDepth'])) {
+            errors.push('Analysis depth must be one of: basic, comprehensive, detailed');
+          }
+        }
+        if (config.settings['outputFormat']) {
+          const validFormats = ['json', 'xml', 'html'];
+          if (!validFormats.includes(config.settings['outputFormat'])) {
+            errors.push('Output format must be one of: json, xml, html');
+          }
         }
         break;
     }
