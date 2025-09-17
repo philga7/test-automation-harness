@@ -19,6 +19,7 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **k6**: Performance and load testing
 - **OWASP ZAP**: Security testing
 - **App Analysis**: Automated app analysis and test generation with self-healing capabilities
+- **WebAppAnalyzer**: Complete web application analysis with DOM extraction and UI element identification
 
 ## AI Agent Responsibilities
 
@@ -173,6 +174,8 @@ class Dashboard {
 ```
 src/
 ├── analysis/       # App analysis engine implementation
+│   ├── AppAnalysisEngine.ts      # Analysis engine implementation
+│   └── WebAppAnalyzer.ts         # NEW! Web app analyzer component
 ├── core/           # Core orchestration logic
 ├── engines/        # Test engine implementations
 ├── healing/        # Self-healing algorithms
