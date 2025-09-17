@@ -112,15 +112,22 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
     maxAge: '1d', // Cache static assets for 1 day
     etag: true,
     lastModified: true,
-    setHeaders: (res, path) => {
+    setHeaders: (res, filePath) => {
       // Security headers for static assets
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.setHeader('X-Frame-Options', 'DENY');
       
-      // Cache control for different file types
-      if (path.endsWith('.html')) {
+      // Set proper MIME types for different file types
+      if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css');
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+      } else if (filePath.endsWith('.js')) {
+        res.setHeader('Content-Type', 'text/javascript');
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+      } else if (filePath.endsWith('.html')) {
+        res.setHeader('Content-Type', 'text/html');
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      } else if (path.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/)) {
+      } else if (filePath.match(/\.(png|jpg|jpeg|gif|ico|svg)$/)) {
         res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
       }
     }
