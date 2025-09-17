@@ -104,7 +104,11 @@ class ApiService {
      * @returns {Promise<Object>} Parsed data
      */
     async parseResponse(response) {
-        const contentType = response.headers.get('content-type');
+        if (!response) {
+            throw new ApiError('No response received', 500, {});
+        }
+        
+        const contentType = response?.headers?.get('content-type');
         
         if (!response.ok) {
             let errorData;

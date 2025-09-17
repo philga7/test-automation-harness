@@ -10,6 +10,7 @@ class Dashboard {
         this.currentSection = 'overview';
         this.refreshInterval = null;
         this.testExecutionInterface = null;
+        this.testResultsVisualization = null;
         this.apiService = new ApiService({
             baseUrl: '',
             timeout: 30000,
@@ -80,6 +81,11 @@ class Dashboard {
             // Initialize test execution interface when execution section is shown
             if (sectionId === 'execution' && !this.testExecutionInterface) {
                 this.initializeTestExecutionInterface();
+            }
+            
+            // Initialize test results visualization when results section is shown
+            if (sectionId === 'results' && !this.testResultsVisualization) {
+                this.initializeTestResultsVisualization();
             }
         }
     }
@@ -368,10 +374,31 @@ class Dashboard {
         }
     }
 
+    /**
+     * Initialize the test results visualization
+     */
+    initializeTestResultsVisualization() {
+        try {
+            if (window.TestResultsVisualization) {
+                this.testResultsVisualization = new window.TestResultsVisualization(this.apiService);
+                // Make it globally available for easy access
+                window.testResults = this.testResultsVisualization;
+                console.log('Test results visualization initialized');
+            } else {
+                console.warn('TestResultsVisualization class not available');
+            }
+        } catch (error) {
+            console.error('Failed to initialize test results visualization:', error);
+        }
+    }
+
     destroy() {
         this.stopAutoRefresh();
         if (this.testExecutionInterface) {
             this.testExecutionInterface.destroy();
+        }
+        if (this.testResultsVisualization) {
+            this.testResultsVisualization.destroy();
         }
     }
 }

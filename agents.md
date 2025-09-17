@@ -56,6 +56,8 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **ALWAYS** use `/static/` prefix for CSS/JS paths in HTML
 - **ALWAYS** set explicit MIME type headers in Express.js server
 - **ALWAYS** rebuild (`npm run build`) after UI changes (server serves from `dist/`)
+- **ALWAYS** implement comprehensive test results visualization with filtering, pagination, and artifact viewing
+- **ALWAYS** provide modal-based detailed views for test results, artifacts, and healing attempts
 
 ## Development Patterns
 
@@ -292,6 +294,8 @@ import { HealingEngine } from '@/healing/engine';
 - **ALWAYS** test healing strategies
 - **ALWAYS** test configuration validation
 - **ALWAYS** test error scenarios
+- **ALWAYS** use unique variable names for global test declarations to prevent TypeScript conflicts
+- **ALWAYS** search for existing global declarations before creating new test files (`grep -r "const mockFetch" tests/`)
 
 ### Integration Testing
 - **ALWAYS** test engine registration

@@ -1081,6 +1081,9 @@ test.describe('Dashboard E2E Tests', () => {
 3. **Mock External Dependencies**: Mock fetch/HTTP calls but test real business logic
 4. **Verify UI Updates**: Check that API responses properly update the UI
 5. **Test User Interactions**: Ensure buttons and forms work with the API service
+6. **Prevent Global Declaration Conflicts**: Use unique variable names like `apiServiceMockFetch` instead of `mockFetch`
+7. **Check Existing Declarations**: Search for existing global variables before creating new test files
+8. **Use Import Aliases**: Import with unique aliases like `{ ApiService: ApiServiceClass }` to prevent conflicts
 
 ### Frontend Testing Checklist
 
@@ -1089,9 +1092,14 @@ test.describe('Dashboard E2E Tests', () => {
 - [ ] Error handling and user notifications
 - [ ] Dashboard data loading and display
 - [ ] Test execution workflow
+- [ ] Test results visualization with filtering and pagination
+- [ ] Artifact viewer for screenshots, videos, and traces
+- [ ] Healing attempts display with confidence scoring
+- [ ] Modal functionality for detailed views
 - [ ] Real-time updates and auto-refresh
 - [ ] Mobile responsiveness with API integration
 - [ ] Network error scenarios
 - [ ] Loading states and user feedback
+- [ ] Global variable declaration conflict prevention
 
 This comprehensive testing guide provides everything needed to effectively test and integrate with the Self-Healing Test Automation Harness API. Follow these practices to ensure reliable and robust API integration.

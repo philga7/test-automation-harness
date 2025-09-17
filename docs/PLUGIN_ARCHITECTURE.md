@@ -47,11 +47,15 @@ src/ui/public/
 ├── index.html              # Main dashboard structure
 ├── css/
 │   ├── dashboard.css       # Base styles and design system
-│   └── overview.css        # Overview-specific styling
+│   ├── overview.css        # Overview-specific styling
+│   ├── test-execution.css  # Test execution interface styling
+│   └── test-results.css    # Test results visualization styling
 └── js/
-    ├── api-service.js      # API client with error handling
-    ├── dashboard.js        # Navigation and core functionality  
-    └── dashboard-overview.js # Real-time system monitoring
+   ├── api-service.js      # API client with error handling
+   ├── dashboard.js        # Navigation and core functionality  
+   ├── dashboard-overview.js # Real-time system monitoring
+   ├── test-execution.js   # Comprehensive test execution interface
+   └── test-results.js     # Test results visualization with artifacts and healing views
 ```
 
 #### Static File Serving
@@ -477,8 +481,10 @@ interface TestConfig {
 ### Testing
 1. **Unit Test Plugins**: Test individual plugin functionality
 2. **Integration Test Workflows**: Test complete plugin interactions
-3. **Mock Dependencies**: Use mocks for external dependencies
+3. **Mock Dependencies**: Use mocks for external dependencies with unique variable names
 4. **Test Error Scenarios**: Ensure error handling works correctly
+5. **Prevent Global Declaration Conflicts**: Use context-specific names like `pluginMockFetch` instead of `mockFetch`
+6. **Check Existing Declarations**: Search for existing global variables before creating new test files
 
 ## Examples
 
