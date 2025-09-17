@@ -161,6 +161,14 @@ When you run `git commit` without a message, vim will open with the template sho
 - Maintain separation of concerns
 - Include comprehensive error handling and logging
 
+#### Mobile Development
+- Follow mobile-first responsive design principles
+- Implement minimum 44px touch targets for mobile accessibility
+- Use Test-Driven Development (TDD) methodology for all mobile features
+- Include Progressive Web App (PWA) features when applicable
+- Ensure proper service worker implementation for offline functionality
+- Test on multiple screen sizes and orientations
+
 ## Testing
 
 ### Unit Tests

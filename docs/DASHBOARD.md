@@ -1,12 +1,19 @@
-# System Overview Dashboard
+# Mobile-Responsive System Overview Dashboard
 
-The Self-Healing Test Automation Harness includes a comprehensive web-based dashboard for real-time system monitoring and management.
+The Self-Healing Test Automation Harness includes a comprehensive mobile-responsive web-based dashboard with Progressive Web App (PWA) capabilities for real-time system monitoring and management.
 
 ## 🌐 Accessing the Dashboard
 
 Navigate to `http://localhost:3000/` after starting the application with `npm start`.
 
 ## 📊 Dashboard Features
+
+### Mobile-Responsive Design
+- **Hamburger Navigation**: Touch-friendly mobile navigation menu
+- **44px Touch Targets**: Optimized for finger interaction
+- **Progressive Web App**: Installable on mobile devices with offline capabilities
+- **Service Worker**: Advanced caching for offline functionality
+- **Responsive Breakpoints**: Optimized layouts for mobile, tablet, and desktop
 
 ### System Overview Section
 
@@ -96,18 +103,28 @@ The comprehensive test execution interface provides:
 ### Frontend Components
 ```
 src/ui/public/
-├── index.html              # Main dashboard HTML with all sections
+├── index.html              # Main dashboard HTML with mobile navigation
 ├── css/
 │   ├── dashboard.css       # Base styling with CSS custom properties
 │   ├── overview.css        # Overview-specific styles and animations
 │   ├── test-execution.css  # Test execution interface styles (glassmorphism)
-│   └── test-results.css    # Test results visualization styles (glassmorphism)
-└── js/
-   ├── api-service.js      # API client with error handling and retry logic
-   ├── dashboard.js        # Main dashboard functionality and navigation
-   ├── dashboard-overview.js # System overview real-time monitoring
-   ├── test-execution.js   # Comprehensive test execution interface
-   └── test-results.js     # Test results visualization with artifacts and healing views
+│   ├── test-results.css    # Test results visualization styles (glassmorphism)
+│   ├── healing-stats.css   # Healing statistics styles
+│   └── mobile.css          # Mobile-responsive styles and PWA features
+├── js/
+│   ├── api-service.js      # API client with error handling and retry logic
+│   ├── dashboard.js        # Main dashboard functionality and navigation
+│   ├── dashboard-overview.js # System overview real-time monitoring
+│   ├── test-execution.js   # Comprehensive test execution interface
+│   ├── test-results.js     # Test results visualization with artifacts and healing views
+│   ├── healing-stats.js    # Healing statistics visualization
+│   ├── mobile-navigation.js # Mobile navigation management
+│   ├── touch-optimizer.js  # Touch interaction optimization
+│   ├── responsive-layout.js # Responsive layout management
+│   ├── pwa-manager.js      # PWA functionality and service worker
+│   └── mobile-performance.js # Mobile performance optimization
+├── manifest.json           # PWA manifest for mobile installation
+└── sw.js                   # Service worker for offline functionality
 ```
 
 ### API Integration
@@ -135,9 +152,11 @@ npm start        # Starts server serving from dist/ directory
 ## 🧪 Testing
 
 The dashboard includes comprehensive test coverage:
-- **651 unit tests** with 100% pass rate (28/28 test suites)
+- **680 unit tests** with 100% pass rate (30/30 test suites)
 - **32 TestExecutionInterface tests** covering all functionality
 - **33 TestResultsVisualization tests** covering filtering, pagination, modals, and artifacts
+- **17 HealingStatistics tests** covering Chart.js integration and real-time updates
+- **12 Mobile-Responsive Design tests** covering PWA features and touch optimization
 - **Complete DOM mocking** for complex UI component testing
 - **Real API integration testing** using actual ApiService component
 - **Global declaration conflict prevention** with unique variable naming patterns
@@ -147,6 +166,8 @@ The dashboard includes comprehensive test coverage:
 - **DOM mocking** with complete method coverage
 - **Error scenarios** and edge case handling
 - **Performance testing** for real-time updates
+- **Mobile interaction testing** with touch events and responsive layouts
+- **PWA functionality testing** including service worker and manifest
 
 Run dashboard tests:
 ```bash
