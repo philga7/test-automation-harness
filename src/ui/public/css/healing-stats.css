@@ -1,0 +1,490 @@
+/* Self-Healing Test Automation Harness - Healing Statistics Styles */
+
+/* Healing Statistics Section */
+#healing .healing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.healing-card {
+  background: var(--background-glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--border-radius-large);
+  padding: 2rem;
+  box-shadow: var(--shadow-medium);
+  transition: var(--transition);
+}
+
+.healing-card:hover {
+  background: var(--background-glass-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-heavy);
+}
+
+.healing-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.healing-card h3::before {
+  content: "🔧";
+  font-size: 1.2em;
+}
+
+/* Healing Statistics Metrics */
+.healing-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition);
+}
+
+.stat-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.02);
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--success-color);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Success Rate Specific Styling */
+#healing-success-rate {
+  color: var(--success-color);
+}
+
+/* Chart Container Styles */
+.chart-container {
+  position: relative;
+  height: 300px;
+  margin: 1.5rem 0;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chart-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Canvas Styling for Charts */
+#healing-success-rate-chart,
+#healing-strategy-chart {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Healing Strategy Breakdown */
+.strategy-breakdown {
+  margin-top: 2rem;
+}
+
+.strategy-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition);
+}
+
+.strategy-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+.strategy-name {
+  font-weight: 600;
+  color: var(--text-color);
+  text-transform: capitalize;
+}
+
+.strategy-success-rate {
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+}
+
+.strategy-success-rate.high {
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--success-color);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.strategy-success-rate.medium {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--warning-color);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.strategy-success-rate.low {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--error-color);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Healing Configuration Interface */
+.healing-config {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.healing-config h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.healing-config h4::before {
+  content: "⚙️";
+  font-size: 1em;
+}
+
+.config-group {
+  margin-bottom: 1.5rem;
+}
+
+.config-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.config-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius);
+  color: var(--text-color);
+  font-size: 0.875rem;
+  transition: var(--transition);
+}
+
+.config-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.config-slider {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.config-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.config-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.config-value {
+  display: inline-block;
+  margin-left: 1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* Healing Trends Chart */
+.trends-container {
+  margin-top: 2rem;
+  grid-column: 1 / -1;
+}
+
+.trends-card {
+  background: var(--background-glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--border-radius-large);
+  padding: 2rem;
+  box-shadow: var(--shadow-medium);
+}
+
+.trends-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trends-card h3::before {
+  content: "📈";
+  font-size: 1.2em;
+}
+
+.trends-chart {
+  height: 400px;
+  position: relative;
+}
+
+/* Healing Performance Indicators */
+.performance-indicators {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.indicator {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition);
+}
+
+.indicator:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.indicator-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.indicator-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+.indicator-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.indicator-trend {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+.indicator-trend.up {
+  color: var(--success-color);
+}
+
+.indicator-trend.down {
+  color: var(--error-color);
+}
+
+.indicator-trend.stable {
+  color: var(--text-muted);
+}
+
+/* Loading States */
+.healing-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.healing-loading::before {
+  content: "🔄";
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 1rem;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Error States */
+.healing-error {
+  text-align: center;
+  padding: 2rem;
+  color: var(--error-color);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--border-radius);
+}
+
+.healing-error::before {
+  content: "⚠️";
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #healing .healing-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .healing-card {
+    padding: 1.5rem;
+  }
+  
+  .healing-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .chart-container {
+    height: 250px;
+    padding: 0.75rem;
+  }
+  
+  .performance-indicators {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .trends-chart {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .healing-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .performance-indicators {
+    grid-template-columns: 1fr;
+  }
+  
+  .healing-card {
+    padding: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 1.25rem;
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .healing-card,
+  .stat-item,
+  .strategy-item,
+  .indicator {
+    transition: none;
+  }
+  
+  .healing-loading::before {
+    animation: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .healing-card {
+    border: 2px solid var(--border-glass);
+  }
+  
+  .stat-item,
+  .strategy-item,
+  .indicator {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .stat-number {
+    text-shadow: none;
+    font-weight: 900;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .healing-card {
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+  
+  .chart-container {
+    background: white;
+    border: 1px solid #ccc;
+  }
+  
+  .stat-number {
+    color: black;
+    text-shadow: none;
+  }
+}

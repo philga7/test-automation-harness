@@ -8,9 +8,9 @@
  * - Systematic test organization with grouped test suites
  */
 
-// Mock fetch globally for all tests
-const mockFetch = jest.fn();
-(global as any).fetch = mockFetch;
+// Mock fetch globally for all tests with unique variable name
+const testResultsMockFetch = jest.fn();
+(global as any).fetch = testResultsMockFetch;
 
 // Mock window object before importing modules
 (global as any).window = {
@@ -18,7 +18,7 @@ const mockFetch = jest.fn();
 };
 
 // Import the actual classes using require (JavaScript modules)
-const { ApiService } = require('../../src/ui/public/js/api-service.js');
+const { ApiService: TestResultsApiService } = require('../../src/ui/public/js/api-service.js');
 const TestResultsVisualization = require('../../src/ui/public/js/test-results.js');
 
 describe('TestResultsVisualization', () => {
@@ -31,7 +31,7 @@ describe('TestResultsVisualization', () => {
     jest.useFakeTimers();
     
     // Set up default mock fetch response to prevent undefined responses
-    mockFetch.mockImplementation(() => Promise.resolve({
+    testResultsMockFetch.mockImplementation(() => Promise.resolve({
       ok: true,
       status: 200,
       headers: { get: (name: string) => name === 'content-type' ? 'application/json' : null },
@@ -39,7 +39,7 @@ describe('TestResultsVisualization', () => {
     }));
     
     // Use actual ApiService component (not mocks) for real data flow testing
-    apiService = new ApiService({
+    apiService = new TestResultsApiService({
       baseUrl: 'http://localhost:3000',
       timeout: 1000,
       retryAttempts: 1,
@@ -146,7 +146,7 @@ describe('TestResultsVisualization', () => {
       clearInterval: jest.fn(),
       setTimeout: jest.fn(() => 'timeout_id' as any),
       clearTimeout: jest.fn(),
-      fetch: mockFetch,
+      fetch: testResultsMockFetch,
       AbortController: jest.fn().mockImplementation(() => ({
         signal: {},
         abort: jest.fn()
@@ -280,7 +280,7 @@ describe('TestResultsVisualization', () => {
   describe('Data Loading', () => {
     beforeEach(() => {
       // Mock successful API response with comprehensive headers
-      mockFetch.mockImplementation((url: string) => {
+      testResultsMockFetch.mockImplementation((url: string) => {
         if (url.includes('/api/v1/results')) {
           return Promise.resolve({
             ok: true,
@@ -332,7 +332,7 @@ describe('TestResultsVisualization', () => {
 
     test('should handle API errors gracefully', async () => {
       // Mock a proper network error with complete response structure
-      mockFetch.mockRejectedValueOnce(Object.assign(new Error('Network error'), {
+      testResultsMockFetch.mockRejectedValueOnce(Object.assign(new Error('Network error'), {
         name: 'TypeError',
         message: 'fetch: Network error'
       }));
@@ -347,13 +347,13 @@ describe('TestResultsVisualization', () => {
       await testResultsVisualization.loadTestResults();
       
       // Verify that fetch was called with filter parameters
-      const fetchCall = mockFetch.mock.calls[0];
+      const fetchCall = testResultsMockFetch.mock.calls[0];
       expect(fetchCall[0]).toContain('status=passed');
       expect(fetchCall[0]).toContain('engine=playwright');
     });
 
     test('should handle empty results correctly', async () => {
-      mockFetch.mockImplementationOnce(() => Promise.resolve({
+      testResultsMockFetch.mockImplementationOnce(() => Promise.resolve({
         ok: true,
         status: 200,
         headers: { get: (name: string) => name === 'content-type' ? 'application/json' : null },
@@ -372,7 +372,7 @@ describe('TestResultsVisualization', () => {
     });
 
     test('should handle malformed API responses', async () => {
-      mockFetch.mockImplementationOnce(() => Promise.resolve({
+      testResultsMockFetch.mockImplementationOnce(() => Promise.resolve({
         ok: false,
         status: 400,
         headers: { get: (name: string) => name === 'content-type' ? 'application/json' : null },
@@ -615,7 +615,7 @@ describe('TestResultsVisualization', () => {
   describe('Error Handling', () => {
     test('should handle view test details errors gracefully', async () => {
       // Mock a proper network error
-      mockFetch.mockRejectedValueOnce(Object.assign(new Error('Network error'), {
+      testResultsMockFetch.mockRejectedValueOnce(Object.assign(new Error('Network error'), {
         name: 'TypeError',
         message: 'fetch: Network error'
       }));

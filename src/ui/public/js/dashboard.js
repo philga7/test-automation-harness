@@ -11,6 +11,7 @@ class Dashboard {
         this.refreshInterval = null;
         this.testExecutionInterface = null;
         this.testResultsVisualization = null;
+        this.healingStatisticsVisualization = null;
         this.apiService = new ApiService({
             baseUrl: '',
             timeout: 30000,
@@ -86,6 +87,11 @@ class Dashboard {
             // Initialize test results visualization when results section is shown
             if (sectionId === 'results' && !this.testResultsVisualization) {
                 this.initializeTestResultsVisualization();
+            }
+            
+            // Initialize healing statistics visualization when healing section is shown
+            if (sectionId === 'healing' && !this.healingStatisticsVisualization) {
+                this.initializeHealingStatisticsVisualization();
             }
         }
     }
@@ -391,6 +397,24 @@ class Dashboard {
             console.error('Failed to initialize test results visualization:', error);
         }
     }
+    
+    /**
+     * Initialize the healing statistics visualization
+     */
+    initializeHealingStatisticsVisualization() {
+        try {
+            if (window.HealingStatisticsVisualization) {
+                this.healingStatisticsVisualization = new window.HealingStatisticsVisualization(this.apiService);
+                // Make it globally available for easy access
+                window.healingStats = this.healingStatisticsVisualization;
+                console.log('Healing statistics visualization initialized');
+            } else {
+                console.warn('HealingStatisticsVisualization class not available');
+            }
+        } catch (error) {
+            console.error('Failed to initialize healing statistics visualization:', error);
+        }
+    }
 
     destroy() {
         this.stopAutoRefresh();
@@ -399,6 +423,9 @@ class Dashboard {
         }
         if (this.testResultsVisualization) {
             this.testResultsVisualization.destroy();
+        }
+        if (this.healingStatisticsVisualization) {
+            this.healingStatisticsVisualization.destroy();
         }
     }
 }
