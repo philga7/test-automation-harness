@@ -9,6 +9,7 @@ A comprehensive TypeScript/Node.js test automation platform that orchestrates mu
 - **✅ Playwright E2E Engine**: Fully implemented with self-healing capabilities
 - **Multi-Engine Support**: Playwright (E2E), Jest (Unit), k6 (Performance), OWASP ZAP (Security)
 - **AI-Powered Self-Healing**: Automatic locator recovery and test adaptation
+- **System Overview Dashboard**: Real-time monitoring with visual health indicators
 - **Unified Reporting**: Consolidated dashboard for all test types
 - **Organized Artifacts**: Centralized test artifacts management
 - **Docker Ready**: Containerized deployment in under 10 minutes
@@ -43,7 +44,16 @@ npm start
 
 The application will be available at `http://localhost:3000`
 
-### 4. Verify Installation
+### 4. Access the Dashboard
+
+Navigate to `http://localhost:3000/` to access the System Overview Dashboard featuring:
+- **Real-time system health monitoring** with visual indicators
+- **Test engine status** and availability tracking  
+- **System metrics** (CPU, memory, disk usage)
+- **Healing statistics** with success rates
+- **Auto-refresh** functionality (10s health checks, 30s metrics)
+
+### 5. Verify Installation
 
 ```bash
 # Health check
@@ -98,13 +108,23 @@ artifacts/         # ✅ Organized test artifacts
 
 ### Available Scripts
 
-- `npm run build` - Compile TypeScript to JavaScript
+- `npm run build` - Compile TypeScript to JavaScript and copy UI files to dist/
 - `npm start` - Start the production server
 - `npm run dev` - Start development server with hot reload
 - `npm test` - Run all tests (unit + integration)
 - `npm run test:unit` - Run unit tests only
 - `npm run test:integration` - Run integration tests only
 - `npm run test:e2e` - Run E2E tests with Playwright
+
+### UI Development Workflow
+
+When making changes to dashboard files:
+1. **Edit files** in `src/ui/public/` directory
+2. **Build project** with `npm run build` (copies to `dist/ui/public/`)
+3. **Restart server** with `npm start` 
+4. **Clear browser cache** or use incognito mode to see changes
+
+**Note**: The server serves from `dist/` directory, so always rebuild after UI changes.
 - `npm run test:e2e:ui` - Run E2E tests with Playwright UI
 - `npm run test:e2e:report` - View HTML test reports
 - `npm run lint` - Run ESLint

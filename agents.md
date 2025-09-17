@@ -53,6 +53,9 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **ALWAYS** provide real-time data updates with auto-refresh
 - **ALWAYS** implement proper error handling and user feedback
 - **NEVER** hardcode API endpoints in frontend code
+- **ALWAYS** use `/static/` prefix for CSS/JS paths in HTML
+- **ALWAYS** set explicit MIME type headers in Express.js server
+- **ALWAYS** rebuild (`npm run build`) after UI changes (server serves from `dist/`)
 
 ## Development Patterns
 
@@ -317,6 +320,8 @@ import { HealingEngine } from '@/healing/engine';
 2. **Healing Timeouts**: Verify confidence thresholds
 3. **Configuration Errors**: Validate YAML syntax
 4. **Memory Leaks**: Check resource cleanup
+5. **CSS/JS Not Loading**: Check MIME type headers, `/static/` paths, rebuild dist/
+6. **Dashboard Not Updating**: Clear browser cache, verify API endpoints
 
 ### Debug Steps
 1. Check logs for error messages

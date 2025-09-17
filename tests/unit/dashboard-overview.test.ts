@@ -82,7 +82,7 @@ Object.defineProperty(global, 'clearInterval', {
 });
 
 // Import actual ApiService (following project pattern of using real components)
-const { ApiService } = require('../../src/ui/public/js/api-service.js');
+const { ApiService: ApiServiceClass } = require('../../src/ui/public/js/api-service.js');
 
 // Mock successful API responses for testing
 const mockApiResponses = {
@@ -210,7 +210,7 @@ describe('Dashboard Overview', () => {
     };
     
     // Setup mock API service using real ApiService
-    mockApiService = new ApiService({
+    mockApiService = new ApiServiceClass({
       baseUrl: 'http://localhost:3000',
       timeout: 1000,
       retryAttempts: 1,

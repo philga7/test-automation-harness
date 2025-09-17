@@ -10,6 +10,18 @@ The Self-Healing Test Automation Harness provides a comprehensive REST API for m
 http://localhost:3000/api/v1
 ```
 
+## Dashboard Access
+
+The web dashboard is available at:
+```
+http://localhost:3000/
+```
+
+Static assets (CSS, JS, images) are served from:
+```
+http://localhost:3000/static/
+```
+
 ## Authentication
 
 Currently, the API operates without authentication for development purposes. In production, API key authentication will be implemented.
