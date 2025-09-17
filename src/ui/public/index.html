@@ -12,10 +12,17 @@
     <link rel="stylesheet" href="/static/css/test-execution.css">
     <link rel="stylesheet" href="/static/css/test-results.css">
     <link rel="stylesheet" href="/static/css/healing-stats.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
+    <link rel="manifest" href="/static/manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Test Harness">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiM2NjdlZWEiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjMiLz4KPC9zdmc+Cjwvc3ZnPg==">
 </head>
 <body>
     <!-- Navigation Header -->
@@ -24,14 +31,14 @@
             <div class="nav-brand">
                 <h1>🧪 Test Automation Harness</h1>
             </div>
-            <ul class="nav-menu" role="menubar">
+            <ul class="nav-menu" id="nav-menu" role="menubar">
                 <li role="none"><a href="#overview" role="menuitem" class="nav-link active">Overview</a></li>
                 <li role="none"><a href="#execution" role="menuitem" class="nav-link">Execution</a></li>
                 <li role="none"><a href="#results" role="menuitem" class="nav-link">Results</a></li>
                 <li role="none"><a href="#healing" role="menuitem" class="nav-link">Healing</a></li>
                 <li role="none"><a href="#settings" role="menuitem" class="nav-link">Settings</a></li>
             </ul>
-            <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -358,10 +365,46 @@
 
     <!-- JavaScript -->
     <script src="/static/js/api-service.js"></script>
+    <script src="/static/js/mobile-navigation.js"></script>
+    <script src="/static/js/touch-optimizer.js"></script>
+    <script src="/static/js/responsive-layout.js"></script>
+    <script src="/static/js/pwa-manager.js"></script>
+    <script src="/static/js/mobile-performance.js"></script>
     <script src="/static/js/dashboard-overview.js"></script>
     <script src="/static/js/dashboard.js"></script>
     <script src="/static/js/test-execution.js"></script>
     <script src="/static/js/test-results.js"></script>
     <script src="/static/js/healing-stats.js"></script>
+    
+    <!-- Initialize Mobile Features -->
+    <script>
+      // Initialize mobile responsive features when DOM is loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize mobile navigation
+        if (window.MobileNavigation) {
+          window.mobileNav = new MobileNavigation(document);
+        }
+        
+        // Initialize touch optimizer
+        if (window.TouchOptimizer) {
+          window.touchOptimizer = new TouchOptimizer(document);
+        }
+        
+        // Initialize responsive layout manager
+        if (window.ResponsiveLayoutManager) {
+          window.layoutManager = new ResponsiveLayoutManager(window);
+        }
+        
+        // Initialize PWA manager
+        if (window.PWAManager) {
+          window.pwaManager = new PWAManager(window);
+        }
+        
+        // Initialize mobile performance optimizer
+        if (window.MobilePerformanceOptimizer) {
+          window.performanceOptimizer = new MobilePerformanceOptimizer(document);
+        }
+      });
+    </script>
 </body>
 </html>
