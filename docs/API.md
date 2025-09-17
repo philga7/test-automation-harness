@@ -98,6 +98,30 @@ Execute a new test.
 }
 ```
 
+**App Analysis Request Body:**
+```json
+{
+  "name": "App Analysis Test",
+  "description": "Analyze web application structure and generate locator strategies",
+  "engine": "app-analysis",
+  "config": {
+    "url": "https://example.com",
+    "timeout": 30000,
+    "analysisDepth": "comprehensive",
+    "includeScreenshots": true,
+    "includeAccessibility": true,
+    "includePerformance": true,
+    "includeSecurity": false,
+    "includeCodeGeneration": true
+  },
+  "options": {
+    "timeout": 30000,
+    "retries": 1,
+    "healing": true
+  }
+}
+```
+
 **Response:**
 ```json
 {
