@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/static/css/dashboard.css">
     <link rel="stylesheet" href="/static/css/overview.css">
     <link rel="stylesheet" href="/static/css/test-execution.css">
+    <link rel="stylesheet" href="/static/css/test-results.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -180,20 +181,76 @@
                     <p class="section-description">View detailed test execution results and analytics</p>
                 </header>
                 
-                <div class="results-grid">
-                    <div class="results-card">
-                        <h3>Latest Results</h3>
-                        <div class="results-placeholder">
-                            <p>Test results will be displayed here</p>
+                <!-- Results Controls -->
+                <div class="results-controls">
+                    <div class="results-header">
+                        <div>
+                            <h3 class="results-title">Test Results</h3>
+                            <p class="results-count" id="results-count">Loading...</p>
+                        </div>
+                        <div class="results-actions">
+                            <button id="refresh-results" class="refresh-button" aria-label="Refresh results" title="Refresh Results">
+                                🔄
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="results-card">
-                        <h3>Test History</h3>
-                        <div class="history-placeholder">
-                            <p>Test execution history will be shown here</p>
+                    <!-- Filters -->
+                    <form id="results-filter-form" class="results-filters">
+                        <div class="filter-group">
+                            <label for="results-search" class="filter-label">Search</label>
+                            <input type="text" id="results-search" class="filter-input" placeholder="Search test names..." aria-describedby="search-help">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="status-filter" class="filter-label">Status</label>
+                            <select id="status-filter" class="filter-select">
+                                <option value="">All Statuses</option>
+                                <option value="passed">Passed</option>
+                                <option value="failed">Failed</option>
+                                <option value="skipped">Skipped</option>
+                                <option value="running">Running</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="engine-filter" class="filter-label">Engine</label>
+                            <select id="engine-filter" class="filter-select">
+                                <option value="">All Engines</option>
+                                <option value="playwright">Playwright</option>
+                                <option value="jest">Jest</option>
+                                <option value="k6">k6</option>
+                                <option value="owasp-zap">OWASP ZAP</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button type="button" id="clear-filters" class="btn btn-secondary">Clear</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Date Range Filters -->
+                    <div class="results-filters">
+                        <div class="filter-group">
+                            <label for="start-date-filter" class="filter-label">Start Date</label>
+                            <input type="date" id="start-date-filter" class="filter-input">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="end-date-filter" class="filter-label">End Date</label>
+                            <input type="date" id="end-date-filter" class="filter-input">
                         </div>
                     </div>
+                </div>
+                
+                <!-- Results List -->
+                <div id="test-results-list" class="test-results-list">
+                    <!-- Results will be populated by JavaScript -->
+                </div>
+                
+                <!-- Pagination -->
+                <div id="results-pagination" class="results-pagination">
+                    <!-- Pagination will be populated by JavaScript -->
                 </div>
             </section>
 
@@ -274,5 +331,6 @@
     <script src="/static/js/dashboard-overview.js"></script>
     <script src="/static/js/dashboard.js"></script>
     <script src="/static/js/test-execution.js"></script>
+    <script src="/static/js/test-results.js"></script>
 </body>
 </html>

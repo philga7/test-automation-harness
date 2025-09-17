@@ -100,12 +100,14 @@ src/ui/public/
 ├── css/
 │   ├── dashboard.css       # Base styling with CSS custom properties
 │   ├── overview.css        # Overview-specific styles and animations
-│   └── test-execution.css  # Test execution interface styles (glassmorphism)
+│   ├── test-execution.css  # Test execution interface styles (glassmorphism)
+│   └── test-results.css    # Test results visualization styles (glassmorphism)
 └── js/
-    ├── api-service.js      # API client with error handling and retry logic
-    ├── dashboard.js        # Main dashboard functionality and navigation
-    ├── dashboard-overview.js # System overview real-time monitoring
-    └── test-execution.js   # Comprehensive test execution interface
+   ├── api-service.js      # API client with error handling and retry logic
+   ├── dashboard.js        # Main dashboard functionality and navigation
+   ├── dashboard-overview.js # System overview real-time monitoring
+   ├── test-execution.js   # Comprehensive test execution interface
+   └── test-results.js     # Test results visualization with artifacts and healing views
 ```
 
 ### API Integration
@@ -133,10 +135,12 @@ npm start        # Starts server serving from dist/ directory
 ## 🧪 Testing
 
 The dashboard includes comprehensive test coverage:
-- **450 unit tests** with 100% pass rate (20/20 test suites)
+- **651 unit tests** with 100% pass rate (28/28 test suites)
 - **32 TestExecutionInterface tests** covering all functionality
+- **33 TestResultsVisualization tests** covering filtering, pagination, modals, and artifacts
 - **Complete DOM mocking** for complex UI component testing
 - **Real API integration testing** using actual ApiService component
+- **Global declaration conflict prevention** with unique variable naming patterns
 - **Test-friendly architecture** with dependency injection patterns
 - **Production bug prevention** through thorough testing practices
 - **Real component testing** using actual ApiService

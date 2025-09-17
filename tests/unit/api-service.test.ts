@@ -5,26 +5,26 @@
  * not mocks where possible, to reduce testing by 60-80%
  */
 
-// Mock fetch globally
-const mockFetch = jest.fn();
-global.fetch = mockFetch;
+// Mock fetch globally for ApiService tests
+const apiServiceMockFetch = jest.fn();
+(global as any).fetch = apiServiceMockFetch;
 
 // Import the actual ApiService class
 // Note: Since ApiService is in JavaScript, we'll test it as a JavaScript module
-const { ApiService } = require('../../src/ui/public/js/api-service.js');
+const { ApiService: ApiServiceClass } = require('../../src/ui/public/js/api-service.js');
 
 describe('ApiService', () => {
   let apiService: any;
 
   beforeEach(() => {
     jest.useFakeTimers();
-    apiService = new ApiService({
+    apiService = new ApiServiceClass({
       baseUrl: 'http://localhost:3000',
       timeout: 1000,
       retryAttempts: 1
     });
     
-    mockFetch.mockClear();
+    apiServiceMockFetch.mockClear();
   });
 
   afterEach(() => {
@@ -35,7 +35,7 @@ describe('ApiService', () => {
 
   describe('Initialization', () => {
     it('should initialize with default options', () => {
-      const service = new ApiService();
+      const service = new ApiServiceClass();
       expect(service.baseUrl).toBe('');
       expect(service.timeout).toBe(30000);
       expect(service.retryAttempts).toBe(3);
@@ -43,7 +43,7 @@ describe('ApiService', () => {
     });
 
     it('should initialize with custom options', () => {
-      const service = new ApiService({
+      const service = new ApiServiceClass({
         baseUrl: 'https://api.example.com',
         timeout: 60000,
         retryAttempts: 5,
@@ -72,11 +72,11 @@ describe('ApiService', () => {
         })
       };
 
-      mockFetch.mockResolvedValueOnce(mockResponse);
+      apiServiceMockFetch.mockResolvedValueOnce(mockResponse);
 
       const result = await apiService.getSystemStatus();
 
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(apiServiceMockFetch).toHaveBeenCalledWith(
         'http://localhost:3000/health',
         expect.objectContaining({
           headers: { 'Content-Type': 'application/json' }
@@ -101,7 +101,7 @@ describe('ApiService', () => {
         })
       };
 
-      mockFetch.mockResolvedValueOnce(mockResponse);
+      apiServiceMockFetch.mockResolvedValueOnce(mockResponse);
 
       await expect(apiService.getSystemStatus())
         .rejects
@@ -123,7 +123,7 @@ describe('ApiService', () => {
         })
       };
 
-      mockFetch.mockResolvedValueOnce(mockResponse);
+      apiServiceMockFetch.mockResolvedValueOnce(mockResponse);
 
       const testConfig = {
         name: 'Test',
@@ -133,7 +133,7 @@ describe('ApiService', () => {
 
       const result = await apiService.executeTest(testConfig);
 
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(apiServiceMockFetch).toHaveBeenCalledWith(
         'http://localhost:3000/api/v1/tests/execute',
         expect.objectContaining({
           method: 'POST',
@@ -159,7 +159,7 @@ describe('ApiService', () => {
         })
       };
 
-      mockFetch.mockResolvedValueOnce(mockResponse);
+      apiServiceMockFetch.mockResolvedValueOnce(mockResponse);
 
       const testConfig = { name: 'Invalid Test' };
 
@@ -187,11 +187,11 @@ describe('ApiService', () => {
         })
       };
 
-      mockFetch.mockResolvedValueOnce(mockResponse);
+      apiServiceMockFetch.mockResolvedValueOnce(mockResponse);
 
       const result = await apiService.getTestStatus('test_123');
 
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(apiServiceMockFetch).toHaveBeenCalledWith(
         'http://localhost:3000/api/v1/tests/test_123/status',
         expect.objectContaining({
           headers: { 'Content-Type': 'application/json' }
@@ -222,11 +222,11 @@ describe('ApiService', () => {
         })
       };
 
-      mockFetch.mockResolvedValueOnce(mockResponse);
+      apiServiceMockFetch.mockResolvedValueOnce(mockResponse);
 
       const result = await apiService.getHealingStatistics();
 
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(apiServiceMockFetch).toHaveBeenCalledWith(
         'http://localhost:3000/api/v1/healing/statistics',
         expect.objectContaining({
           headers: { 'Content-Type': 'application/json' }
@@ -251,7 +251,7 @@ describe('ApiService', () => {
         })
       };
 
-      mockFetch.mockResolvedValueOnce(mockResponse);
+      apiServiceMockFetch.mockResolvedValueOnce(mockResponse);
 
       const options = {
         startDate: '2025-01-01',
@@ -260,7 +260,7 @@ describe('ApiService', () => {
 
       await apiService.getHealingStatistics(options);
 
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(apiServiceMockFetch).toHaveBeenCalledWith(
         'http://localhost:3000/api/v1/healing/statistics?startDate=2025-01-01&endDate=2025-01-07',
         expect.any(Object)
       );
@@ -269,7 +269,7 @@ describe('ApiService', () => {
 
   describe('Error Handling', () => {
     it('should handle network errors', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+      apiServiceMockFetch.mockRejectedValueOnce(new Error('Network error'));
 
       const promise = apiService.getSystemStatus();
       jest.runAllTimers();
@@ -280,7 +280,7 @@ describe('ApiService', () => {
     });
 
     it('should handle timeout errors', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('AbortError'));
+      apiServiceMockFetch.mockRejectedValueOnce(new Error('AbortError'));
 
       const promise = apiService.getSystemStatus();
       jest.runAllTimers();
@@ -303,7 +303,7 @@ describe('ApiService', () => {
         })
       };
 
-      mockFetch.mockResolvedValueOnce(mockResponse);
+      apiServiceMockFetch.mockResolvedValueOnce(mockResponse);
 
       try {
         await apiService.getSystemStatus();
@@ -328,7 +328,7 @@ describe('ApiService', () => {
         })
       };
 
-      mockFetch.mockResolvedValueOnce(mockResponse);
+      apiServiceMockFetch.mockResolvedValueOnce(mockResponse);
 
       const options = {
         includeArtifacts: true,
@@ -337,7 +337,7 @@ describe('ApiService', () => {
 
       await apiService.getTestResult('test_123', options);
 
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(apiServiceMockFetch).toHaveBeenCalledWith(
         'http://localhost:3000/api/v1/tests/test_123/result?includeArtifacts=true&includeHealingAttempts=false',
         expect.any(Object)
       );
