@@ -18,6 +18,7 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **Jest/Vitest**: Unit and integration testing
 - **k6**: Performance and load testing
 - **OWASP ZAP**: Security testing
+- **App Analysis**: Automated app analysis and test generation with self-healing capabilities
 
 ## AI Agent Responsibilities
 
@@ -81,6 +82,20 @@ class TestOrchestrator {
       logger.error('Test execution failed:', error);
       throw new TestExecutionError('Failed to execute tests', error);
     }
+  }
+}
+
+// ALWAYS use bracket notation for Record<string, any> properties in strict mode
+class AppAnalysisEngine extends TestEngine {
+  protected async doExecute(config: TestConfig): Promise<TestResult> {
+    // ✅ CORRECT: Use bracket notation for dynamic properties
+    const url = config.parameters['url'] as string;
+    const analysisType = config.parameters['analysisType'] || 'basic';
+    
+    // ❌ WRONG: Dot notation fails in TypeScript strict mode
+    // const url = config.parameters.url;
+    
+    return this.createTestResult(config, 'passed');
   }
 }
 ```
@@ -157,6 +172,7 @@ class Dashboard {
 ### Directory Structure
 ```
 src/
+├── analysis/       # App analysis engine implementation
 ├── core/           # Core orchestration logic
 ├── engines/        # Test engine implementations
 ├── healing/        # Self-healing algorithms
@@ -296,12 +312,16 @@ import { HealingEngine } from '@/healing/engine';
 - **ALWAYS** test error scenarios
 - **ALWAYS** use unique variable names for global test declarations to prevent TypeScript conflicts
 - **ALWAYS** search for existing global declarations before creating new test files (`grep -r "const mockFetch" tests/`)
+- **ALWAYS** follow strict TDD methodology: RED-GREEN-REFACTOR cycle for new engines
+- **ALWAYS** test TypeScript strict mode compliance with bracket notation for dynamic properties
 
 ### Integration Testing
 - **ALWAYS** test engine registration
 - **ALWAYS** test healing workflows
 - **ALWAYS** test API endpoints
 - **ALWAYS** test observability hooks
+- **ALWAYS** test plugin factory integration
+- **ALWAYS** test engine configuration validation
 
 ## Performance Guidelines
 

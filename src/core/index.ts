@@ -19,6 +19,7 @@ export { PluginArchitectureDemo, runPluginArchitectureDemo } from '../demo/Plugi
 
 // Export engines
 export { HelloWorldEngine } from '../engines/HelloWorldEngine';
+export { AppAnalysisEngine } from '../analysis/AppAnalysisEngine';
 
 // Export healing strategies
 export { SimpleHealingStrategy } from '../healing/SimpleHealingStrategy';

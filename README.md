@@ -7,8 +7,9 @@ A comprehensive TypeScript/Node.js test automation platform that orchestrates mu
 ## 🚀 Features
 
 - **✅ Playwright E2E Engine**: Fully implemented with self-healing capabilities
+- **✅ App Analysis Engine**: Automated app analysis and test generation with healing support
 - **✅ Mobile-Responsive Dashboard**: Complete PWA with offline capabilities
-- **Multi-Engine Support**: Playwright (E2E), Jest (Unit), k6 (Performance), OWASP ZAP (Security)
+- **Multi-Engine Support**: Playwright (E2E), Jest (Unit), k6 (Performance), OWASP ZAP (Security), App Analysis
 - **AI-Powered Self-Healing**: Automatic locator recovery and test adaptation
 - **System Overview Dashboard**: Real-time monitoring with visual health indicators
 - **Unified Reporting**: Consolidated dashboard for all test types

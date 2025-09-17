@@ -488,6 +488,35 @@ interface TestConfig {
 
 ## Examples
 
+### Available Test Engines
+
+#### AppAnalysisEngine
+```typescript
+class AppAnalysisEngine extends TestEngine {
+  constructor() {
+    super('app-analysis', '1.0.0', 'e2e', true);
+  }
+  
+  // Provides automated app analysis and test generation
+  // Supports configurable analysis depth: basic, comprehensive, detailed
+  // Generates multiple artifact types: screenshots, reports, generated tests
+  // Self-healing for element_not_found failures with confidence scoring
+}
+```
+
+**Configuration:**
+```typescript
+{
+  engine: 'app-analysis',
+  settings: {
+    timeout: 30000,
+    analysisDepth: 'comprehensive', // basic | comprehensive | detailed
+    outputFormat: 'json',          // json | xml | html
+    includeScreenshots: true
+  }
+}
+```
+
 ### Creating a Custom Test Engine
 ```typescript
 class CustomTestEngine extends TestEngine {
