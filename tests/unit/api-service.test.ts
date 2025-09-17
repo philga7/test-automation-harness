@@ -11,14 +11,14 @@ const apiServiceMockFetch = jest.fn();
 
 // Import the actual ApiService class
 // Note: Since ApiService is in JavaScript, we'll test it as a JavaScript module
-const { ApiService: ApiServiceClass } = require('../../src/ui/public/js/api-service.js');
+const { ApiService: ApiServiceTestClass } = require('../../src/ui/public/js/api-service.js');
 
 describe('ApiService', () => {
   let apiService: any;
 
   beforeEach(() => {
     jest.useFakeTimers();
-    apiService = new ApiServiceClass({
+    apiService = new ApiServiceTestClass({
       baseUrl: 'http://localhost:3000',
       timeout: 1000,
       retryAttempts: 1
@@ -35,7 +35,7 @@ describe('ApiService', () => {
 
   describe('Initialization', () => {
     it('should initialize with default options', () => {
-      const service = new ApiServiceClass();
+      const service = new ApiServiceTestClass();
       expect(service.baseUrl).toBe('');
       expect(service.timeout).toBe(30000);
       expect(service.retryAttempts).toBe(3);
@@ -43,7 +43,7 @@ describe('ApiService', () => {
     });
 
     it('should initialize with custom options', () => {
-      const service = new ApiServiceClass({
+      const service = new ApiServiceTestClass({
         baseUrl: 'https://api.example.com',
         timeout: 60000,
         retryAttempts: 5,

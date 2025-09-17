@@ -11,9 +11,11 @@
     <link rel="stylesheet" href="/static/css/overview.css">
     <link rel="stylesheet" href="/static/css/test-execution.css">
     <link rel="stylesheet" href="/static/css/test-results.css">
+    <link rel="stylesheet" href="/static/css/healing-stats.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Navigation Header -->
@@ -281,9 +283,37 @@
                     </div>
                     
                     <div class="healing-card">
-                        <h3>Healing Strategies</h3>
-                        <div class="strategies-placeholder">
-                            <p>Available healing strategies will be listed here</p>
+                        <h3>Success Rate Chart</h3>
+                        <div class="chart-container">
+                            <canvas id="healing-success-rate-chart" aria-label="Healing success rate chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="healing-card">
+                        <h3>Performance Metrics</h3>
+                        <div class="performance-indicators">
+                            <div class="indicator">
+                                <span class="indicator-icon">🎯</span>
+                                <div class="indicator-value" id="healing-success-rate">0%</div>
+                                <div class="indicator-label">Success Rate</div>
+                            </div>
+                            <div class="indicator">
+                                <span class="indicator-icon">⚡</span>
+                                <div class="indicator-value" id="avg-healing-duration">0ms</div>
+                                <div class="indicator-label">Avg Duration</div>
+                            </div>
+                            <div class="indicator">
+                                <span class="indicator-icon">🔍</span>
+                                <div class="indicator-value" id="avg-healing-confidence">0%</div>
+                                <div class="indicator-label">Avg Confidence</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="healing-card">
+                        <h3>Strategy Breakdown</h3>
+                        <div class="chart-container">
+                            <canvas id="healing-strategy-chart" aria-label="Healing strategy breakdown chart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -332,5 +362,6 @@
     <script src="/static/js/dashboard.js"></script>
     <script src="/static/js/test-execution.js"></script>
     <script src="/static/js/test-results.js"></script>
+    <script src="/static/js/healing-stats.js"></script>
 </body>
 </html>
