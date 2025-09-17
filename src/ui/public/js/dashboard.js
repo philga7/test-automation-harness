@@ -9,6 +9,7 @@ class Dashboard {
     constructor() {
         this.currentSection = 'overview';
         this.refreshInterval = null;
+        this.testExecutionInterface = null;
         this.apiService = new ApiService({
             baseUrl: '',
             timeout: 30000,
@@ -75,6 +76,11 @@ class Dashboard {
         if (targetSection) {
             targetSection.classList.add('active');
             this.currentSection = sectionId;
+            
+            // Initialize test execution interface when execution section is shown
+            if (sectionId === 'execution' && !this.testExecutionInterface) {
+                this.initializeTestExecutionInterface();
+            }
         }
     }
 
@@ -346,8 +352,27 @@ class Dashboard {
         }
     }
 
+    /**
+     * Initialize the test execution interface
+     */
+    initializeTestExecutionInterface() {
+        try {
+            if (window.TestExecutionInterface) {
+                this.testExecutionInterface = new window.TestExecutionInterface(this.apiService);
+                console.log('Test execution interface initialized');
+            } else {
+                console.warn('TestExecutionInterface class not available');
+            }
+        } catch (error) {
+            console.error('Failed to initialize test execution interface:', error);
+        }
+    }
+
     destroy() {
         this.stopAutoRefresh();
+        if (this.testExecutionInterface) {
+            this.testExecutionInterface.destroy();
+        }
     }
 }
 

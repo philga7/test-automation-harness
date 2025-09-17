@@ -32,6 +32,34 @@ A central plugin registry provides:
 
 ## Architecture Components
 
+### UI/Dashboard Layer
+
+#### Web Dashboard
+The system includes a comprehensive web dashboard built with:
+- **Semantic HTML**: Accessible structure with ARIA labels
+- **Glassmorphism Design**: Modern UI with transparency effects
+- **Real-time Updates**: Live system monitoring with configurable refresh intervals
+- **API Integration**: JavaScript service layer for backend communication
+
+#### Dashboard Components
+```
+src/ui/public/
+├── index.html              # Main dashboard structure
+├── css/
+│   ├── dashboard.css       # Base styles and design system
+│   └── overview.css        # Overview-specific styling
+└── js/
+    ├── api-service.js      # API client with error handling
+    ├── dashboard.js        # Navigation and core functionality  
+    └── dashboard-overview.js # Real-time system monitoring
+```
+
+#### Static File Serving
+- **Route**: `/static/` serves files from `dist/ui/public/`
+- **MIME Types**: Explicit Content-Type headers for proper browser loading
+- **Caching**: Optimized cache headers for performance
+- **Security**: CSP and security headers for static assets
+
 ### Core Classes
 
 #### HealingEngine
