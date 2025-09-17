@@ -11,6 +11,7 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **Configuration System**: YAML-based test and environment configuration
 - **Observability Layer**: Metrics collection and reporting
 - **REST API**: Task execution, result retrieval, and healing statistics
+- **Web Dashboard**: Responsive UI for system monitoring and control
 
 ### Test Engines
 - **Playwright**: E2E testing with auto-heal capabilities
@@ -44,6 +45,14 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **ALWAYS** provide fallback strategies (ID, CSS, XPath, neighbor analysis)
 - **ALWAYS** log healing attempts and success rates
 - **NEVER** auto-heal without user-configurable confidence thresholds
+
+### UI/Dashboard Development
+- **ALWAYS** use semantic HTML with proper ARIA labels
+- **ALWAYS** implement mobile-first responsive design
+- **ALWAYS** follow glassmorphism design patterns for consistency
+- **ALWAYS** provide real-time data updates with auto-refresh
+- **ALWAYS** implement proper error handling and user feedback
+- **NEVER** hardcode API endpoints in frontend code
 
 ## Development Patterns
 
@@ -106,6 +115,38 @@ class ConfigManager {
 }
 ```
 
+### UI/Dashboard Patterns
+```typescript
+// ALWAYS use semantic HTML structure
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <ul class="nav-menu" role="menubar">
+    <li role="none">
+      <a href="#overview" role="menuitem" class="nav-link">Overview</a>
+    </li>
+  </ul>
+</nav>
+
+// ALWAYS implement responsive CSS with CSS custom properties
+:root {
+  --primary-color: #667eea;
+  --background-glass: rgba(255, 255, 255, 0.1);
+  --border-glass: rgba(255, 255, 255, 0.2);
+}
+
+// ALWAYS provide real-time data updates
+class Dashboard {
+  async loadSystemStatus() {
+    try {
+      const response = await fetch('/health');
+      const data = await response.json();
+      this.updateElement('system-status', data.status);
+    } catch (error) {
+      this.showNotification('Failed to load status', 'error');
+    }
+  }
+}
+```
+
 ## File Interaction Standards
 
 ### Directory Structure
@@ -118,6 +159,8 @@ src/
 ├── api/            # REST API endpoints
 ├── observability/  # Metrics and monitoring
 ├── types/          # TypeScript type definitions
+├── ui/             # Web dashboard and UI components
+│   └── public/     # Static assets (HTML, CSS, JS)
 └── utils/          # Shared utilities
 ```
 

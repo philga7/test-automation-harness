@@ -8,6 +8,7 @@
     <meta name="author" content="Self-Healing Test Automation Harness">
     <title>Self-Healing Test Automation Harness - Dashboard</title>
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/overview.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -42,6 +43,9 @@
                 <header class="section-header">
                     <h2 id="overview-heading">System Overview</h2>
                     <p class="section-description">Real-time system status and health monitoring</p>
+                    <button id="refresh-overview" class="refresh-button" aria-label="Refresh dashboard data" title="Refresh Data">
+                        🔄
+                    </button>
                 </header>
                 
                 <div class="status-grid">
@@ -81,6 +85,14 @@
                                 <span class="metric-value" id="engines-count">Loading...</span>
                             </div>
                             <div class="metric">
+                                <span class="metric-label">Healthy Engines:</span>
+                                <span class="metric-value" id="healthy-engines">Loading...</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Overall Status:</span>
+                                <span class="metric-value" id="engines-status">Loading...</span>
+                            </div>
+                            <div class="metric">
                                 <span class="metric-label">Active Tests:</span>
                                 <span class="metric-value" id="active-tests">0</span>
                             </div>
@@ -88,14 +100,17 @@
                                 <span class="metric-label">Healing Success Rate:</span>
                                 <span class="metric-value" id="healing-rate">Loading...</span>
                             </div>
+                            <div id="engines-list" class="engines-list" aria-label="Detailed engine list">
+                                <!-- Engine list will be populated by JavaScript -->
+                            </div>
                         </div>
                     </div>
 
                     <div class="status-card">
                         <div class="card-header">
                             <h3>
-                                <span class="status-indicator" aria-label="Recent activity indicator"></span>
-                                Recent Activity
+                                <span class="status-indicator" aria-label="System metrics indicator"></span>
+                                System Metrics
                             </h3>
                         </div>
                         <div class="card-content">
@@ -110,6 +125,20 @@
                             <div class="metric">
                                 <span class="metric-label">Last Update:</span>
                                 <span class="metric-value" id="last-update">Loading...</span>
+                            </div>
+                            <div class="system-metrics">
+                                <div class="metric-card">
+                                    <div class="metric-card-value" id="cpu-usage">--</div>
+                                    <div class="metric-card-label">CPU Usage</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-card-value" id="memory-usage">--</div>
+                                    <div class="metric-card-label">Memory</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-card-value" id="disk-usage">--</div>
+                                    <div class="metric-card-label">Disk Usage</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -241,6 +270,7 @@
 
     <!-- JavaScript -->
     <script src="js/api-service.js"></script>
+    <script src="js/dashboard-overview.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>
