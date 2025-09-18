@@ -10,6 +10,7 @@ This document provides code examples for integrating with the Self-Healing Test 
 4. [Java](#java)
 5. [C#](#c)
 6. [Go](#go)
+7. [App Analysis API Examples](#app-analysis-api-examples)
 
 ## JavaScript/TypeScript
 
@@ -1192,4 +1193,257 @@ type TestResults struct {
 }
 ```
 
-This comprehensive set of client examples provides developers with ready-to-use code for integrating with the Self-Healing Test Automation Harness API in their preferred programming language.
+## App Analysis API Examples
+
+### JavaScript/TypeScript
+
+```typescript
+// Start App Analysis
+async function startAnalysis(url: string, analysisType: string = 'comprehensive') {
+  const response = await fetch('http://localhost:3000/api/v1/analysis/scan', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      url,
+      analysisType,
+      options: {
+        includeScreenshots: true,
+        includeAccessibility: true,
+        includePerformance: true,
+        includeSecurity: true,
+        includeCodeGeneration: true,
+        timeout: 30000
+      }
+    })
+  });
+  
+  const result = await response.json();
+  return result.data.analysisId;
+}
+
+// Check Analysis Status
+async function checkAnalysisStatus(analysisId: string) {
+  const response = await fetch(`http://localhost:3000/api/v1/analysis/${analysisId}/status`);
+  return response.json();
+}
+
+// Get Analysis Results
+async function getAnalysisResults(analysisId: string, includeArtifacts: boolean = false) {
+  const response = await fetch(`http://localhost:3000/api/v1/analysis/${analysisId}/results?includeArtifacts=${includeArtifacts}`);
+  return response.json();
+}
+
+// Generate Test Scenarios
+async function generateTestScenarios(analysisId: string, testTypes: string[] = ['e2e']) {
+  const response = await fetch(`http://localhost:3000/api/v1/analysis/${analysisId}/generate-tests`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      testTypes,
+      options: {
+        framework: 'playwright',
+        includeDataDriven: true,
+        includeNegativeTests: true,
+        maxScenarios: 10,
+        priority: 'high'
+      }
+    })
+  });
+  
+  return response.json();
+}
+
+// Complete Analysis Workflow
+async function completeAnalysisWorkflow(url: string) {
+  try {
+    // 1. Start analysis
+    console.log('Starting analysis...');
+    const analysisId = await startAnalysis(url);
+    console.log(`Analysis started with ID: ${analysisId}`);
+    
+    // 2. Wait for completion
+    let status = 'running';
+    while (status === 'running') {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+      const statusResponse = await checkAnalysisStatus(analysisId);
+      status = statusResponse.data.status;
+      console.log(`Analysis progress: ${statusResponse.data.progress}%`);
+    }
+    
+    // 3. Get results
+    console.log('Getting analysis results...');
+    const results = await getAnalysisResults(analysisId, true);
+    console.log('Analysis completed:', results.data.status);
+    
+    // 4. Generate test scenarios
+    console.log('Generating test scenarios...');
+    const testScenarios = await generateTestScenarios(analysisId, ['e2e', 'accessibility']);
+    console.log(`Generated ${testScenarios.data.count} test scenarios`);
+    
+    return { analysisId, results, testScenarios };
+  } catch (error) {
+    console.error('Analysis workflow failed:', error);
+    throw error;
+  }
+}
+
+// Usage
+completeAnalysisWorkflow('https://example.com')
+  .then(result => console.log('Workflow completed:', result))
+  .catch(error => console.error('Workflow failed:', error));
+```
+
+### Python
+
+```python
+import requests
+import time
+import json
+
+class AppAnalysisClient:
+    def __init__(self, base_url='http://localhost:3000'):
+        self.base_url = base_url
+    
+    def start_analysis(self, url, analysis_type='comprehensive'):
+        """Start a new app analysis scan"""
+        response = requests.post(
+            f'{self.base_url}/api/v1/analysis/scan',
+            json={
+                'url': url,
+                'analysisType': analysis_type,
+                'options': {
+                    'includeScreenshots': True,
+                    'includeAccessibility': True,
+                    'includePerformance': True,
+                    'includeSecurity': True,
+                    'includeCodeGeneration': True,
+                    'timeout': 30000
+                }
+            }
+        )
+        response.raise_for_status()
+        return response.json()['data']['analysisId']
+    
+    def check_status(self, analysis_id):
+        """Check analysis scan status"""
+        response = requests.get(f'{self.base_url}/api/v1/analysis/{analysis_id}/status')
+        response.raise_for_status()
+        return response.json()
+    
+    def get_results(self, analysis_id, include_artifacts=False):
+        """Get complete analysis results"""
+        params = {'includeArtifacts': include_artifacts}
+        response = requests.get(
+            f'{self.base_url}/api/v1/analysis/{analysis_id}/results',
+            params=params
+        )
+        response.raise_for_status()
+        return response.json()
+    
+    def generate_tests(self, analysis_id, test_types=['e2e']):
+        """Generate test scenarios from analysis results"""
+        response = requests.post(
+            f'{self.base_url}/api/v1/analysis/{analysis_id}/generate-tests',
+            json={
+                'testTypes': test_types,
+                'options': {
+                    'framework': 'playwright',
+                    'includeDataDriven': True,
+                    'includeNegativeTests': True,
+                    'maxScenarios': 10,
+                    'priority': 'high'
+                }
+            }
+        )
+        response.raise_for_status()
+        return response.json()
+    
+    def complete_workflow(self, url):
+        """Complete analysis workflow from start to finish"""
+        try:
+            # Start analysis
+            print('Starting analysis...')
+            analysis_id = self.start_analysis(url)
+            print(f'Analysis started with ID: {analysis_id}')
+            
+            # Wait for completion
+            status = 'running'
+            while status == 'running':
+                time.sleep(2)  # Wait 2 seconds
+                status_response = self.check_status(analysis_id)
+                status = status_response['data']['status']
+                progress = status_response['data']['progress']
+                print(f'Analysis progress: {progress}%')
+            
+            # Get results
+            print('Getting analysis results...')
+            results = self.get_results(analysis_id, include_artifacts=True)
+            print(f'Analysis completed: {results["data"]["status"]}')
+            
+            # Generate test scenarios
+            print('Generating test scenarios...')
+            test_scenarios = self.generate_tests(analysis_id, ['e2e', 'accessibility'])
+            print(f'Generated {test_scenarios["data"]["count"]} test scenarios')
+            
+            return {
+                'analysis_id': analysis_id,
+                'results': results,
+                'test_scenarios': test_scenarios
+            }
+        except Exception as error:
+            print(f'Analysis workflow failed: {error}')
+            raise
+
+# Usage
+client = AppAnalysisClient()
+try:
+    result = client.complete_workflow('https://example.com')
+    print('Workflow completed:', json.dumps(result, indent=2))
+except Exception as error:
+    print(f'Workflow failed: {error}')
+```
+
+### cURL Examples
+
+```bash
+# Start App Analysis
+curl -X POST http://localhost:3000/api/v1/analysis/scan \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com",
+    "analysisType": "comprehensive",
+    "options": {
+      "includeScreenshots": true,
+      "includeAccessibility": true,
+      "includePerformance": true,
+      "includeSecurity": true,
+      "includeCodeGeneration": true,
+      "timeout": 30000
+    }
+  }'
+
+# Check Analysis Status
+curl "http://localhost:3000/api/v1/analysis/analysis_https_example_com_1641234567890/status"
+
+# Get Analysis Results
+curl "http://localhost:3000/api/v1/analysis/analysis_https_example_com_1641234567890/results?includeArtifacts=true"
+
+# Generate Test Scenarios
+curl -X POST http://localhost:3000/api/v1/analysis/analysis_https_example_com_1641234567890/generate-tests \
+  -H "Content-Type: application/json" \
+  -d '{
+    "testTypes": ["e2e", "accessibility"],
+    "options": {
+      "framework": "playwright",
+      "includeDataDriven": true,
+      "includeNegativeTests": true,
+      "maxScenarios": 10,
+      "priority": "high"
+    }
+  }'
+
+# Get Generated Test Scenarios
+curl "http://localhost:3000/api/v1/analysis/generated-tests?analysisId=analysis_https_example_com_1641234567890&page=1&limit=10"
+```
+
+This comprehensive set of client examples provides developers with ready-to-use code for integrating with the Self-Healing Test Automation Harness API in their preferred programming language, including the new App Analysis API endpoints.

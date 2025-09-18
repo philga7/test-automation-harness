@@ -50,6 +50,21 @@ This guide provides comprehensive instructions for testing and integrating with 
      }'
    ```
 
+4. **Start Your First App Analysis**
+   ```bash
+   curl -X POST http://localhost:3000/api/v1/analysis/scan \
+     -H "Content-Type: application/json" \
+     -d '{
+       "url": "https://example.com",
+       "analysisType": "comprehensive",
+       "options": {
+         "includeScreenshots": true,
+         "includeAccessibility": true,
+         "timeout": 30000
+       }
+     }'
+   ```
+
 ## Testing Environment Setup
 
 ### Local Development
