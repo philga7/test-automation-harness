@@ -20,6 +20,7 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **OWASP ZAP**: Security testing
 - **App Analysis**: Automated app analysis and test generation with self-healing capabilities
 - **WebAppAnalyzer**: Complete web application analysis with DOM extraction and UI element identification
+- **TestScenarioGenerator**: Converts app analysis results into Playwright test scenarios with comprehensive test generation
 
 ## AI Agent Responsibilities
 
@@ -175,7 +176,9 @@ class Dashboard {
 src/
 ├── analysis/       # App analysis engine implementation
 │   ├── AppAnalysisEngine.ts      # Analysis engine implementation
-│   └── WebAppAnalyzer.ts         # NEW! Web app analyzer component
+│   ├── WebAppAnalyzer.ts         # Web app analyzer component
+│   ├── UserFlowDetector.ts       # User journey identification and flow analysis
+│   └── TestScenarioGenerator.ts  # NEW! Converts analysis results to Playwright test scenarios
 ├── core/           # Core orchestration logic
 ├── engines/        # Test engine implementations
 ├── healing/        # Self-healing algorithms
