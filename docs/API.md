@@ -277,6 +277,220 @@ Get engine performance metrics.
 #### GET /api/v1/engines/types
 Get available test engine types.
 
+### App Analysis
+
+#### POST /api/v1/analysis/scan
+Start a new app analysis scan.
+
+**Request Body:**
+```json
+{
+  "url": "https://example.com",
+  "analysisType": "comprehensive",
+  "options": {
+    "includeScreenshots": true,
+    "includeAccessibility": true,
+    "includePerformance": true,
+    "includeSecurity": true,
+    "includeCodeGeneration": true,
+    "timeout": 30000
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Analysis scan started successfully",
+  "data": {
+    "analysisId": "analysis_https_example_com_1641234567890",
+    "status": "running",
+    "url": "https://example.com",
+    "analysisType": "comprehensive"
+  },
+  "statusCode": 202
+}
+```
+
+#### GET /api/v1/analysis/:id/status
+Get analysis scan status.
+
+**Path Parameters:**
+- `id` (string, required): Analysis ID
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "analysisId": "analysis_https_example_com_1641234567890",
+    "status": "running",
+    "progress": 45,
+    "currentStep": "analyzing_ui_elements",
+    "startTime": "2025-01-06T15:30:00.000Z",
+    "endTime": null,
+    "duration": 15000,
+    "errors": 0,
+    "artifactsCount": 2
+  }
+}
+```
+
+#### GET /api/v1/analysis/:id/results
+Get complete analysis results.
+
+**Path Parameters:**
+- `id` (string, required): Analysis ID
+
+**Query Parameters:**
+- `includeArtifacts` (boolean): Include analysis artifacts (default: false)
+- `includeMetrics` (boolean): Include performance metrics (default: false)
+- `includeErrors` (boolean): Include error details (default: false)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "analysisId": "analysis_https_example_com_1641234567890",
+    "status": "passed",
+    "results": {
+      "url": "https://example.com",
+      "analysisType": "comprehensive",
+      "duration": 30000,
+      "elements": {
+        "total": 150,
+        "forms": 5,
+        "buttons": 12,
+        "links": 25,
+        "inputs": 8
+      },
+      "navigation": {
+        "menus": 3,
+        "breadcrumbs": 1,
+        "pagination": 2
+      },
+      "accessibility": {
+        "score": 85,
+        "issues": 3,
+        "warnings": 7
+      },
+      "performance": {
+        "loadTime": 2.5,
+        "domContentLoaded": 1.8,
+        "firstPaint": 1.2
+      }
+    },
+    "artifacts": [
+      {
+        "type": "screenshot",
+        "path": "/artifacts/screenshots/analysis_1641234567890.png",
+        "size": 245760
+      },
+      {
+        "type": "report",
+        "path": "/artifacts/reports/analysis_1641234567890.json",
+        "size": 15360
+      }
+    ]
+  }
+}
+```
+
+#### POST /api/v1/analysis/:id/generate-tests
+Generate test scenarios from analysis results.
+
+**Path Parameters:**
+- `id` (string, required): Analysis ID
+
+**Request Body:**
+```json
+{
+  "testTypes": ["e2e", "accessibility"],
+  "options": {
+    "framework": "playwright",
+    "includeDataDriven": true,
+    "includeNegativeTests": true,
+    "maxScenarios": 10,
+    "priority": "high"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Test scenarios generated successfully",
+  "data": {
+    "generationId": "generation_analysis_1641234567890_1641234570000",
+    "status": "completed",
+    "count": 8,
+    "scenarios": [
+      {
+        "id": "scenario_analysis_1641234567890_0",
+        "name": "Generated E2E Test Scenario 1 for https://example.com",
+        "type": "e2e",
+        "description": "AI-generated scenario based on analysis of https://example.com",
+        "steps": [
+          { "action": "navigate", "target": "https://example.com" },
+          { "action": "click", "target": "button.submit" },
+          { "action": "assertTitle", "expected": "Example Domain" }
+        ],
+        "framework": "playwright",
+        "priority": "high"
+      }
+    ]
+  },
+  "statusCode": 201
+}
+```
+
+#### GET /api/v1/analysis/generated-tests
+Get list of generated test scenarios.
+
+**Query Parameters:**
+- `analysisId` (string): Filter by analysis ID
+- `testType` (string): Filter by test type (e2e, accessibility, performance, security)
+- `page` (number): Page number (default: 1)
+- `limit` (number): Items per page (default: 10)
+- `sort` (string): Sort order (asc/desc, default: desc)
+- `sortBy` (string): Sort field (default: createdAt)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "generation_analysis_1641234567890_1641234570000",
+        "analysisId": "analysis_https_example_com_1641234567890",
+        "status": "completed",
+        "startTime": "2025-01-06T15:30:30.000Z",
+        "endTime": "2025-01-06T15:30:35.000Z",
+        "testTypes": ["e2e", "accessibility"],
+        "options": {
+          "framework": "playwright",
+          "maxScenarios": 10,
+          "priority": "high"
+        },
+        "count": 8
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "totalPages": 1,
+      "hasNext": false,
+      "hasPrev": false
+    }
+  }
+}
+```
+
 ## Error Codes
 
 | Code | Description |

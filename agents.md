@@ -10,7 +10,7 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **Healing Engine**: AI-powered test recovery and adaptation
 - **Configuration System**: YAML-based test and environment configuration
 - **Observability Layer**: Metrics collection and reporting
-- **REST API**: Task execution, result retrieval, and healing statistics
+- **REST API**: Task execution, result retrieval, healing statistics, and app analysis
 - **Web Dashboard**: Responsive UI for system monitoring and control
 
 ### Test Engines
@@ -21,6 +21,7 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **App Analysis**: Automated app analysis and test generation with self-healing capabilities
 - **WebAppAnalyzer**: Complete web application analysis with DOM extraction and UI element identification
 - **TestScenarioGenerator**: Converts app analysis results into Playwright test scenarios with comprehensive test generation
+- **AITestGenerator**: AI-powered intelligent test scenario generation using LLM integration for natural language processing
 
 ## AI Agent Responsibilities
 
@@ -137,6 +138,69 @@ class ConfigManager {
 }
 ```
 
+### AI-Powered Test Generation Patterns
+```typescript
+// ALWAYS implement AI service integration with multiple providers
+interface AIServiceConfig {
+  provider: 'openai' | 'claude' | 'local';
+  model: string;
+  temperature: number;
+  maxTokens: number;
+  timeout: number;
+}
+
+// ALWAYS implement performance monitoring and caching
+class AITestGenerator {
+  private requestCache = new Map<string, { result: any; timestamp: number }>();
+  private performanceMetrics = {
+    totalRequests: 0,
+    successfulRequests: 0,
+    cacheHitRate: 0,
+    averageResponseTime: 0
+  };
+
+  async generateFromUserStory(userStory: string): Promise<AITestGenerationResponse> {
+    const startTime = Date.now();
+    
+    // Check cache first
+    const cacheKey = this.getCacheKey('generate_scenarios', { userStory });
+    const cached = this.getFromCache(cacheKey);
+    if (cached) {
+      this.updateCacheHitRate(true);
+      return cached;
+    }
+
+    // Call AI service with comprehensive error handling
+    try {
+      const result = await this.callAIService('generate_scenarios', { userStory });
+      this.setCache(cacheKey, result);
+      this.updatePerformanceMetrics(true, Date.now() - startTime);
+      return result;
+    } catch (error) {
+      this.handleAIServiceError(error);
+      throw error;
+    }
+  }
+}
+
+// ALWAYS provide fallback mechanisms for AI service unavailability
+class AITestGenerator {
+  async generateWithFallback(userStory: string): Promise<AITestGenerationResponse> {
+    try {
+      return await this.generateFromUserStory(userStory);
+    } catch (error) {
+      // Fallback to TestScenarioGenerator
+      const fallbackScenarios = await this.testScenarioGenerator.generateUserFlowScenarios([]);
+      return {
+        scenarios: fallbackScenarios.map(s => ({ ...s, metadata: { fallbackGenerated: true } })),
+        confidence: 0.5,
+        reasoning: 'Generated using fallback due to AI service unavailability'
+      };
+    }
+  }
+}
+```
+
 ### UI/Dashboard Patterns
 ```typescript
 // ALWAYS use semantic HTML structure
@@ -178,7 +242,8 @@ src/
 │   ├── AppAnalysisEngine.ts      # Analysis engine implementation
 │   ├── WebAppAnalyzer.ts         # Web app analyzer component
 │   ├── UserFlowDetector.ts       # User journey identification and flow analysis
-│   └── TestScenarioGenerator.ts  # NEW! Converts analysis results to Playwright test scenarios
+│   ├── TestScenarioGenerator.ts  # Converts analysis results to Playwright test scenarios
+│   └── AITestGenerator.ts        # NEW! AI-powered intelligent test generation with LLM integration
 ├── core/           # Core orchestration logic
 ├── engines/        # Test engine implementations
 ├── healing/        # Self-healing algorithms
@@ -308,6 +373,8 @@ import { HealingEngine } from '@/healing/engine';
 - **ALWAYS** include request/response validation
 - **ALWAYS** provide comprehensive logging
 - **ALWAYS** support graceful degradation
+- **ALWAYS** follow established middleware patterns (validation, error handling, async handlers)
+- **ALWAYS** integrate with existing server configuration and route registration
 
 ## Testing Standards
 
@@ -328,6 +395,9 @@ import { HealingEngine } from '@/healing/engine';
 - **ALWAYS** test observability hooks
 - **ALWAYS** test plugin factory integration
 - **ALWAYS** test engine configuration validation
+- **ALWAYS** test API route integration with Express.js server
+- **ALWAYS** test middleware integration (validation, error handling, async handlers)
+- **ALWAYS** test API endpoint request/response validation with Joi schemas
 
 ## Performance Guidelines
 
@@ -352,6 +422,9 @@ import { HealingEngine } from '@/healing/engine';
 4. **Memory Leaks**: Check resource cleanup
 5. **CSS/JS Not Loading**: Check MIME type headers, `/static/` paths, rebuild dist/
 6. **Dashboard Not Updating**: Clear browser cache, verify API endpoints
+7. **API Route Not Found**: Check server integration and route registration
+8. **Validation Errors**: Verify Joi schema definitions and request format
+9. **Async Handler Issues**: Ensure proper error handling in async route handlers
 
 ### Debug Steps
 1. Check logs for error messages

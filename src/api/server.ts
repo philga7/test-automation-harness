@@ -19,6 +19,7 @@ import resultsRoutes from './routes/results';
 import healingRoutes from './routes/healing';
 import enginesRoutes from './routes/engines';
 import observabilityRoutes from './routes/observability';
+import analysisRoutes from './routes/analysis';
 
 // Import middleware
 import { errorHandlerMiddleware } from './middleware/errorHandler';
@@ -155,6 +156,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
   app.use('/api/v1/healing', healingRoutes);
   app.use('/api/v1/engines', enginesRoutes);
   app.use('/api/v1/observability', observabilityRoutes);
+  app.use('/api/v1/analysis', analysisRoutes);
 
   // API status endpoint
   app.get('/api/status', (_req: Request, res: Response) => {
@@ -167,6 +169,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
         selfHealing: 'available',
         unifiedReporting: 'available',
         pluginArchitecture: 'available',
+        appAnalysis: 'available',
       },
       endpoints: {
         tests: '/api/v1/tests',
@@ -174,6 +177,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
         healing: '/api/v1/healing',
         engines: '/api/v1/engines',
         observability: '/api/v1/observability',
+        analysis: '/api/v1/analysis',
         health: '/health',
         docs: config.enableSwagger ? '/api/docs' : 'disabled',
       },
@@ -203,6 +207,7 @@ export function createApp(config: ServerConfig = DEFAULT_CONFIG): Application {
         '/api/v1/healing',
         '/api/v1/engines',
         '/api/v1/observability',
+        '/api/v1/analysis',
         '/api/status',
         '/health',
       ],
