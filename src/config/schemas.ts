@@ -42,6 +42,14 @@ export interface ZapConfig extends TestEngineConfig {
   target?: string;
 }
 
+export interface AppAnalysisConfig extends TestEngineConfig {
+  analysisDepth?: 'basic' | 'comprehensive' | 'detailed';
+  outputFormat?: 'json' | 'xml' | 'html';
+  includeScreenshots?: boolean;
+  maxElements?: number;
+  includeHidden?: boolean;
+}
+
 export interface HealingConfig {
   enabled: boolean;
   confidenceThreshold: number;
@@ -185,6 +193,7 @@ export interface AppConfig {
     jest: JestConfig;
     k6: K6Config;
     zap: ZapConfig;
+    'app-analysis': AppAnalysisConfig;
   };
 
   // Self-healing configuration
@@ -262,6 +271,18 @@ export const DEFAULT_CONFIG: Partial<AppConfig> = {
       enabled: true,
       timeout: 120000,
       retries: 1,
+    },
+    'app-analysis': {
+      enabled: true,
+      timeout: 30000,
+      retries: 2,
+      analysisDepth: 'comprehensive',
+      outputFormat: 'json',
+      includeScreenshots: true,
+      options: {
+        maxElements: 1000,
+        includeHidden: false,
+      },
     },
   },
   healing: {

@@ -44,6 +44,16 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **ALWAYS** follow the plugin registration pattern
 - **NEVER** hardcode engine-specific logic in the core orchestrator
 
+### Plugin Integration Standards
+- **ALWAYS** add configuration schema interface extending TestEngineConfig
+- **ALWAYS** update AppConfig.engines type definition with bracket notation for new engines
+- **ALWAYS** add comprehensive default configuration values in DEFAULT_CONFIG
+- **ALWAYS** include environment-specific overrides in YAML configuration
+- **ALWAYS** test constructor registration with TestEngineFactory
+- **ALWAYS** test plugin registry integration and engine discovery
+- **ALWAYS** test complete lifecycle management (initialization → execution → cleanup)
+- **ALWAYS** use TDD methodology for plugin integration (RED-GREEN-REFACTOR)
+
 ### Self-Healing Implementation
 - **ALWAYS** implement confidence scoring for healing actions
 - **ALWAYS** provide fallback strategies (ID, CSS, XPath, neighbor analysis)
@@ -136,6 +146,35 @@ class ConfigManager {
     return this.validateConfig(config);
   }
 }
+```
+
+### Plugin Integration Patterns
+```typescript
+// ALWAYS add engine-specific configuration interface
+export interface AppAnalysisConfig extends TestEngineConfig {
+  analysisDepth?: 'basic' | 'comprehensive' | 'detailed';
+  outputFormat?: 'json' | 'xml' | 'html';
+  includeScreenshots?: boolean;
+}
+
+// ALWAYS update AppConfig.engines with bracket notation
+engines: {
+  playwright: PlaywrightConfig;
+  jest: JestConfig;
+  k6: K6Config;
+  zap: ZapConfig;
+  'app-analysis': AppAnalysisConfig;  // Use bracket notation for dynamic keys
+};
+
+// ALWAYS test plugin registration
+factory.registerEngineConstructor('app-analysis', AppAnalysisEngine);
+expect(factory.isEngineTypeAvailable('app-analysis')).toBe(true);
+
+// ALWAYS test complete integration workflow
+const engine = await factory.createEngine(config);
+registry.registerTestEngine(engine);
+const retrievedEngine = registry.getTestEngine('app-analysis');
+expect(retrievedEngine).toBe(engine);
 ```
 
 ### AI-Powered Test Generation Patterns
