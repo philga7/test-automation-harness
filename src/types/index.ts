@@ -9,3 +9,6 @@ export * from './interfaces';
 
 // Export all types
 export * from './types';
+
+// Export analysis types
+export * from '../analysis/types';

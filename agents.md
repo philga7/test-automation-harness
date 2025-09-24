@@ -111,6 +111,33 @@ class AppAnalysisEngine extends TestEngine {
     return this.createTestResult(config, 'passed');
   }
 }
+
+// ALWAYS implement Error classes with proper TypeScript strict mode compliance
+class AnalysisError extends Error {
+  public override readonly cause?: Error;
+  
+  constructor(message: string, cause?: Error) {
+    super(message);
+    this.name = 'AnalysisError';
+    // ✅ CORRECT: Conditional assignment for exactOptionalPropertyTypes
+    if (cause !== undefined) {
+      this.cause = cause;
+    }
+  }
+}
+
+// ALWAYS use conditional assignment for optional properties in strict mode
+class AnalysisConfigurationError extends AnalysisError {
+  public readonly configField?: string;
+  
+  constructor(message: string, configField?: string, cause?: Error) {
+    super(message, cause);
+    this.name = 'AnalysisConfigurationError';
+    if (configField !== undefined) {
+      this.configField = configField;
+    }
+  }
+}
 ```
 
 ### Plugin Registration Pattern
@@ -175,6 +202,41 @@ const engine = await factory.createEngine(config);
 registry.registerTestEngine(engine);
 const retrievedEngine = registry.getTestEngine('app-analysis');
 expect(retrievedEngine).toBe(engine);
+```
+
+### Analysis Configuration and Types Patterns
+```typescript
+// ALWAYS organize analysis types in structured modules
+// src/analysis/types/
+// ├── config.ts          # AppAnalysisConfig with comprehensive options
+// ├── results.ts          # AppAnalysisResult with nested type definitions  
+// ├── errors.ts           # Error hierarchy with proper inheritance
+// ├── validation.ts       # JSON schemas and runtime validation
+// ├── patterns.ts         # TypeScript strict mode patterns
+// └── index.ts           # Consolidated exports
+
+// ALWAYS extend base interfaces with analysis-specific options
+export interface AppAnalysisConfig extends TestEngineConfig {
+  analysisDepth?: 'basic' | 'comprehensive' | 'detailed';
+  outputFormat?: 'json' | 'xml' | 'html';
+  ai?: {
+    enabled?: boolean;
+    provider?: 'openai' | 'claude' | 'local';
+    model?: string;
+  };
+  // Comprehensive JSDoc documentation with @example blocks
+}
+
+// ALWAYS provide comprehensive result structures with nested types
+export interface AppAnalysisResult {
+  id: string;
+  status: AnalysisStatus;
+  domStructure?: { elementCount: number; depth: number; complexity: string };
+  uiElements?: AnalysisUIElement[];
+  userFlows?: AnalysisUserFlow[];
+  artifacts?: { screenshots: string[]; reports: string[] };
+  performance?: { analysisTime: number; elementExtractionTime: number };
+}
 ```
 
 ### AI-Powered Test Generation Patterns
@@ -355,6 +417,47 @@ import { HealingEngine } from '@/healing/engine';
 - [ ] Supports extensibility
 - [ ] Includes observability hooks
 
+### Documentation Standards
+```typescript
+// ALWAYS provide comprehensive JSDoc with examples
+/**
+ * Comprehensive configuration interface for App Analysis Engine
+ * 
+ * Extends the base TestEngineConfig with analysis-specific options for:
+ * - DOM extraction and UI element identification
+ * - User flow detection and test scenario generation  
+ * - AI-powered test generation capabilities
+ * - Browser automation and screenshot capture
+ * - Output formatting and artifact management
+ * 
+ * @example
+ * ```typescript
+ * const config: AppAnalysisConfig = {
+ *   enabled: true,
+ *   timeout: 30000,
+ *   analysisDepth: 'comprehensive',
+ *   outputFormat: 'json',
+ *   includeScreenshots: true,
+ *   ai: {
+ *     enabled: true,
+ *     provider: 'openai',
+ *     model: 'gpt-4'
+ *   }
+ * };
+ * ```
+ */
+export interface AppAnalysisConfig extends TestEngineConfig {
+  /**
+   * Analysis depth configuration
+   * - 'basic': Fast analysis with core elements only
+   * - 'comprehensive': Balanced analysis with most elements and flows
+   * - 'detailed': Deep analysis with all elements, flows, and edge cases
+   * @default 'comprehensive'
+   */
+  analysisDepth?: 'basic' | 'comprehensive' | 'detailed';
+}
+```
+
 ## Prohibited Actions
 
 ### NEVER Do These
@@ -364,6 +467,8 @@ import { HealingEngine } from '@/healing/engine';
 - **NEVER** create circular dependencies
 - **NEVER** ignore TypeScript strict mode warnings
 - **NEVER** commit without proper logging
+- **NEVER** implement Error classes without conditional assignment for optional properties
+- **NEVER** use dot notation for Record<string, any> properties in strict mode
 
 ### Security Considerations
 - **NEVER** expose sensitive configuration in logs
@@ -426,6 +531,9 @@ import { HealingEngine } from '@/healing/engine';
 - **ALWAYS** search for existing global declarations before creating new test files (`grep -r "const mockFetch" tests/`)
 - **ALWAYS** follow strict TDD methodology: RED-GREEN-REFACTOR cycle for new engines
 - **ALWAYS** test TypeScript strict mode compliance with bracket notation for dynamic properties
+- **ALWAYS** test module existence before implementation using require() with try-catch patterns
+- **ALWAYS** use conditional assignment for optional properties in exactOptionalPropertyTypes mode
+- **ALWAYS** implement Error class inheritance with proper override modifiers and conditional assignment
 
 ### Integration Testing
 - **ALWAYS** test engine registration

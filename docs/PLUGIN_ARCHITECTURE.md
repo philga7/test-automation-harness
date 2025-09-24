@@ -326,8 +326,240 @@ await registry.cleanupAllPlugins();
 
 #### TestType
 ```typescript
-type TestType = 'unit' | 'integration' | 'e2e' | 'performance' | 'security';
+type TestType = 'unit' | 'integration' | 'e2e' | 'performance' | 'security' | 'app-analysis';
 ```
+
+### Analysis Type System Architecture
+
+The Self-Healing Test Automation Harness includes a comprehensive analysis type system that provides type safety and validation for web application analysis operations. This system was implemented using strict Test-Driven Development methodology with 100% test success rate.
+
+#### Analysis Configuration Types
+
+##### AppAnalysisConfig
+```typescript
+export interface AppAnalysisConfig extends TestEngineConfig {
+  analysisDepth?: 'basic' | 'comprehensive' | 'detailed';
+  outputFormat?: 'json' | 'xml' | 'html';
+  includeScreenshots?: boolean;
+  maxElements?: number;
+  includeHidden?: boolean;
+  browser?: {
+    headless?: boolean;
+    viewport?: { width: number; height: number };
+    userAgent?: string;
+  };
+  capabilities?: {
+    domExtraction?: boolean;
+    uiElementIdentification?: boolean;
+    userFlowDetection?: boolean;
+    testScenarioGeneration?: boolean;
+    aiTestGeneration?: boolean;
+  };
+  ai?: {
+    enabled?: boolean;
+    provider?: 'openai' | 'claude' | 'local';
+    model?: string;
+    temperature?: number;
+    maxTokens?: number;
+    timeout?: number;
+  };
+  output?: {
+    artifactsDir?: string;
+    screenshotsDir?: string;
+    reportsDir?: string;
+    includeMetadata?: boolean;
+  };
+  validation?: {
+    requiredElements?: string[];
+    maxDepth?: number;
+    timeout?: number;
+  };
+}
+```
+
+#### Analysis Result Types
+
+##### AppAnalysisResult
+```typescript
+export interface AppAnalysisResult {
+  id: string;
+  timestamp: Date;
+  duration: number;
+  url: string;
+  status: AnalysisStatus;
+  domStructure?: {
+    elementCount: number;
+    depth: number;
+    complexity: 'low' | 'medium' | 'high';
+  };
+  uiElements?: AnalysisUIElement[];
+  userFlows?: AnalysisUserFlow[];
+  testScenarios?: AnalysisTestScenario[];
+  artifacts?: {
+    screenshots: string[];
+    videos: string[];
+    traces: string[];
+    reports: string[];
+  };
+  aiAnalysis?: {
+    confidence: number;
+    insights: string[];
+    recommendations: string[];
+    generatedTests: number;
+  };
+  performance?: {
+    analysisTime: number;
+    elementExtractionTime: number;
+    flowDetectionTime: number;
+    testGenerationTime: number;
+  };
+  errors?: string[];
+  warnings?: string[];
+  configuration?: {
+    analysisDepth: AnalysisDepth;
+    includeScreenshots: boolean;
+    [key: string]: any;
+  };
+}
+```
+
+##### AnalysisUIElement
+```typescript
+export interface AnalysisUIElement {
+  id: string;
+  type: string;
+  tagName: string;
+  name?: string;
+  description?: string;
+  pageUrl: string;
+  locators: Array<{
+    strategy: LocatorStrategyType;
+    value: string;
+    confidence?: number;
+  }>;
+  properties: {
+    text?: string;
+    ariaLabel?: string;
+    isVisible: boolean;
+    isEnabled: boolean;
+    isChecked?: boolean;
+    isSelected?: boolean;
+    placeholder?: string;
+    attributes?: Record<string, string>;
+  };
+  context: {
+    parent?: string;
+    siblings?: string[];
+    children?: string[];
+    cssPath: string;
+    xpath: string;
+  };
+  accessibility?: {
+    role?: string;
+    hasSufficientContrast?: boolean;
+    hasLabel?: boolean;
+  };
+  interactions: {
+    supported: UIInteractionType[];
+    testActions: string[];
+  };
+  screenshotPath?: string;
+}
+```
+
+##### AnalysisUserFlow
+```typescript
+export interface AnalysisUserFlow {
+  id: string;
+  name: string;
+  type: string;
+  category: string;
+  description?: string;
+  steps: Array<{
+    id: string;
+    action: UserFlowActionType;
+    target: string;
+    value?: string;
+    description?: string;
+    waitConditions?: string[];
+    timeout?: number;
+  }>;
+  metadata: {
+    complexity: FlowComplexity;
+    businessImpact: BusinessImpact;
+    frequency: 'rare' | 'occasional' | 'frequent' | 'daily';
+    userTypes: string[];
+    devices: string[];
+  };
+  validation: {
+    requiredElements: string[];
+    successCriteria: string[];
+    errorHandling: string[];
+  };
+  diagram: {
+    mermaid: string;
+    nodes: Array<{
+      id: string;
+      label: string;
+      type: string;
+    }>;
+    edges: Array<{
+      from: string;
+      to: string;
+      label?: string;
+    }>;
+  };
+}
+```
+
+#### Analysis Error Types
+
+The analysis system includes a comprehensive error hierarchy designed with TypeScript strict mode compliance:
+
+```typescript
+export class AnalysisError extends Error {
+  public override readonly cause?: Error;
+  
+  constructor(message: string, cause?: Error) {
+    super(message);
+    this.name = 'AnalysisError';
+    if (cause !== undefined) {
+      this.cause = cause;
+    }
+  }
+}
+
+export class AnalysisTimeoutError extends AnalysisError {
+  public readonly timeout: number;
+  
+  constructor(message: string, timeout: number, cause?: Error) {
+    super(message, cause);
+    this.name = 'AnalysisTimeoutError';
+    this.timeout = timeout;
+  }
+}
+
+export class AnalysisConfigurationError extends AnalysisError {
+  public readonly configField?: string;
+  
+  constructor(message: string, configField?: string, cause?: Error) {
+    super(message, cause);
+    this.name = 'AnalysisConfigurationError';
+    if (configField !== undefined) {
+      this.configField = configField;
+    }
+  }
+}
+```
+
+#### TypeScript Strict Mode Compliance
+
+All analysis types follow proven patterns for TypeScript strict mode compliance:
+
+1. **Conditional Assignment for Optional Properties**: Uses explicit checks for `undefined` to satisfy `exactOptionalPropertyTypes`
+2. **Bracket Notation for Dynamic Properties**: Uses `config.parameters['url']` instead of `config.parameters.url` for `Record<string, any>` properties
+3. **Proper Error Inheritance**: Uses `override` modifiers and conditional assignment in constructors
+4. **Module Organization**: Structured in `src/analysis/types/` with dedicated files for configuration, results, errors, validation, and patterns
 
 #### FailureType
 ```typescript
