@@ -722,6 +722,91 @@ interface TestConfig {
 
 ### Available Test Engines
 
+#### TestGenerator
+```typescript
+class TestGenerator extends TestEngine {
+  constructor() {
+    super('test-generator', '1.0.0', 'integration', true);
+  }
+  
+  // Provides comprehensive test case generation from multiple sources
+  // Supports user interaction recordings, specifications, and templates
+  // Includes validation, error handling, and configuration management
+  async generateFromUserInteraction(recording: UserInteractionRecording, config: TestGenerationConfig): Promise<TestGenerationResult>;
+  async generateFromSpecification(specification: string, config: TestGenerationConfig): Promise<TestGenerationResult>;
+  async generateFromTemplate(template: TestTemplate, parameters: Record<string, any>, config: TestGenerationConfig): Promise<TestGenerationResult>;
+  async validateTestCases(testCases: GeneratedTestCase[]): Promise<ValidationResult>;
+}
+```
+
+**Configuration:**
+```typescript
+{
+  engine: 'test-generator',
+  settings: {
+    maxTestCases: 10,
+    complexityLevel: 'medium',        // low | medium | high
+    includeValidation: true,
+    source: 'user_interaction'        // user_interaction | specification | template
+  }
+}
+```
+
+#### TestExporter
+```typescript
+class TestExporter extends TestEngine {
+  constructor() {
+    super('test-exporter', '1.0.0', 'unit', false);
+  }
+  
+  // Provides multi-format test export capabilities
+  // Base functionality for all export operations
+  async export(testCases: GeneratedTestCase[], config: TestExportConfig): Promise<TestExportResult>;
+  readonly supportedFormats: TestExportFormat[] = ['json'];
+}
+```
+
+#### GenericExporter
+```typescript
+class GenericExporter extends TestEngine {
+  constructor() {
+    super('generic-exporter', '1.0.0', 'unit', false);
+  }
+  
+  // Provides generic export formats with advanced features
+  // Supports JSON, YAML, CSV, Markdown formats with filtering and transformation
+  readonly supportedFormats: TestExportFormat[] = ['json', 'yaml', 'csv', 'markdown'];
+  
+  async export(testCases: GeneratedTestCase[], config: TestExportConfig): Promise<TestExportResult>;
+}
+```
+
+#### PlaywrightExporter
+```typescript
+class PlaywrightExporter extends TestEngine {
+  constructor() {
+    super('playwright-exporter', '1.0.0', 'e2e', false);
+  }
+  
+  // Generates syntactically correct Playwright test code (.spec.ts files)
+  // Supports page interactions: goto, fill, click, expect
+  readonly supportedFormats: TestExportFormat[] = ['playwright'];
+}
+```
+
+#### JestExporter
+```typescript
+class JestExporter extends TestEngine {
+  constructor() {
+    super('jest-exporter', '1.0.0', 'unit', false);
+  }
+  
+  // Generates syntactically correct Jest test code (.test.ts files)
+  // Supports describe/it structure and expect assertions
+  readonly supportedFormats: TestExportFormat[] = ['jest'];
+}
+```
+
 #### AppAnalysisEngine
 ```typescript
 class AppAnalysisEngine extends TestEngine {
