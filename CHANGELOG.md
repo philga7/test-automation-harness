@@ -1,3 +1,9 @@
+## [0.9.0-develop.2](https://github.com/philga7/test-automation-harness/compare/v0.9.0-develop.1...v0.9.0-develop.2) (2025-09-25)
+
+### Bug Fixes
+
+* **tests:** resolve health-monitor test timing issues ([#34](https://github.com/philga7/test-automation-harness/issues/34)) ([a4df451](https://github.com/philga7/test-automation-harness/commit/a4df45187470d2f84a368465c2d334388d89e211))
+
 ## [0.9.0-develop.1](https://github.com/philga7/test-automation-harness/compare/v0.8.0...v0.9.0-develop.1) (2025-09-25)
 
 ### Features
