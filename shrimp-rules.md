@@ -1094,10 +1094,39 @@ class Logger {
 - **ALWAYS** include comprehensive error handling tests for UI components
 
 ### Deployment Workflow
-- **ALWAYS** use Docker for deployment
-- **ALWAYS** validate configuration in staging
-- **ALWAYS** monitor healing success rates
-- **ALWAYS** have rollback procedures
+
+#### MVP DevOps Implementation
+- **✅ CI/CD Pipeline**: Streamlined workflow with `ci.yml` (PR validation) and `deploy.yml` (unified deployment)
+- **✅ Semantic Versioning**: Automated with semantic-release and conventional commits
+- **✅ Docker Production Ready**: Multi-stage builds with health checks and security optimization
+- **✅ Quality Gates**: Build, test, type-check, and lint validation before deployment
+
+#### Release Strategy Evolution
+- **Phase 1 (Current)**: `develop` = alpha development branch (v0.6.x-alpha.x)
+- **Phase 2 (Active)**: `develop` = pre-release staging, `main` = production (v0.8.0+)  
+- **Phase 3 (Future)**: `develop` = beta channel (v0.8.x-beta.x), `main` = production
+
+#### Infrastructure-as-Code Standards
+- **ALWAYS** use unified deployment workflows that handle multiple branch strategies
+- **ALWAYS** implement comprehensive quality gates (build, test, type-check, lint)
+- **ALWAYS** use semantic-release with Git plugin for automatic versioning and changelog
+- **ALWAYS** include artifact management with retention policies
+- **ALWAYS** validate workflow configurations with dry-run testing
+- **ALWAYS** test Docker configurations for production readiness
+
+#### DevOps Best Practices
+- **ALWAYS** use Docker for deployment with multi-stage builds
+- **ALWAYS** validate configuration in staging environment
+- **ALWAYS** monitor healing success rates and system health
+- **ALWAYS** have rollback procedures and disaster recovery plans
+- **ALWAYS** implement security scanning and dependency vulnerability checks
+- **NEVER** deploy without passing all quality gates and comprehensive test validation
+
+#### Future Task Management
+- **Shrimp Task ID**: `5272fa59-8a0a-4a1e-a243-8ccbea7e6319`
+- **Purpose**: Transition develop branch from alpha to beta channel
+- **Timing**: After first production release (v0.8.0) deployment
+- **Critical**: Maintains semantic versioning progression and proper channel management
 
 ## Prohibited Actions
 

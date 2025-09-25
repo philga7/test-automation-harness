@@ -124,14 +124,21 @@ When you run `git commit` without a message, vim will open with the template sho
 ## Development Workflow
 
 ### Branching Strategy
-- **main**: Production-ready code
-- **beta**: Pre-release features
-- **feature/***: New features
-- **fix/***: Bug fixes
-- **docs/***: Documentation updates
+
+#### Current MVP Workflow
+- **main**: Production releases (v0.8.0+)
+- **develop**: Pre-release staging branch (currently alpha, future beta)
+- **feature/***: New features (merge to develop)
+- **fix/***: Bug fixes (merge to develop)
+- **docs/***: Documentation updates (merge to develop)
+
+#### Release Strategy Evolution
+- **Phase 1**: `develop` = alpha development (v0.6.x-alpha.x)
+- **Phase 2**: `develop` = pre-release staging → `main` = production (v0.8.0+)
+- **Phase 3**: `develop` = beta channel (v0.8.x-beta.x) → `main` = production
 
 ### Pull Request Process
-1. Create a feature branch from `main`
+1. Create a feature branch from `develop`
 2. Make your changes following the coding standards
 3. Write tests for new functionality
 4. Update documentation as needed
@@ -293,11 +300,13 @@ This project uses automated semantic versioning with [semantic-release](https://
 
 ### How It Works
 1. Commits follow conventional commit format
-2. GitHub Actions automatically runs on push to `main` or `beta`
-3. semantic-release analyzes commits and determines version bump
-4. New version is published to npm (if applicable)
-5. GitHub release is created with changelog
-6. Version is updated in `package.json`
+2. **CI Workflow**: Pull requests to `develop` or `main` trigger validation (build, test, type-check, lint)
+3. **Deploy Workflow**: Push to `develop` or `main` triggers deployment pipeline
+4. semantic-release analyzes commits and determines version bump
+5. **Develop Branch**: Creates alpha/beta pre-releases (v0.7.x-alpha.x)
+6. **Main Branch**: Creates production releases (v0.8.0+)
+7. GitHub release is created with changelog and artifacts
+8. Version is updated in `package.json` and `CHANGELOG.md` automatically
 
 ### Version Bumps
 - **Major**: Breaking changes (BREAKING CHANGE in commit)
