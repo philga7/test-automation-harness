@@ -14,7 +14,7 @@
  * ```
  */
 
-import { TestConfig, TestResult, EngineConfig, EngineHealth } from './types';
+import { EngineConfig, EngineHealth } from './types';
 
 /**
  * Test generation source types

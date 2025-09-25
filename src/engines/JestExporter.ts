@@ -47,7 +47,7 @@ export class JestExporter {
     
     const files = [
       {
-        type: 'test',
+        type: 'test' as const,
         path: `${testCases[0]?.title?.toLowerCase().replace(/\s+/g, '-') || 'test'}.test.ts`,
         preview: jestCode
       }
@@ -56,7 +56,11 @@ export class JestExporter {
     return {
       sessionId: "jest_exp_session_1",
       format: config.format,
-      files: files,
+      files: files.map(file => ({
+        ...file,
+        size: file.preview.length,
+        metadata: { framework: "jest" }
+      })),
       metadata: {
         testCaseCount: testCases.length,
         outputDir: config.outputDirectory || "./tests/unit",
@@ -74,11 +78,11 @@ export class JestExporter {
     };
   }
 
-  private generateJestCode(testCases: GeneratedTestCase[], config: TestExportConfig): string {
+  private generateJestCode(testCases: GeneratedTestCase[], _config: TestExportConfig): string {
     const testCase = testCases[0]; // Use first test case for minimal implementation
     
     const testTitle = testCase?.title || 'Generated Test';
-    const testDescription = testCase?.description || 'Generated test description';
+    // const _testDescription = testCase?.description || 'Generated test description';
     
     let jestCode = `describe('${testTitle}', () => {\n`;
     

@@ -47,7 +47,7 @@ export class PlaywrightExporter {
     
     const files = [
       {
-        type: 'test',
+        type: 'test' as const,
         path: `${testCases[0]?.title?.toLowerCase().replace(/\s+/g, '-') || 'test'}.spec.ts`,
         preview: playwrightCode
       }
@@ -56,7 +56,11 @@ export class PlaywrightExporter {
     return {
       sessionId: "playwright_exp_session_1",
       format: config.format,
-      files: files,
+      files: files.map(file => ({
+        ...file,
+        size: file.preview.length,
+        metadata: { framework: "playwright" }
+      })),
       metadata: {
         testCaseCount: testCases.length,
         outputDir: config.outputDirectory || "./tests/e2e",
@@ -74,7 +78,7 @@ export class PlaywrightExporter {
     };
   }
 
-  private generatePlaywrightCode(testCases: GeneratedTestCase[], config: TestExportConfig): string {
+  private generatePlaywrightCode(testCases: GeneratedTestCase[], _config: TestExportConfig): string {
     const testCase = testCases[0]; // Use first test case for minimal implementation
     
     // Generate Playwright test code

@@ -22,6 +22,8 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **WebAppAnalyzer**: Complete web application analysis with DOM extraction and UI element identification
 - **TestScenarioGenerator**: Converts app analysis results into Playwright test scenarios with comprehensive test generation
 - **AITestGenerator**: AI-powered intelligent test scenario generation using LLM integration for natural language processing
+- **TestGenerator**: Comprehensive test case generation from user interactions, specifications, and templates
+- **TestExporter**: Multi-format test export system with framework-specific code generation (Playwright, Jest, JSON, YAML, CSV, Markdown)
 
 ## AI Agent Responsibilities
 
@@ -302,6 +304,72 @@ class AITestGenerator {
 }
 ```
 
+### Test Case Generation and Export Patterns
+```typescript
+// ALWAYS implement comprehensive test generation with multiple sources
+interface TestGenerator {
+  generateFromUserInteraction(recording: UserInteractionRecording, config: TestGenerationConfig): Promise<TestGenerationResult>;
+  generateFromSpecification(specification: string, config: TestGenerationConfig): Promise<TestGenerationResult>;
+  generateFromTemplate(template: TestTemplate, parameters: Record<string, any>, config: TestGenerationConfig): Promise<TestGenerationResult>;
+  validateTestCases(testCases: GeneratedTestCase[]): Promise<ValidationResult>;
+}
+
+// ALWAYS implement multi-format export capabilities
+interface TestExporter {
+  export(testCases: GeneratedTestCase[], config: TestExportConfig): Promise<TestExportResult>;
+  supportedFormats: TestExportFormat[];
+}
+
+// ALWAYS use filtering and transformation for advanced export features
+class GenericExporter implements TestExporter {
+  async export(testCases: GeneratedTestCase[], config: TestExportConfig): Promise<TestExportResult> {
+    // Apply filtering based on priority and tags
+    let filteredTestCases = [...testCases];
+    if (config.customParameters?.filter) {
+      const filter = config.customParameters.filter;
+      if (filter.priority) {
+        filteredTestCases = filteredTestCases.filter(tc => filter.priority.includes(tc.priority));
+      }
+      if (filter.tags) {
+        filteredTestCases = filteredTestCases.filter(tc => tc.tags?.some(tag => filter.tags.includes(tag)));
+      }
+    }
+    
+    // Generate format-specific output
+    return this.generateFormatOutput(filteredTestCases, config);
+  }
+}
+
+// ALWAYS generate syntactically correct framework-specific code
+class PlaywrightExporter implements TestExporter {
+  async export(testCases: GeneratedTestCase[], config: TestExportConfig): Promise<TestExportResult> {
+    const playwrightContent = `import { test, expect } from '@playwright/test';
+
+${testCases.map(tc => `
+test('${tc.title}', async ({ page }) => {
+  ${tc.steps?.map(step => {
+    if (step.actionType === 'navigate') {
+      return `await page.goto('${step.inputData?.url}');`;
+    } else if (step.actionType === 'type') {
+      return `await page.fill('${step.selector}', '${step.inputData?.value}');`;
+    } else if (step.actionType === 'click') {
+      return `await page.click('${step.selector}');`;
+    }
+    return `// ${step.action}`;
+  }).join('\\n  ')}
+});`).join('\\n')}
+`;
+    
+    return {
+      sessionId: 'playwright_session',
+      format: 'playwright',
+      files: [{ type: 'test', path: 'e2e-tests.spec.ts', preview: playwrightContent }],
+      statistics: { totalFiles: 1, totalTestCases: testCases.length, exportDuration: 100, totalSize: playwrightContent.length, successRate: 1.0 }
+    };
+  }
+}
+```
+
 ### UI/Dashboard Patterns
 ```typescript
 // ALWAYS use semantic HTML structure
@@ -344,14 +412,20 @@ src/
 │   ├── WebAppAnalyzer.ts         # Web app analyzer component
 │   ├── UserFlowDetector.ts       # User journey identification and flow analysis
 │   ├── TestScenarioGenerator.ts  # Converts analysis results to Playwright test scenarios
-│   └── AITestGenerator.ts        # NEW! AI-powered intelligent test generation with LLM integration
+│   └── AITestGenerator.ts        # AI-powered intelligent test generation with LLM integration
 ├── core/           # Core orchestration logic
 ├── engines/        # Test engine implementations
+│   ├── TestGenerator.ts          # Test case generation from multiple sources
+│   ├── TestExporter.ts           # Base test export functionality
+│   ├── GenericExporter.ts        # JSON, YAML, CSV, Markdown export formats
+│   ├── PlaywrightExporter.ts     # Playwright-specific test code generation
+│   └── JestExporter.ts           # Jest-specific test code generation
 ├── healing/        # Self-healing algorithms
 ├── config/         # Configuration management
 ├── api/            # REST API endpoints
 ├── observability/  # Metrics and monitoring
 ├── types/          # TypeScript type definitions
+│   └── test-generation.ts       # Test generation and export type definitions
 ├── ui/             # Web dashboard and UI components
 │   └── public/     # Static assets (HTML, CSS, JS)
 └── utils/          # Shared utilities
@@ -377,6 +451,72 @@ import { Request, Response } from 'express';
 import { TestOrchestrator } from '@/core/orchestrator';
 import { HealingEngine } from '@/healing/engine';
 ```
+
+## DevOps and CI/CD Guidelines
+
+### MVP Workflow Architecture
+The project implements a streamlined DevOps workflow using Infrastructure-as-Code principles:
+
+```
+.github/workflows/
+├── ci.yml        # PR validation for develop and main branches
+└── deploy.yml    # Unified deployment for alpha and production releases
+```
+
+### Release Strategy Evolution
+- **Phase 1 (Current)**: `develop` = alpha branch (v0.6.x-alpha.x)
+- **Phase 2 (Post-Merge)**: `develop` = pre-release staging, `main` = production (v0.8.0+)
+- **Phase 3 (Future)**: `develop` = beta channel (v0.8.x-beta.x), `main` = production
+
+### CI/CD Implementation Standards
+- **ALWAYS** validate PRs with comprehensive quality gates (build, test, type-check, lint)
+- **ALWAYS** use semantic-release for automated versioning and changelog generation
+- **ALWAYS** implement unified deployment workflows that handle multiple branches
+- **ALWAYS** include artifact management with retention policies
+- **ALWAYS** test workflow configurations with dry-run validation
+- **NEVER** deploy without passing all quality gates
+
+### Semantic Release Configuration
+```typescript
+// .releaserc.json - Production-ready configuration
+{
+  "branches": [
+    "main",                    // Production releases
+    {
+      "name": "develop",
+      "prerelease": true,
+      "channel": "alpha"       // Pre-release channel (future: beta)
+    }
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator", 
+    "@semantic-release/changelog",
+    "@semantic-release/git",   // Auto-update package.json and CHANGELOG.md
+    "@semantic-release/github"
+  ]
+}
+```
+
+### Docker Integration Standards
+- **ALWAYS** use multi-stage builds for production optimization
+- **ALWAYS** implement health checks with appropriate intervals
+- **ALWAYS** use non-root users for security
+- **ALWAYS** include development profiles for hot reload
+- **ALWAYS** optimize for production deployment with minimal attack surface
+
+### Workflow Quality Gates
+- **Build Validation**: TypeScript compilation and build artifacts
+- **Test Coverage**: All 958+ tests must pass with zero regressions
+- **Type Safety**: Strict TypeScript checking with exactOptionalPropertyTypes
+- **Code Quality**: ESLint validation and formatting checks
+- **Security**: Automated dependency scanning and vulnerability checks
+
+### Future Task Management
+- **Task ID**: `5272fa59-8a0a-4a1e-a243-8ccbea7e6319`
+- **Purpose**: Transition develop branch from alpha to beta channel
+- **Timing**: After first production release (v0.8.0)
+- **Critical**: Maintains proper semantic versioning progression
 
 ## Decision-Making Guidelines
 

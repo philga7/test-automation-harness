@@ -1,7 +1,7 @@
 {
   "name": "test-automation-harness",
-  "version": "0.6.0",
-  "description": "A comprehensive TypeScript/Node.js test automation platform with AI-powered self-healing capabilities (Alpha v0.6 - Core Architecture, Playwright Engine, Self-Healing, API, Docker, Observability Complete)",
+  "version": "0.7.0",
+  "description": "A comprehensive TypeScript/Node.js test automation platform with AI-powered self-healing capabilities - Pre-Production (Release Config Ready)",
   "main": "dist/index.js",
   "bin": {
     "test-harness": "./dist/index.js"
