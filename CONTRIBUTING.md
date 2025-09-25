@@ -127,15 +127,15 @@ When you run `git commit` without a message, vim will open with the template sho
 
 #### Current MVP Workflow
 - **main**: Production releases (v0.8.0+)
-- **develop**: Pre-release staging branch (currently alpha, future beta)
+- **develop**: Pre-release staging branch (currently beta channel)
 - **feature/***: New features (merge to develop)
 - **fix/***: Bug fixes (merge to develop)
 - **docs/***: Documentation updates (merge to develop)
 
 #### Release Strategy Evolution
-- **Phase 1**: `develop` = alpha development (v0.6.x-alpha.x)
-- **Phase 2**: `develop` = pre-release staging → `main` = production (v0.8.0+)
-- **Phase 3**: `develop` = beta channel (v0.8.x-beta.x) → `main` = production
+- **Phase 1 (Completed)**: `develop` = alpha development (v0.6.x-alpha.x)
+- **Phase 2 (Completed)**: `develop` = pre-release staging → `main` = production (v0.8.0+)
+- **Phase 3 (Current)**: `develop` = beta channel (v0.8.x-beta.x) → `main` = production
 
 ### Pull Request Process
 1. Create a feature branch from `develop`
@@ -303,7 +303,7 @@ This project uses automated semantic versioning with [semantic-release](https://
 2. **CI Workflow**: Pull requests to `develop` or `main` trigger validation (build, test, type-check, lint)
 3. **Deploy Workflow**: Push to `develop` or `main` triggers deployment pipeline
 4. semantic-release analyzes commits and determines version bump
-5. **Develop Branch**: Creates alpha/beta pre-releases (v0.7.x-alpha.x)
+5. **Develop Branch**: Creates beta pre-releases (v0.8.x-beta.x)
 6. **Main Branch**: Creates production releases (v0.8.0+)
 7. GitHub release is created with changelog and artifacts
 8. Version is updated in `package.json` and `CHANGELOG.md` automatically
