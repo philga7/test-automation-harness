@@ -1,0 +1,439 @@
+/* Self-Healing Test Automation Harness - System Overview Styles */
+
+/* Overview-specific variables */
+:root {
+  --overview-healthy: #4ade80;
+  --overview-degraded: #f59e0b;
+  --overview-unhealthy: #ef4444;
+  --overview-unknown: #94a3b8;
+  --overview-card-padding: 1.5rem;
+  --overview-metric-gap: 0.75rem;
+}
+
+/* System Overview Section Enhancements */
+#overview {
+  position: relative;
+}
+
+/* Enhanced Status Grid for Overview */
+#overview .status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Enhanced Status Cards */
+#overview .status-card {
+  position: relative;
+  overflow: hidden;
+}
+
+#overview .status-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--overview-unknown);
+  transition: background-color 0.3s ease;
+}
+
+#overview .status-card.healthy::before {
+  background: var(--overview-healthy);
+}
+
+#overview .status-card.degraded::before {
+  background: var(--overview-degraded);
+}
+
+#overview .status-card.unhealthy::before {
+  background: var(--overview-unhealthy);
+}
+
+/* Enhanced Status Indicators */
+.status-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--overview-unknown);
+  animation: pulse-gentle 2s infinite;
+  flex-shrink: 0;
+  position: relative;
+  box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4);
+}
+
+.status-indicator.healthy {
+  background: var(--overview-healthy);
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4);
+}
+
+.status-indicator.degraded {
+  background: var(--overview-degraded);
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+}
+
+.status-indicator.unhealthy {
+  background: var(--overview-unhealthy);
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  animation: pulse-alert 1.5s infinite;
+}
+
+.status-indicator.unknown {
+  background: var(--overview-unknown);
+  animation: pulse-slow 3s infinite;
+}
+
+/* Pulse Animations */
+@keyframes pulse-gentle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes pulse-alert {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Enhanced Metrics Display */
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--overview-metric-gap) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+.metric:last-child {
+  border-bottom: none;
+}
+
+.metric:hover {
+  background: rgba(255, 255, 255, 0.02);
+  margin: 0 -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 8px;
+}
+
+.metric-label {
+  font-weight: 500;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.metric-value {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.metric-value.error-state {
+  color: var(--overview-unhealthy);
+}
+
+/* Engine List Styling */
+.engines-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 1rem;
+}
+
+.engine-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border-left: 3px solid var(--overview-unknown);
+  transition: all 0.2s ease;
+}
+
+.engine-item:hover {
+  background: rgba(0, 0, 0, 0.15);
+  transform: translateX(4px);
+}
+
+.engine-item.healthy {
+  border-left-color: var(--overview-healthy);
+}
+
+.engine-item.degraded {
+  border-left-color: var(--overview-degraded);
+}
+
+.engine-item.unhealthy {
+  border-left-color: var(--overview-unhealthy);
+}
+
+.engine-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.engine-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--overview-unknown);
+  flex-shrink: 0;
+}
+
+.engine-indicator.healthy {
+  background: var(--overview-healthy);
+}
+
+.engine-indicator.degraded {
+  background: var(--overview-degraded);
+}
+
+.engine-indicator.unhealthy {
+  background: var(--overview-unhealthy);
+}
+
+.engine-name {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.engine-type {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.engine-status {
+  text-align: right;
+}
+
+.engine-health {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* System Metrics Cards */
+.system-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.metric-card {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.metric-card:hover {
+  background: rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.metric-card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 0.25rem;
+}
+
+.metric-card-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Refresh Button */
+.refresh-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--background-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-color);
+}
+
+.refresh-button:hover {
+  background: var(--background-glass-hover);
+  transform: rotate(90deg);
+}
+
+.refresh-button.loading {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Loading States */
+.loading {
+  position: relative;
+  opacity: 0.6;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Status Summary Bar */
+.status-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.status-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-summary-count {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.status-summary-label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+  #overview .status-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .engine-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .engine-status {
+    align-self: flex-end;
+  }
+  
+  .system-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .status-summary {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .system-metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .refresh-button {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin: 1rem auto 0;
+    display: block;
+  }
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .status-indicator,
+  .refresh-button,
+  .engine-item,
+  .metric-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .engine-item,
+  .metric-card,
+  .status-summary {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .status-indicator {
+    border: 2px solid rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Focus Styles */
+.refresh-button:focus,
+.engine-item:focus {
+  outline: 2px solid var(--overview-healthy);
+  outline-offset: 2px;
+}

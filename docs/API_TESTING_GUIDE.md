@@ -50,6 +50,21 @@ This guide provides comprehensive instructions for testing and integrating with 
      }'
    ```
 
+4. **Start Your First App Analysis**
+   ```bash
+   curl -X POST http://localhost:3000/api/v1/analysis/scan \
+     -H "Content-Type: application/json" \
+     -d '{
+       "url": "https://example.com",
+       "analysisType": "comprehensive",
+       "options": {
+         "includeScreenshots": true,
+         "includeAccessibility": true,
+         "timeout": 30000
+       }
+     }'
+   ```
+
 ## Testing Environment Setup
 
 ### Local Development
@@ -927,5 +942,179 @@ async function measureAPIPerformance() {
   }
 }
 ```
+
+## Frontend Integration Testing
+
+### JavaScript Client Testing
+
+The Self-Healing Test Automation Harness provides a comprehensive JavaScript client library (`ApiService`) for easy frontend integration. Here's how to test your frontend integration:
+
+#### Unit Testing with Jest
+
+```javascript
+// test/api-service.test.js
+describe('ApiService Integration', () => {
+  let apiService;
+  let mockFetch;
+
+  beforeEach(() => {
+    // Mock fetch
+    mockFetch = jest.fn();
+    global.fetch = mockFetch;
+    
+    apiService = new ApiService({
+      baseUrl: 'http://localhost:3000',
+      timeout: 1000,
+      retryAttempts: 1
+    });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  describe('executeTest', () => {
+    it('should execute test successfully', async () => {
+      const mockResponse = {
+        ok: true,
+        status: 202,
+        json: () => Promise.resolve({
+          success: true,
+          data: { testId: 'test_123', status: 'accepted' }
+        })
+      };
+
+      mockFetch.mockResolvedValueOnce(mockResponse);
+
+      const testConfig = {
+        name: 'Test',
+        engine: 'playwright',
+        config: { url: 'https://example.com' }
+      };
+
+      const result = await apiService.executeTest(testConfig);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://localhost:3000/api/v1/tests/execute',
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testConfig)
+        })
+      );
+
+      expect(result.data.testId).toBe('test_123');
+    });
+  });
+});
+```
+
+#### Dashboard Integration Testing
+
+```javascript
+// test/dashboard-integration.test.js
+describe('Dashboard Integration', () => {
+  let dashboard;
+  let mockApiService;
+
+  beforeEach(() => {
+    // Mock ApiService
+    mockApiService = {
+      getSystemStatus: jest.fn(),
+      getHealingStatistics: jest.fn(),
+      executeTest: jest.fn()
+    };
+
+    // Mock global ApiService
+    global.ApiService = jest.fn().mockImplementation(() => mockApiService);
+
+    // Create dashboard instance
+    dashboard = new TestAutomationDashboard();
+  });
+
+  it('should load system status successfully', async () => {
+    const mockStatus = {
+      status: 'healthy',
+      version: '1.0.0',
+      uptime: 3600
+    };
+
+    mockApiService.getSystemStatus.mockResolvedValue(mockStatus);
+
+    await dashboard.loadSystemStatus();
+
+    expect(mockApiService.getSystemStatus).toHaveBeenCalled();
+    // Verify UI updates
+    expect(dashboard.updateElement).toHaveBeenCalledWith('system-status', 'healthy');
+  });
+});
+```
+
+#### E2E Testing with Playwright
+
+```javascript
+// test/e2e/dashboard.spec.js
+import { test, expect } from '@playwright/test';
+
+test.describe('Dashboard E2E Tests', () => {
+  test('should load dashboard and display system status', async ({ page }) => {
+    // Navigate to dashboard
+    await page.goto('http://localhost:3000/static/');
+    
+    // Wait for system status to load
+    await expect(page.locator('#system-status')).toContainText('healthy');
+    
+    // Verify healing statistics are displayed
+    await expect(page.locator('#healing-rate')).toContainText('%');
+    
+    // Test test execution
+    await page.click('button[data-test-type="e2e"]');
+    await expect(page.locator('.notification-success')).toBeVisible();
+  });
+
+  test('should handle API errors gracefully', async ({ page }) => {
+    // Mock API failure
+    await page.route('**/health', route => route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: 'Server error' })
+    }));
+
+    await page.goto('http://localhost:3000/static/');
+    
+    // Verify error handling
+    await expect(page.locator('#system-status')).toContainText('Error');
+    await expect(page.locator('.notification-error')).toBeVisible();
+  });
+});
+```
+
+### Testing Best Practices
+
+1. **Use Actual Components**: Test against real components when possible, not mocks
+2. **Test Error Scenarios**: Always test both success and failure cases
+3. **Mock External Dependencies**: Mock fetch/HTTP calls but test real business logic
+4. **Verify UI Updates**: Check that API responses properly update the UI
+5. **Test User Interactions**: Ensure buttons and forms work with the API service
+6. **Prevent Global Declaration Conflicts**: Use unique variable names like `apiServiceMockFetch` instead of `mockFetch`
+7. **Check Existing Declarations**: Search for existing global variables before creating new test files
+8. **Use Import Aliases**: Import with unique aliases like `{ ApiService: ApiServiceClass }` to prevent conflicts
+
+### Frontend Testing Checklist
+
+- [ ] ApiService initialization and configuration
+- [ ] All API endpoint methods (getSystemStatus, executeTest, etc.)
+- [ ] Error handling and user notifications
+- [ ] Dashboard data loading and display
+- [ ] Test execution workflow
+- [ ] Test results visualization with filtering and pagination
+- [ ] Artifact viewer for screenshots, videos, and traces
+- [ ] Healing attempts display with confidence scoring
+- [ ] Modal functionality for detailed views
+- [ ] Real-time updates and auto-refresh
+- [ ] Mobile responsiveness with API integration
+- [ ] Network error scenarios
+- [ ] Loading states and user feedback
+- [ ] Global variable declaration conflict prevention
 
 This comprehensive testing guide provides everything needed to effectively test and integrate with the Self-Healing Test Automation Harness API. Follow these practices to ensure reliable and robust API integration.

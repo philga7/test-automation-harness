@@ -73,6 +73,17 @@ engines:
     policy: "Default Policy"
     target: "http://localhost:3000"
 
+  app-analysis:
+    enabled: true
+    timeout: 30000
+    retries: 2
+    analysisDepth: "comprehensive"
+    outputFormat: "json"
+    includeScreenshots: true
+    options:
+      maxElements: 1000
+      includeHidden: false
+
 healing:
   enabled: true
   confidenceThreshold: 0.6
@@ -173,6 +184,9 @@ environments:
         playwright:
           headless: false
           devtools: true
+        app-analysis:
+          analysisDepth: "detailed"
+          includeScreenshots: true
 
   staging:
     name: "staging"
@@ -191,6 +205,9 @@ environments:
         k6:
           vus: 20
           duration: "60s"
+        app-analysis:
+          analysisDepth: "comprehensive"
+          timeout: 45000
 
   production:
     name: "production"
@@ -211,6 +228,10 @@ environments:
         k6:
           vus: 50
           duration: "120s"
+        app-analysis:
+          analysisDepth: "basic"
+          includeScreenshots: false
+          timeout: 60000
       healing:
         confidenceThreshold: 0.8
         maxRetries: 2

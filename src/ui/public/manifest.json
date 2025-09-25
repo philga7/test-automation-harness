@@ -1,0 +1,64 @@
+{
+  "name": "Self-Healing Test Automation Harness",
+  "short_name": "Test Harness",
+  "description": "AI-powered test automation with self-healing capabilities",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "developer", "testing"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiM2NjdlZWEiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjMiLz4KPHN2ZyB4PSIxMiIgeT0iMSIgd2lkdGg9IjE1IiBoZWlnaHQ9IjE1Ij4KPHN2ZyB4PSIxNi4yNCIgeT0iNy43NiIgd2lkdGg9IjE1IiBoZWlnaHQ9IjE1Ij4KPHN2ZyB4PSIyMSIgeT0iMTIiIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSI+CjxzdmcgeD0iMTYuMjQiIHk9IjE2LjI0IiB3aWR0aD0iMTUiIGhlaWdodD0iMTUiPgo8c3ZnIHg9IjEyIiB5PSIyMSIgd2lkdGg9IjE1IiBoZWlnaHQ9IjE1Ij4KPHN2ZyB4PSI3Ljc2IiB5PSIxNi4yNCIgd2lkdGg9IjE1IiBoZWlnaHQ9IjE1Ij4KPHN2ZyB4PSIzIiB5PSIxMiIgd2lkdGg9IjE1IiBoZWlnaHQ9IjE1Ij4KPHN2ZyB4PSI3Ljc2IiB5PSI3Ljc2IiB3aWR0aD0iMTUiIGhlaWdodD0iMTUiPgo8L3N2Zz4KPC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNjQiIGZpbGw9IiM2NjdlZWEiLz4KPHN2ZyB4PSIxMjgiIHk9IjEyOCIgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIzIi8+CjxwYXRoIGQ9Im0xMiAxbDEuMDkgMy4yNkwyMCA0bC0yLjc0IDEuMDlMMTggOWwtMy4yNi0xLjA5TDEyIDVsLTEuMDkgMy4yNkw0IDlsMi43NCAxLjA5TDYgMTRsMy4yNi0xLjA5TDEyIDEzeiIvPgo8L3N2Zz4KPC9zdmc+",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSJ1cmwoI2dyYWQxKSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkMSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM2NjdlZWEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjNzY0YmEyIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "Dashboard Overview"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzUwIiBoZWlnaHQ9IjEzMzQiIHZpZXdCb3g9IjAgMCA3NTAgMTMzNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijc1MCIgaGVpZ2h0PSIxMzM0IiBmaWxsPSJ1cmwoI2dyYWQyKSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkMiIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM2NjdlZWEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjNzY0YmEyIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+",
+      "sizes": "750x1334",
+      "type": "image/svg+xml", 
+      "form_factor": "narrow",
+      "label": "Mobile Dashboard"
+    }
+  ],
+  "features": [
+    "Cross Platform",
+    "Fast",
+    "Simple"
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+test",
+      "url": "/?test=%s"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

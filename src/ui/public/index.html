@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Self-Healing Test Automation Harness - Unified Test Orchestration with AI-Powered Self-Healing">
+    <meta name="keywords" content="test automation, self-healing, AI, testing, orchestration">
+    <meta name="author" content="Self-Healing Test Automation Harness">
+    <title>Self-Healing Test Automation Harness - Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/overview.css">
+    <link rel="stylesheet" href="/static/css/test-execution.css">
+    <link rel="stylesheet" href="/static/css/test-results.css">
+    <link rel="stylesheet" href="/static/css/healing-stats.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Test Harness">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiM2NjdlZWEiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjMiLz4KPC9zdmc+Cjwvc3ZnPg==">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>🧪 Test Automation Harness</h1>
+            </div>
+            <ul class="nav-menu" id="nav-menu" role="menubar">
+                <li role="none"><a href="#overview" role="menuitem" class="nav-link active">Overview</a></li>
+                <li role="none"><a href="#execution" role="menuitem" class="nav-link">Execution</a></li>
+                <li role="none"><a href="#results" role="menuitem" class="nav-link">Results</a></li>
+                <li role="none"><a href="#healing" role="menuitem" class="nav-link">Healing</a></li>
+                <li role="none"><a href="#settings" role="menuitem" class="nav-link">Settings</a></li>
+            </ul>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- System Overview Section -->
+            <section id="overview" class="dashboard-section active" aria-labelledby="overview-heading">
+                <header class="section-header">
+                    <h2 id="overview-heading">System Overview</h2>
+                    <p class="section-description">Real-time system status and health monitoring</p>
+                    <button id="refresh-overview" class="refresh-button" aria-label="Refresh dashboard data" title="Refresh Data">
+                        🔄
+                    </button>
+                </header>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="card-header">
+                            <h3>
+                                <span class="status-indicator" aria-label="System status indicator"></span>
+                                System Status
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-label">Status:</span>
+                                <span class="metric-value" id="system-status">Loading...</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Version:</span>
+                                <span class="metric-value" id="system-version">Loading...</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Uptime:</span>
+                                <span class="metric-value" id="system-uptime">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="card-header">
+                            <h3>
+                                <span class="status-indicator" aria-label="Test engines status indicator"></span>
+                                Test Engines
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-label">Available Engines:</span>
+                                <span class="metric-value" id="engines-count">Loading...</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Healthy Engines:</span>
+                                <span class="metric-value" id="healthy-engines">Loading...</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Overall Status:</span>
+                                <span class="metric-value" id="engines-status">Loading...</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Active Tests:</span>
+                                <span class="metric-value" id="active-tests">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Healing Success Rate:</span>
+                                <span class="metric-value" id="healing-rate">Loading...</span>
+                            </div>
+                            <div id="engines-list" class="engines-list" aria-label="Detailed engine list">
+                                <!-- Engine list will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="card-header">
+                            <h3>
+                                <span class="status-indicator" aria-label="System metrics indicator"></span>
+                                System Metrics
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-label">Tests Executed:</span>
+                                <span class="metric-value" id="tests-executed">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Healing Actions:</span>
+                                <span class="metric-value" id="healing-actions">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Last Update:</span>
+                                <span class="metric-value" id="last-update">Loading...</span>
+                            </div>
+                            <div class="system-metrics">
+                                <div class="metric-card">
+                                    <div class="metric-card-value" id="cpu-usage">--</div>
+                                    <div class="metric-card-label">CPU Usage</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-card-value" id="memory-usage">--</div>
+                                    <div class="metric-card-label">Memory</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-card-value" id="disk-usage">--</div>
+                                    <div class="metric-card-label">Disk Usage</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Test Execution Section -->
+            <section id="execution" class="dashboard-section" aria-labelledby="execution-heading">
+                <header class="section-header">
+                    <h2 id="execution-heading">Test Execution</h2>
+                    <p class="section-description">Configure and execute test suites across multiple engines</p>
+                </header>
+                
+                <div class="execution-grid">
+                    <div class="execution-card">
+                        <h3>Quick Actions</h3>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="run-all-tests">Run All Tests</button>
+                            <button class="btn btn-secondary" id="run-unit-tests">Unit Tests</button>
+                            <button class="btn btn-secondary" id="run-e2e-tests">E2E Tests</button>
+                            <button class="btn btn-secondary" id="run-performance-tests">Performance Tests</button>
+                        </div>
+                    </div>
+                    
+                    <div class="execution-card">
+                        <h3>Test Configuration</h3>
+                        <div class="config-placeholder">
+                            <p>Test configuration options will be available here</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results" class="dashboard-section" aria-labelledby="results-heading">
+                <header class="section-header">
+                    <h2 id="results-heading">Test Results</h2>
+                    <p class="section-description">View detailed test execution results and analytics</p>
+                </header>
+                
+                <!-- Results Controls -->
+                <div class="results-controls">
+                    <div class="results-header">
+                        <div>
+                            <h3 class="results-title">Test Results</h3>
+                            <p class="results-count" id="results-count">Loading...</p>
+                        </div>
+                        <div class="results-actions">
+                            <button id="refresh-results" class="refresh-button" aria-label="Refresh results" title="Refresh Results">
+                                🔄
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <form id="results-filter-form" class="results-filters">
+                        <div class="filter-group">
+                            <label for="results-search" class="filter-label">Search</label>
+                            <input type="text" id="results-search" class="filter-input" placeholder="Search test names..." aria-describedby="search-help">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="status-filter" class="filter-label">Status</label>
+                            <select id="status-filter" class="filter-select">
+                                <option value="">All Statuses</option>
+                                <option value="passed">Passed</option>
+                                <option value="failed">Failed</option>
+                                <option value="skipped">Skipped</option>
+                                <option value="running">Running</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="engine-filter" class="filter-label">Engine</label>
+                            <select id="engine-filter" class="filter-select">
+                                <option value="">All Engines</option>
+                                <option value="playwright">Playwright</option>
+                                <option value="jest">Jest</option>
+                                <option value="k6">k6</option>
+                                <option value="owasp-zap">OWASP ZAP</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button type="button" id="clear-filters" class="btn btn-secondary">Clear</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Date Range Filters -->
+                    <div class="results-filters">
+                        <div class="filter-group">
+                            <label for="start-date-filter" class="filter-label">Start Date</label>
+                            <input type="date" id="start-date-filter" class="filter-input">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="end-date-filter" class="filter-label">End Date</label>
+                            <input type="date" id="end-date-filter" class="filter-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results List -->
+                <div id="test-results-list" class="test-results-list">
+                    <!-- Results will be populated by JavaScript -->
+                </div>
+                
+                <!-- Pagination -->
+                <div id="results-pagination" class="results-pagination">
+                    <!-- Pagination will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Healing Section -->
+            <section id="healing" class="dashboard-section" aria-labelledby="healing-heading">
+                <header class="section-header">
+                    <h2 id="healing-heading">Self-Healing Statistics</h2>
+                    <p class="section-description">Monitor AI-powered healing actions and success rates</p>
+                </header>
+                
+                <div class="healing-grid">
+                    <div class="healing-card">
+                        <h3>Healing Actions</h3>
+                        <div class="healing-stats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="total-healing-actions">0</span>
+                                <span class="stat-label">Total Actions</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="successful-healing">0</span>
+                                <span class="stat-label">Successful</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="failed-healing">0</span>
+                                <span class="stat-label">Failed</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="healing-card">
+                        <h3>Success Rate Chart</h3>
+                        <div class="chart-container">
+                            <canvas id="healing-success-rate-chart" aria-label="Healing success rate chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="healing-card">
+                        <h3>Performance Metrics</h3>
+                        <div class="performance-indicators">
+                            <div class="indicator">
+                                <span class="indicator-icon">🎯</span>
+                                <div class="indicator-value" id="healing-success-rate">0%</div>
+                                <div class="indicator-label">Success Rate</div>
+                            </div>
+                            <div class="indicator">
+                                <span class="indicator-icon">⚡</span>
+                                <div class="indicator-value" id="avg-healing-duration">0ms</div>
+                                <div class="indicator-label">Avg Duration</div>
+                            </div>
+                            <div class="indicator">
+                                <span class="indicator-icon">🔍</span>
+                                <div class="indicator-value" id="avg-healing-confidence">0%</div>
+                                <div class="indicator-label">Avg Confidence</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="healing-card">
+                        <h3>Strategy Breakdown</h3>
+                        <div class="chart-container">
+                            <canvas id="healing-strategy-chart" aria-label="Healing strategy breakdown chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="dashboard-section" aria-labelledby="settings-heading">
+                <header class="section-header">
+                    <h2 id="settings-heading">Settings</h2>
+                    <p class="section-description">Configure system settings and preferences</p>
+                </header>
+                
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>General Settings</h3>
+                        <div class="settings-placeholder">
+                            <p>General configuration options will be available here</p>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <h3>Engine Configuration</h3>
+                        <div class="engine-settings-placeholder">
+                            <p>Test engine configuration will be shown here</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <p>🚀 Self-Healing Test Automation Harness v1.0.0 | Built with ❤️ for reliable testing</p>
+            <div class="footer-links">
+                <a href="/api/docs" aria-label="API Documentation">API Docs</a>
+                <a href="/health" aria-label="System Health">Health Check</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="/static/js/api-service.js"></script>
+    <script src="/static/js/mobile-navigation.js"></script>
+    <script src="/static/js/touch-optimizer.js"></script>
+    <script src="/static/js/responsive-layout.js"></script>
+    <script src="/static/js/pwa-manager.js"></script>
+    <script src="/static/js/mobile-performance.js"></script>
+    <script src="/static/js/dashboard-overview.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/test-execution.js"></script>
+    <script src="/static/js/test-results.js"></script>
+    <script src="/static/js/healing-stats.js"></script>
+    
+    <!-- Initialize Mobile Features -->
+    <script>
+      // Initialize mobile responsive features when DOM is loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize mobile navigation
+        if (window.MobileNavigation) {
+          window.mobileNav = new MobileNavigation(document);
+        }
+        
+        // Initialize touch optimizer
+        if (window.TouchOptimizer) {
+          window.touchOptimizer = new TouchOptimizer(document);
+        }
+        
+        // Initialize responsive layout manager
+        if (window.ResponsiveLayoutManager) {
+          window.layoutManager = new ResponsiveLayoutManager(window);
+        }
+        
+        // Initialize PWA manager
+        if (window.PWAManager) {
+          window.pwaManager = new PWAManager(window);
+        }
+        
+        // Initialize mobile performance optimizer
+        if (window.MobilePerformanceOptimizer) {
+          window.performanceOptimizer = new MobilePerformanceOptimizer(document);
+        }
+      });
+    </script>
+</body>
+</html>

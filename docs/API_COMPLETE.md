@@ -178,13 +178,15 @@ Get API status information.
     "testOrchestration": "available",
     "selfHealing": "available",
     "unifiedReporting": "available",
-    "pluginArchitecture": "available"
+    "pluginArchitecture": "available",
+    "appAnalysis": "available"
   },
   "endpoints": {
     "tests": "/api/v1/tests",
     "results": "/api/v1/results",
     "healing": "/api/v1/healing",
     "engines": "/api/v1/engines",
+    "analysis": "/api/v1/analysis",
     "health": "/health",
     "docs": "/api/docs"
   }
@@ -735,6 +737,220 @@ Get test engine health status.
 }
 ```
 
+### App Analysis
+
+#### POST /api/v1/analysis/scan
+Start a new app analysis scan.
+
+**Request Body:**
+```json
+{
+  "url": "https://example.com",
+  "analysisType": "comprehensive",
+  "options": {
+    "includeScreenshots": true,
+    "includeAccessibility": true,
+    "includePerformance": true,
+    "includeSecurity": true,
+    "includeCodeGeneration": true,
+    "timeout": 30000
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Analysis scan started successfully",
+  "data": {
+    "analysisId": "analysis_https_example_com_1641234567890",
+    "status": "running",
+    "url": "https://example.com",
+    "analysisType": "comprehensive"
+  },
+  "statusCode": 202
+}
+```
+
+#### GET /api/v1/analysis/:id/status
+Get analysis scan status.
+
+**Path Parameters:**
+- `id` (string, required): Analysis ID
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "analysisId": "analysis_https_example_com_1641234567890",
+    "status": "running",
+    "progress": 45,
+    "currentStep": "analyzing_ui_elements",
+    "startTime": "2025-01-06T15:30:00.000Z",
+    "endTime": null,
+    "duration": 15000,
+    "errors": 0,
+    "artifactsCount": 2
+  }
+}
+```
+
+#### GET /api/v1/analysis/:id/results
+Get complete analysis results.
+
+**Path Parameters:**
+- `id` (string, required): Analysis ID
+
+**Query Parameters:**
+- `includeArtifacts` (boolean): Include analysis artifacts (default: false)
+- `includeMetrics` (boolean): Include performance metrics (default: false)
+- `includeErrors` (boolean): Include error details (default: false)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "analysisId": "analysis_https_example_com_1641234567890",
+    "status": "passed",
+    "results": {
+      "url": "https://example.com",
+      "analysisType": "comprehensive",
+      "duration": 30000,
+      "elements": {
+        "total": 150,
+        "forms": 5,
+        "buttons": 12,
+        "links": 25,
+        "inputs": 8
+      },
+      "navigation": {
+        "menus": 3,
+        "breadcrumbs": 1,
+        "pagination": 2
+      },
+      "accessibility": {
+        "score": 85,
+        "issues": 3,
+        "warnings": 7
+      },
+      "performance": {
+        "loadTime": 2.5,
+        "domContentLoaded": 1.8,
+        "firstPaint": 1.2
+      }
+    },
+    "artifacts": [
+      {
+        "type": "screenshot",
+        "path": "/artifacts/screenshots/analysis_1641234567890.png",
+        "size": 245760
+      },
+      {
+        "type": "report",
+        "path": "/artifacts/reports/analysis_1641234567890.json",
+        "size": 15360
+      }
+    ]
+  }
+}
+```
+
+#### POST /api/v1/analysis/:id/generate-tests
+Generate test scenarios from analysis results.
+
+**Path Parameters:**
+- `id` (string, required): Analysis ID
+
+**Request Body:**
+```json
+{
+  "testTypes": ["e2e", "accessibility"],
+  "options": {
+    "framework": "playwright",
+    "includeDataDriven": true,
+    "includeNegativeTests": true,
+    "maxScenarios": 10,
+    "priority": "high"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Test scenarios generated successfully",
+  "data": {
+    "generationId": "generation_analysis_1641234567890_1641234570000",
+    "status": "completed",
+    "count": 8,
+    "scenarios": [
+      {
+        "id": "scenario_analysis_1641234567890_0",
+        "name": "Generated E2E Test Scenario 1 for https://example.com",
+        "type": "e2e",
+        "description": "AI-generated scenario based on analysis of https://example.com",
+        "steps": [
+          { "action": "navigate", "target": "https://example.com" },
+          { "action": "click", "target": "button.submit" },
+          { "action": "assertTitle", "expected": "Example Domain" }
+        ],
+        "framework": "playwright",
+        "priority": "high"
+      }
+    ]
+  },
+  "statusCode": 201
+}
+```
+
+#### GET /api/v1/analysis/generated-tests
+Get list of generated test scenarios.
+
+**Query Parameters:**
+- `analysisId` (string): Filter by analysis ID
+- `testType` (string): Filter by test type (e2e, accessibility, performance, security)
+- `page` (number): Page number (default: 1)
+- `limit` (number): Items per page (default: 10)
+- `sort` (string): Sort order (asc/desc, default: desc)
+- `sortBy` (string): Sort field (default: createdAt)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "generation_analysis_1641234567890_1641234570000",
+        "analysisId": "analysis_https_example_com_1641234567890",
+        "status": "completed",
+        "startTime": "2025-01-06T15:30:30.000Z",
+        "endTime": "2025-01-06T15:30:35.000Z",
+        "testTypes": ["e2e", "accessibility"],
+        "options": {
+          "framework": "playwright",
+          "maxScenarios": 10,
+          "priority": "high"
+        },
+        "count": 8
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "totalPages": 1,
+      "hasNext": false,
+      "hasPrev": false
+    }
+  }
+}
+```
+
 ## Data Models
 
 ### TestConfig
@@ -851,7 +1067,155 @@ curl "http://localhost:3000/api/v1/healing/statistics?startDate=2025-01-01&endDa
 curl "http://localhost:3000/api/v1/engines/playwright-1.40.0/health"
 ```
 
-### JavaScript Example
+### JavaScript Example (Using ApiService)
+
+The Self-Healing Test Automation Harness provides a comprehensive JavaScript client library for easy integration:
+
+```javascript
+// Initialize the API service
+const apiService = new ApiService({
+  baseUrl: 'http://localhost:3000',
+  timeout: 30000,
+  retryAttempts: 3,
+  enableLogging: true
+});
+
+// Execute a test
+try {
+  const result = await apiService.executeTest({
+    name: 'Login Test',
+    description: 'Test user login functionality',
+    engine: 'playwright',
+    config: {
+      url: 'https://example.com',
+      browser: 'chromium',
+      headless: true,
+      timeout: 30000
+    },
+    options: {
+      timeout: 30000,
+      retries: 2,
+      parallel: false,
+      healing: true
+    }
+  });
+  
+  console.log('Test started:', result.data.testId);
+  
+  // Monitor test status
+  const status = await apiService.getTestStatus(result.data.testId);
+  console.log('Test status:', status.data.status);
+  
+  // Get final results
+  const finalResult = await apiService.getTestResult(result.data.testId);
+  console.log('Test completed:', finalResult.data.status);
+  
+} catch (error) {
+  console.error('Test execution failed:', error.message);
+}
+```
+
+### Advanced JavaScript Examples
+
+#### Dashboard Integration
+```javascript
+class TestDashboard {
+  constructor() {
+    this.apiService = new ApiService({
+      baseUrl: '',
+      timeout: 30000,
+      retryAttempts: 3,
+      enableLogging: true
+    });
+  }
+  
+  async loadSystemStatus() {
+    try {
+      const data = await this.apiService.getSystemStatus();
+      this.updateElement('system-status', data.status);
+      this.updateElement('system-version', data.version);
+    } catch (error) {
+      this.showNotification('Failed to load system status', 'error');
+    }
+  }
+  
+  async loadHealingStats() {
+    try {
+      const data = await this.apiService.getHealingStatistics();
+      this.updateElement('healing-rate', `${(data.successRate * 100).toFixed(1)}%`);
+      this.updateElement('total-healing-actions', data.totalAttempts);
+    } catch (error) {
+      this.showNotification('Failed to load healing statistics', 'error');
+    }
+  }
+  
+  async executeTests(testType) {
+    try {
+      const testConfig = this.createTestConfig(testType);
+      const result = await this.apiService.executeTest(testConfig);
+      this.showNotification(`Tests executed successfully! Test ID: ${result.data.testId}`, 'success');
+    } catch (error) {
+      this.showNotification(`Test execution failed: ${error.message}`, 'error');
+    }
+  }
+}
+```
+
+#### Batch Operations
+```javascript
+// Execute multiple tests in batch
+const batchTests = [
+  {
+    name: 'Login Test',
+    engine: 'playwright',
+    config: { url: 'https://example.com/login' }
+  },
+  {
+    name: 'Registration Test',
+    engine: 'playwright',
+    config: { url: 'https://example.com/register' }
+  }
+];
+
+const batchResult = await apiService.executeBatchTests(batchTests, {
+  parallel: true,
+  stopOnFailure: false,
+  timeout: 60000
+});
+
+console.log('Batch execution started:', batchResult.data.batchId);
+```
+
+#### Error Handling
+```javascript
+// Comprehensive error handling
+try {
+  const result = await apiService.executeTest(testConfig);
+} catch (error) {
+  if (error instanceof ApiError) {
+    switch (error.statusCode) {
+      case 400:
+        console.error('Validation error:', error.details);
+        break;
+      case 404:
+        console.error('Resource not found:', error.message);
+        break;
+      case 429:
+        console.error('Rate limit exceeded:', error.message);
+        break;
+      case 500:
+        console.error('Server error:', error.message);
+        break;
+      default:
+        console.error('Unknown error:', error.message);
+    }
+  } else {
+    console.error('Network or other error:', error.message);
+  }
+}
+```
+
+### Raw JavaScript Example (Without ApiService)
 ```javascript
 const response = await fetch('http://localhost:3000/api/v1/tests/execute', {
   method: 'POST',

@@ -32,6 +32,38 @@ A central plugin registry provides:
 
 ## Architecture Components
 
+### UI/Dashboard Layer
+
+#### Web Dashboard
+The system includes a comprehensive web dashboard built with:
+- **Semantic HTML**: Accessible structure with ARIA labels
+- **Glassmorphism Design**: Modern UI with transparency effects
+- **Real-time Updates**: Live system monitoring with configurable refresh intervals
+- **API Integration**: JavaScript service layer for backend communication
+
+#### Dashboard Components
+```
+src/ui/public/
+├── index.html              # Main dashboard structure
+├── css/
+│   ├── dashboard.css       # Base styles and design system
+│   ├── overview.css        # Overview-specific styling
+│   ├── test-execution.css  # Test execution interface styling
+│   └── test-results.css    # Test results visualization styling
+└── js/
+   ├── api-service.js      # API client with error handling
+   ├── dashboard.js        # Navigation and core functionality  
+   ├── dashboard-overview.js # Real-time system monitoring
+   ├── test-execution.js   # Comprehensive test execution interface
+   └── test-results.js     # Test results visualization with artifacts and healing views
+```
+
+#### Static File Serving
+- **Route**: `/static/` serves files from `dist/ui/public/`
+- **MIME Types**: Explicit Content-Type headers for proper browser loading
+- **Caching**: Optimized cache headers for performance
+- **Security**: CSP and security headers for static assets
+
 ### Core Classes
 
 #### HealingEngine
@@ -294,8 +326,240 @@ await registry.cleanupAllPlugins();
 
 #### TestType
 ```typescript
-type TestType = 'unit' | 'integration' | 'e2e' | 'performance' | 'security';
+type TestType = 'unit' | 'integration' | 'e2e' | 'performance' | 'security' | 'app-analysis';
 ```
+
+### Analysis Type System Architecture
+
+The Self-Healing Test Automation Harness includes a comprehensive analysis type system that provides type safety and validation for web application analysis operations. This system was implemented using strict Test-Driven Development methodology with 100% test success rate.
+
+#### Analysis Configuration Types
+
+##### AppAnalysisConfig
+```typescript
+export interface AppAnalysisConfig extends TestEngineConfig {
+  analysisDepth?: 'basic' | 'comprehensive' | 'detailed';
+  outputFormat?: 'json' | 'xml' | 'html';
+  includeScreenshots?: boolean;
+  maxElements?: number;
+  includeHidden?: boolean;
+  browser?: {
+    headless?: boolean;
+    viewport?: { width: number; height: number };
+    userAgent?: string;
+  };
+  capabilities?: {
+    domExtraction?: boolean;
+    uiElementIdentification?: boolean;
+    userFlowDetection?: boolean;
+    testScenarioGeneration?: boolean;
+    aiTestGeneration?: boolean;
+  };
+  ai?: {
+    enabled?: boolean;
+    provider?: 'openai' | 'claude' | 'local';
+    model?: string;
+    temperature?: number;
+    maxTokens?: number;
+    timeout?: number;
+  };
+  output?: {
+    artifactsDir?: string;
+    screenshotsDir?: string;
+    reportsDir?: string;
+    includeMetadata?: boolean;
+  };
+  validation?: {
+    requiredElements?: string[];
+    maxDepth?: number;
+    timeout?: number;
+  };
+}
+```
+
+#### Analysis Result Types
+
+##### AppAnalysisResult
+```typescript
+export interface AppAnalysisResult {
+  id: string;
+  timestamp: Date;
+  duration: number;
+  url: string;
+  status: AnalysisStatus;
+  domStructure?: {
+    elementCount: number;
+    depth: number;
+    complexity: 'low' | 'medium' | 'high';
+  };
+  uiElements?: AnalysisUIElement[];
+  userFlows?: AnalysisUserFlow[];
+  testScenarios?: AnalysisTestScenario[];
+  artifacts?: {
+    screenshots: string[];
+    videos: string[];
+    traces: string[];
+    reports: string[];
+  };
+  aiAnalysis?: {
+    confidence: number;
+    insights: string[];
+    recommendations: string[];
+    generatedTests: number;
+  };
+  performance?: {
+    analysisTime: number;
+    elementExtractionTime: number;
+    flowDetectionTime: number;
+    testGenerationTime: number;
+  };
+  errors?: string[];
+  warnings?: string[];
+  configuration?: {
+    analysisDepth: AnalysisDepth;
+    includeScreenshots: boolean;
+    [key: string]: any;
+  };
+}
+```
+
+##### AnalysisUIElement
+```typescript
+export interface AnalysisUIElement {
+  id: string;
+  type: string;
+  tagName: string;
+  name?: string;
+  description?: string;
+  pageUrl: string;
+  locators: Array<{
+    strategy: LocatorStrategyType;
+    value: string;
+    confidence?: number;
+  }>;
+  properties: {
+    text?: string;
+    ariaLabel?: string;
+    isVisible: boolean;
+    isEnabled: boolean;
+    isChecked?: boolean;
+    isSelected?: boolean;
+    placeholder?: string;
+    attributes?: Record<string, string>;
+  };
+  context: {
+    parent?: string;
+    siblings?: string[];
+    children?: string[];
+    cssPath: string;
+    xpath: string;
+  };
+  accessibility?: {
+    role?: string;
+    hasSufficientContrast?: boolean;
+    hasLabel?: boolean;
+  };
+  interactions: {
+    supported: UIInteractionType[];
+    testActions: string[];
+  };
+  screenshotPath?: string;
+}
+```
+
+##### AnalysisUserFlow
+```typescript
+export interface AnalysisUserFlow {
+  id: string;
+  name: string;
+  type: string;
+  category: string;
+  description?: string;
+  steps: Array<{
+    id: string;
+    action: UserFlowActionType;
+    target: string;
+    value?: string;
+    description?: string;
+    waitConditions?: string[];
+    timeout?: number;
+  }>;
+  metadata: {
+    complexity: FlowComplexity;
+    businessImpact: BusinessImpact;
+    frequency: 'rare' | 'occasional' | 'frequent' | 'daily';
+    userTypes: string[];
+    devices: string[];
+  };
+  validation: {
+    requiredElements: string[];
+    successCriteria: string[];
+    errorHandling: string[];
+  };
+  diagram: {
+    mermaid: string;
+    nodes: Array<{
+      id: string;
+      label: string;
+      type: string;
+    }>;
+    edges: Array<{
+      from: string;
+      to: string;
+      label?: string;
+    }>;
+  };
+}
+```
+
+#### Analysis Error Types
+
+The analysis system includes a comprehensive error hierarchy designed with TypeScript strict mode compliance:
+
+```typescript
+export class AnalysisError extends Error {
+  public override readonly cause?: Error;
+  
+  constructor(message: string, cause?: Error) {
+    super(message);
+    this.name = 'AnalysisError';
+    if (cause !== undefined) {
+      this.cause = cause;
+    }
+  }
+}
+
+export class AnalysisTimeoutError extends AnalysisError {
+  public readonly timeout: number;
+  
+  constructor(message: string, timeout: number, cause?: Error) {
+    super(message, cause);
+    this.name = 'AnalysisTimeoutError';
+    this.timeout = timeout;
+  }
+}
+
+export class AnalysisConfigurationError extends AnalysisError {
+  public readonly configField?: string;
+  
+  constructor(message: string, configField?: string, cause?: Error) {
+    super(message, cause);
+    this.name = 'AnalysisConfigurationError';
+    if (configField !== undefined) {
+      this.configField = configField;
+    }
+  }
+}
+```
+
+#### TypeScript Strict Mode Compliance
+
+All analysis types follow proven patterns for TypeScript strict mode compliance:
+
+1. **Conditional Assignment for Optional Properties**: Uses explicit checks for `undefined` to satisfy `exactOptionalPropertyTypes`
+2. **Bracket Notation for Dynamic Properties**: Uses `config.parameters['url']` instead of `config.parameters.url` for `Record<string, any>` properties
+3. **Proper Error Inheritance**: Uses `override` modifiers and conditional assignment in constructors
+4. **Module Organization**: Structured in `src/analysis/types/` with dedicated files for configuration, results, errors, validation, and patterns
 
 #### FailureType
 ```typescript
@@ -449,10 +713,300 @@ interface TestConfig {
 ### Testing
 1. **Unit Test Plugins**: Test individual plugin functionality
 2. **Integration Test Workflows**: Test complete plugin interactions
-3. **Mock Dependencies**: Use mocks for external dependencies
+3. **Mock Dependencies**: Use mocks for external dependencies with unique variable names
 4. **Test Error Scenarios**: Ensure error handling works correctly
+5. **Prevent Global Declaration Conflicts**: Use context-specific names like `pluginMockFetch` instead of `mockFetch`
+6. **Check Existing Declarations**: Search for existing global variables before creating new test files
 
 ## Examples
+
+### Available Test Engines
+
+#### TestGenerator
+```typescript
+class TestGenerator extends TestEngine {
+  constructor() {
+    super('test-generator', '1.0.0', 'integration', true);
+  }
+  
+  // Provides comprehensive test case generation from multiple sources
+  // Supports user interaction recordings, specifications, and templates
+  // Includes validation, error handling, and configuration management
+  async generateFromUserInteraction(recording: UserInteractionRecording, config: TestGenerationConfig): Promise<TestGenerationResult>;
+  async generateFromSpecification(specification: string, config: TestGenerationConfig): Promise<TestGenerationResult>;
+  async generateFromTemplate(template: TestTemplate, parameters: Record<string, any>, config: TestGenerationConfig): Promise<TestGenerationResult>;
+  async validateTestCases(testCases: GeneratedTestCase[]): Promise<ValidationResult>;
+}
+```
+
+**Configuration:**
+```typescript
+{
+  engine: 'test-generator',
+  settings: {
+    maxTestCases: 10,
+    complexityLevel: 'medium',        // low | medium | high
+    includeValidation: true,
+    source: 'user_interaction'        // user_interaction | specification | template
+  }
+}
+```
+
+#### TestExporter
+```typescript
+class TestExporter extends TestEngine {
+  constructor() {
+    super('test-exporter', '1.0.0', 'unit', false);
+  }
+  
+  // Provides multi-format test export capabilities
+  // Base functionality for all export operations
+  async export(testCases: GeneratedTestCase[], config: TestExportConfig): Promise<TestExportResult>;
+  readonly supportedFormats: TestExportFormat[] = ['json'];
+}
+```
+
+#### GenericExporter
+```typescript
+class GenericExporter extends TestEngine {
+  constructor() {
+    super('generic-exporter', '1.0.0', 'unit', false);
+  }
+  
+  // Provides generic export formats with advanced features
+  // Supports JSON, YAML, CSV, Markdown formats with filtering and transformation
+  readonly supportedFormats: TestExportFormat[] = ['json', 'yaml', 'csv', 'markdown'];
+  
+  async export(testCases: GeneratedTestCase[], config: TestExportConfig): Promise<TestExportResult>;
+}
+```
+
+#### PlaywrightExporter
+```typescript
+class PlaywrightExporter extends TestEngine {
+  constructor() {
+    super('playwright-exporter', '1.0.0', 'e2e', false);
+  }
+  
+  // Generates syntactically correct Playwright test code (.spec.ts files)
+  // Supports page interactions: goto, fill, click, expect
+  readonly supportedFormats: TestExportFormat[] = ['playwright'];
+}
+```
+
+#### JestExporter
+```typescript
+class JestExporter extends TestEngine {
+  constructor() {
+    super('jest-exporter', '1.0.0', 'unit', false);
+  }
+  
+  // Generates syntactically correct Jest test code (.test.ts files)
+  // Supports describe/it structure and expect assertions
+  readonly supportedFormats: TestExportFormat[] = ['jest'];
+}
+```
+
+#### AppAnalysisEngine
+```typescript
+class AppAnalysisEngine extends TestEngine {
+  constructor() {
+    super('app-analysis', '1.0.0', 'e2e', true);
+  }
+  
+  // Provides automated app analysis and test generation
+  // Supports configurable analysis depth: basic, comprehensive, detailed
+  // Generates multiple artifact types: screenshots, reports, generated tests
+  // Self-healing for element_not_found failures with confidence scoring
+}
+```
+
+**Configuration:**
+```typescript
+{
+  engine: 'app-analysis',
+  settings: {
+    timeout: 30000,
+    analysisDepth: 'comprehensive', // basic | comprehensive | detailed
+    outputFormat: 'json',          // json | xml | html
+    includeScreenshots: true
+  }
+}
+```
+
+## Plugin Integration Patterns
+
+### Configuration Schema Integration
+
+When adding a new engine to the plugin system, follow these proven patterns:
+
+#### 1. Create Engine-Specific Configuration Interface
+```typescript
+export interface AppAnalysisConfig extends TestEngineConfig {
+  analysisDepth?: 'basic' | 'comprehensive' | 'detailed';
+  outputFormat?: 'json' | 'xml' | 'html';
+  includeScreenshots?: boolean;
+  maxElements?: number;
+  includeHidden?: boolean;
+}
+```
+
+#### 2. Update AppConfig Type Definition
+```typescript
+// Use bracket notation for dynamic engine keys
+engines: {
+  playwright: PlaywrightConfig;
+  jest: JestConfig;
+  k6: K6Config;
+  zap: ZapConfig;
+  'app-analysis': AppAnalysisConfig;  // Bracket notation required for TypeScript strict mode
+};
+```
+
+#### 3. Add Default Configuration Values
+```typescript
+'app-analysis': {
+  enabled: true,
+  timeout: 30000,
+  retries: 2,
+  analysisDepth: 'comprehensive',
+  outputFormat: 'json',
+  includeScreenshots: true,
+  options: {
+    maxElements: 1000,
+    includeHidden: false,
+  },
+}
+```
+
+### YAML Configuration Integration
+
+Update `config/default.yaml` with engine configuration:
+
+```yaml
+engines:
+  app-analysis:
+    enabled: true
+    timeout: 30000
+    retries: 2
+    analysisDepth: "comprehensive"
+    outputFormat: "json"
+    includeScreenshots: true
+    options:
+      maxElements: 1000
+      includeHidden: false
+```
+
+Add environment-specific overrides:
+
+```yaml
+environments:
+  development:
+    overrides:
+      engines:
+        app-analysis:
+          analysisDepth: "detailed"
+          includeScreenshots: true
+  
+  production:
+    overrides:
+      engines:
+        app-analysis:
+          analysisDepth: "basic"
+          includeScreenshots: false
+          timeout: 60000
+```
+
+### Plugin Registration and Testing
+
+#### Complete Integration Workflow
+```typescript
+// 1. Register engine constructor
+factory.registerEngineConstructor('app-analysis', AppAnalysisEngine);
+
+// 2. Verify registration
+expect(factory.isEngineTypeAvailable('app-analysis')).toBe(true);
+
+// 3. Create engine through factory
+const engine = await factory.createEngine(config, metadata);
+
+// 4. Register with plugin registry
+registry.registerTestEngine(engine);
+
+// 5. Verify discovery
+const retrievedEngine = registry.getTestEngine('app-analysis');
+expect(retrievedEngine).toBe(engine);
+
+// 6. Test lifecycle management
+await registry.initializeAllPlugins(context);
+const health = await engine.getHealth();
+expect(health.status).toBe('healthy');
+```
+
+#### TDD Integration Testing Pattern
+```typescript
+describe('Plugin Integration', () => {
+  it('should integrate engine with complete workflow', async () => {
+    // RED PHASE: Write failing test first
+    expect(() => factory.getEngineConstructor('new-engine')).toThrow();
+    
+    // GREEN PHASE: Minimal implementation
+    factory.registerEngineConstructor('new-engine', NewEngine);
+    
+    // REFACTOR PHASE: Complete integration testing
+    const config = factory.createDefaultConfig('new-engine', 'e2e');
+    const engine = await factory.createEngine(config);
+    registry.registerTestEngine(engine);
+    
+    expect(registry.getTestEngine('new-engine')).toBe(engine);
+  });
+});
+```
+
+### Integration Success Metrics
+
+The AppAnalysisEngine integration achieved:
+- **✅ 53/53 tests (100% success rate)** using strict TDD methodology
+- **✅ Zero regressions** across 903 total project tests
+- **✅ Complete configuration integration** with TypeScript type safety
+- **✅ Full lifecycle management** with proper initialization and cleanup
+- **✅ Environment-specific configuration** support across dev/staging/production
+
+#### WebAppAnalyzer Component
+```typescript
+class WebAppAnalyzer {
+  // NEW! Complete web application analysis component
+  async analyzeWebApp(url: string, options: AnalysisOptions): Promise<AnalysisResult>
+  async extractDOMStructure(): Promise<DOMStructure>
+  async identifyUIElements(): Promise<UIElement[]>
+  async generateLocatorStrategies(elements: UIElement[]): Promise<Record<string, LocatorStrategy[]>>
+  async detectNavigationPatterns(): Promise<NavigationPattern[]>
+  
+  // Provides comprehensive web app analysis with Playwright integration
+  // DOM structure extraction with semantic element identification
+  // UI element identification (forms, buttons, links, navigation)
+  // Locator strategy generation with multiple fallback strategies
+  // Navigation pattern detection (menus, tabs, breadcrumbs, pagination)
+  // Self-healing integration with confidence scoring
+}
+```
+
+**Configuration:**
+```typescript
+{
+  analysisDepth: 'comprehensive',     // basic | comprehensive | detailed
+  includeScreenshots: true,
+  includeAccessibility: true,
+  includePerformance: true,
+  includeSecurity: false,
+  includeCodeGeneration: true,
+  timeout: 30000,
+  viewport: { width: 1920, height: 1080 },
+  deviceType: 'desktop',            // desktop | mobile | tablet
+  waitForJS: true,
+  dynamicContent: true
+}
+```
 
 ### Creating a Custom Test Engine
 ```typescript

@@ -352,6 +352,47 @@ export class PluginRegistry {
   }
   
   /**
+   * Get names of all registered test engines
+   * 
+   * @returns Array of registered test engine names
+   */
+  public getRegisteredEngines(): string[] {
+    const engineNames: string[] = [];
+    for (const engine of this.testEngines.values()) {
+      if (!engineNames.includes(engine.name)) {
+        engineNames.push(engine.name);
+      }
+    }
+    return engineNames;
+  }
+  
+  /**
+   * Unregister a test engine by name
+   * 
+   * @param name - The name of the test engine to unregister
+   */
+  public unregisterTestEngine(name: string): void {
+    // Find and remove all versions of this engine
+    const keysToDelete: string[] = [];
+    for (const [key, engine] of this.testEngines.entries()) {
+      if (engine.name === name) {
+        keysToDelete.push(key);
+      }
+    }
+    
+    for (const key of keysToDelete) {
+      this.testEngines.delete(key);
+      this.pluginMetadata.delete(key);
+      this.pluginLifecycles.delete(key);
+      this.observablePlugins.delete(key);
+    }
+    
+    if (keysToDelete.length > 0) {
+      logger.info(`Unregistered test engine: ${name} (${keysToDelete.length} versions)`);
+    }
+  }
+
+  /**
    * Get registry statistics
    * 
    * @returns Statistics about the registry
