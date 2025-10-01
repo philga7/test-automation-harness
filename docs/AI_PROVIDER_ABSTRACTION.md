@@ -136,42 +136,82 @@ export interface ProviderConfig {
 
 ## 📝 Implementation Guide
 
-### Creating a New AI Provider
+### Using HTTPClient for API Requests
 
-#### Step 1: Extend AIProviderStrategy
+**IMPORTANT**: All AI provider implementations should use the shared `HTTPClient` utility for making HTTP requests. This provides automatic retry logic, timeout handling, and consistent error management.
+
 ```typescript
-import { AIProviderStrategy, AIRequest, AIResponse, ProviderConfig, ProviderContext, ConnectionTestResult } from '@/ai';
+import { HTTPClient, HTTPError } from '@/utils/http-client';
+import { RetryConfig } from '@/types/types';
 
 export class OpenAIProvider extends AIProviderStrategy {
-  constructor() {
+  private httpClient: HTTPClient;
+  
+  constructor(retryConfig?: RetryConfig) {
     super(
       'openai',
       '1.0.0',
       ['text-generation', 'embeddings', 'chat-completion'],
       ['timeout', 'rate-limit', 'quota-exceeded']
     );
+    
+    // Initialize HTTP client with retry logic
+    this.httpClient = new HTTPClient(
+      retryConfig || {
+        maxRetries: 3,
+        delay: 1000,
+        backoffMultiplier: 2,
+        maxDelay: 10000
+      },
+      30000 // 30 second timeout
+    );
   }
   
   protected async doSendRequest(request: AIRequest): Promise<AIResponse> {
-    // OpenAI-specific implementation
     const apiKey = this.config.parameters['apiKey'] as string;
     const model = this.config.parameters['model'] as string || 'gpt-4';
     
-    // Make API call to OpenAI
-    const response = await this.callOpenAI(request.prompt, model, apiKey);
-    
-    return {
-      id: request.id,
-      content: response.choices[0].message.content,
-      metadata: {
-        model: response.model,
-        provider: 'openai',
-        tokensUsed: response.usage.total_tokens,
-        responseTime: Date.now() - startTime,
-        timestamp: new Date()
-      },
-      status: 'success'
-    };
+    try {
+      // Use HTTPClient for automatic retry and timeout handling
+      const response = await this.httpClient.request<OpenAIResponse>(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model,
+            messages: [{ role: 'user', content: request.prompt }],
+            temperature: request.parameters?.['temperature'] || 0.7
+          })
+        }
+      );
+      
+      return {
+        id: request.id,
+        content: response.choices[0].message.content,
+        metadata: {
+          model: response.model,
+          provider: 'openai',
+          tokensUsed: response.usage.total_tokens,
+          responseTime: Date.now() - startTime,
+          timestamp: new Date()
+        },
+        status: 'success'
+      };
+    } catch (error) {
+      if (error instanceof HTTPError) {
+        // Handle specific HTTP errors
+        if (error.status === 429) {
+          throw new RateLimitError('OpenAI rate limit exceeded', error.body?.['retry_after']);
+        } else if (error.status === 401) {
+          throw new AIProviderError('Invalid API key', 'apiKey');
+        }
+      }
+      throw error;
+    }
   }
   
   protected async doTestConnection(config: ProviderConfig): Promise<ConnectionTestResult> {

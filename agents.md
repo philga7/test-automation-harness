@@ -248,10 +248,52 @@ export interface AppAnalysisResult {
 }
 ```
 
+### Shared HTTP Client Patterns
+```typescript
+// ALWAYS use HTTPClient for external API requests with retry logic
+import { HTTPClient, HTTPError } from '@/utils/http-client';
+import { RetryConfig } from '@/types/types';
+
+// Create client with default retry configuration
+const client = new HTTPClient();
+
+// Create client with custom retry configuration
+const customClient = new HTTPClient(
+  {
+    maxRetries: 3,
+    delay: 1000,
+    backoffMultiplier: 2,
+    maxDelay: 10000
+  },
+  5000 // 5 second timeout
+);
+
+// Make HTTP requests with automatic retry
+try {
+  const data = await client.request<ResponseType>('https://api.example.com/data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: 'test' })
+  });
+  
+  console.log('Success:', data);
+} catch (error) {
+  if (error instanceof HTTPError) {
+    // Handle HTTP errors (non-2xx responses)
+    console.error(`HTTP ${error.status}:`, error.body);
+  } else {
+    // Handle network errors
+    console.error('Network error:', error);
+  }
+}
+```
+
 ### AI Provider Abstraction Patterns
 ```typescript
 // ALWAYS implement AI providers using the Strategy pattern
 export abstract class AIProviderStrategy implements IAIProviderStrategy {
+  protected httpClient: HTTPClient;
+  
   public readonly name: string;
   public readonly version: string;
   public readonly supportedServiceTypes: string[];
@@ -261,12 +303,16 @@ export abstract class AIProviderStrategy implements IAIProviderStrategy {
     name: string,
     version: string,
     supportedServiceTypes: string[],
-    supportedFailureTypes: string[]
+    supportedFailureTypes: string[],
+    retryConfig?: RetryConfig
   ) {
     this.name = name;
     this.version = version;
     this.supportedServiceTypes = supportedServiceTypes;
     this.supportedFailureTypes = supportedFailureTypes;
+    
+    // Initialize HTTP client with retry logic
+    this.httpClient = new HTTPClient(retryConfig);
   }
   
   // Common functionality with abstract methods
@@ -501,6 +547,8 @@ src/
 ├── ui/             # Web dashboard and UI components
 │   └── public/     # Static assets (HTML, CSS, JS)
 └── utils/          # Shared utilities
+    ├── logger.ts               # Logging utility
+    └── http-client.ts          # Shared HTTP client with retry logic and timeout handling
 ```
 
 ### File Naming Conventions
