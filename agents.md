@@ -8,6 +8,7 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **Core Orchestrator**: Manages test execution and coordination
 - **Plugin Architecture**: Swappable test engines for different test types
 - **Healing Engine**: AI-powered test recovery and adaptation
+- **AI Provider Abstraction**: Swappable AI provider implementations with consistent error handling
 - **Configuration System**: YAML-based test and environment configuration
 - **Observability Layer**: Metrics collection and reporting
 - **REST API**: Task execution, result retrieval, healing statistics, and app analysis
@@ -24,6 +25,12 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **AITestGenerator**: AI-powered intelligent test scenario generation using LLM integration for natural language processing
 - **TestGenerator**: Comprehensive test case generation from user interactions, specifications, and templates
 - **TestExporter**: Multi-format test export system with framework-specific code generation (Playwright, Jest, JSON, YAML, CSV, Markdown)
+
+### AI Provider System
+- **AIProviderStrategy**: Abstract base class for AI provider implementations following the Strategy pattern
+- **AI Provider Interfaces**: IAIProvider, IAIProviderStrategy with comprehensive type definitions
+- **Error Handling**: Specialized error classes (AIProviderError, RateLimitError, QuotaExceededError, TimeoutError)
+- **Provider Management**: Statistics tracking, health monitoring, and confidence-based provider selection
 
 ## AI Agent Responsibilities
 
@@ -241,6 +248,67 @@ export interface AppAnalysisResult {
 }
 ```
 
+### AI Provider Abstraction Patterns
+```typescript
+// ALWAYS implement AI providers using the Strategy pattern
+export abstract class AIProviderStrategy implements IAIProviderStrategy {
+  public readonly name: string;
+  public readonly version: string;
+  public readonly supportedServiceTypes: string[];
+  public readonly supportedFailureTypes: string[];
+  
+  constructor(
+    name: string,
+    version: string,
+    supportedServiceTypes: string[],
+    supportedFailureTypes: string[]
+  ) {
+    this.name = name;
+    this.version = version;
+    this.supportedServiceTypes = supportedServiceTypes;
+    this.supportedFailureTypes = supportedFailureTypes;
+  }
+  
+  // Common functionality with abstract methods
+  public async sendRequest(request: AIRequest): Promise<AIResponse> {
+    // Common validation and error handling
+    const response = await this.doSendRequest(request);
+    // Update statistics
+    return response;
+  }
+  
+  // Abstract methods for provider-specific implementation
+  protected abstract doSendRequest(request: AIRequest): Promise<AIResponse>;
+  protected abstract doTestConnection(config: ProviderConfig): Promise<ConnectionTestResult>;
+  protected abstract doCalculateConfidence(request: AIRequest, context: ProviderContext): Promise<number>;
+}
+
+// ALWAYS implement error classes with TypeScript strict mode compliance
+export class AIProviderError extends Error {
+  public override readonly cause?: Error;
+  public readonly field?: string;
+  
+  constructor(message: string, field?: string, cause?: Error) {
+    super(message);
+    this.name = 'AIProviderError';
+    
+    // Conditional assignment for exactOptionalPropertyTypes compliance
+    if (field !== undefined) {
+      this.field = field;
+    }
+    if (cause !== undefined) {
+      this.cause = cause;
+    }
+  }
+}
+
+// ALWAYS use bracket notation for Record<string, any> properties
+const config: ProviderConfig = {
+  parameters: { 'apiKey': 'test-key', 'model': 'gpt-4' }
+};
+const apiKey = config.parameters['apiKey'] as string;
+```
+
 ### AI-Powered Test Generation Patterns
 ```typescript
 // ALWAYS implement AI service integration with multiple providers
@@ -407,6 +475,10 @@ class Dashboard {
 ### Directory Structure
 ```
 src/
+├── ai/             # AI provider abstraction layer
+│   ├── providers/  # AI provider implementations
+│   │   └── AIProviderStrategy.ts  # Abstract base class for AI providers
+│   └── types.ts    # AI provider interfaces and type definitions
 ├── analysis/       # App analysis engine implementation
 │   ├── AppAnalysisEngine.ts      # Analysis engine implementation
 │   ├── WebAppAnalyzer.ts         # Web app analyzer component
