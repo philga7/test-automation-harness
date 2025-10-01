@@ -1,3 +1,9 @@
+## [0.10.0-develop.2](https://github.com/philga7/test-automation-harness/compare/v0.10.0-develop.1...v0.10.0-develop.2) (2025-10-01)
+
+### Features
+
+* **ai:** implement shared HTTP client with retry logic using TDD ([#38](https://github.com/philga7/test-automation-harness/issues/38)) ([768beda](https://github.com/philga7/test-automation-harness/commit/768beda0ea7cec909c412bf69856e664eca653f1))
+
 ## [0.10.0-develop.1](https://github.com/philga7/test-automation-harness/compare/v0.9.1...v0.10.0-develop.1) (2025-10-01)
 
 ### Features
