@@ -1,3 +1,9 @@
+## [0.10.0-develop.1](https://github.com/philga7/test-automation-harness/compare/v0.9.1...v0.10.0-develop.1) (2025-10-01)
+
+### Features
+
+* **ai:** implement AI provider abstraction layer with strategy pattern ([#37](https://github.com/philga7/test-automation-harness/issues/37)) ([ef9a3b3](https://github.com/philga7/test-automation-harness/commit/ef9a3b3df02911ab51fcbda1ce62f26e97d82aca))
+
 ## [0.9.1](https://github.com/philga7/test-automation-harness/compare/v0.9.0...v0.9.1) (2025-09-25)
 
 ### Bug Fixes
