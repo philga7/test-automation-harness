@@ -15,6 +15,7 @@ This is a **Self-Healing Test Automation Harness** that orchestrates multiple te
 - **UserFlowDetector**: User journey identification and flow diagram generation
 - **TestScenarioGenerator**: Converts analysis results into Playwright test scenarios
 - **AITestGenerator**: AI-powered intelligent test generation with LLM integration
+- **AI Provider Abstraction**: Swappable AI provider implementations (OpenAI, Claude, Local models)
 - **TestGenerator**: Comprehensive test case generation from user interactions, specifications, and templates
 - **TestExporter**: Multi-format test export system with framework-specific code generation
 - **GenericExporter**: JSON, YAML, CSV, Markdown export formats with filtering and transformation
@@ -36,6 +37,9 @@ This is a **Self-Healing Test Automation Harness** that orchestrates multiple te
 ### Core Components
 ```
 src/
+├── ai/             # AI provider abstraction layer
+│   ├── providers/  # AI provider implementations (AIProviderStrategy)
+│   └── types.ts    # AI provider interfaces and type definitions
 ├── analysis/       # App analysis engine implementation (WebAppAnalyzer, UserFlowDetector, TestScenarioGenerator, AITestGenerator)
 ├── core/           # Test orchestration and coordination
 ├── engines/        # Test engine implementations (Playwright, Jest, k6, ZAP, TestGenerator, TestExporter)
@@ -207,6 +211,25 @@ export class AnalysisError extends Error {
   }
 }
 
+// ✅ CORRECT: AI Provider error classes with strict mode compliance
+export class AIProviderError extends Error {
+  public override readonly cause?: Error;
+  public readonly field?: string;
+  
+  constructor(message: string, field?: string, cause?: Error) {
+    super(message);
+    this.name = 'AIProviderError';
+    
+    // Conditional assignment for exactOptionalPropertyTypes compliance
+    if (field !== undefined) {
+      this.field = field;
+    }
+    if (cause !== undefined) {
+      this.cause = cause;
+    }
+  }
+}
+
 // ✅ CORRECT: Bracket notation for Record<string, any> properties
 const url = config.parameters['url'] as string;
 const analysisType = config.parameters['analysisType'] || 'basic';
@@ -220,6 +243,15 @@ constructor(message: string, configField?: string, cause?: Error) {
   if (configField !== undefined) {
     this.configField = configField;
   }
+}
+
+// ✅ CORRECT: Underscore prefix for unused parameters
+protected adjustConfidence(
+  baseConfidence: number,
+  _request: AIRequest,  // Unused parameter
+  context: ProviderContext
+): number {
+  // Implementation uses baseConfidence and context, not request
 }
 ```
 
@@ -305,6 +337,66 @@ class LocatorHealingStrategy implements HealingStrategy {
       }
     }
     throw new HealingFailedError('No suitable healing strategy found');
+  }
+}
+```
+
+### AI Provider Strategy Implementation
+```typescript
+// ALWAYS implement AI providers using the Strategy pattern
+export abstract class AIProviderStrategy implements IAIProviderStrategy {
+  public readonly name: string;
+  public readonly version: string;
+  public readonly supportedServiceTypes: string[];
+  public readonly supportedFailureTypes: string[];
+  
+  constructor(
+    name: string,
+    version: string,
+    supportedServiceTypes: string[],
+    supportedFailureTypes: string[]
+  ) {
+    this.name = name;
+    this.version = version;
+    this.supportedServiceTypes = supportedServiceTypes;
+    this.supportedFailureTypes = supportedFailureTypes;
+  }
+  
+  // Common functionality
+  public async sendRequest(request: AIRequest): Promise<AIResponse> {
+    // Validation and error handling
+    if (!this.canHandle(request)) {
+      throw new AIProviderError(`Provider ${this.name} cannot handle service type: ${request.serviceType}`);
+    }
+    
+    // Call provider-specific implementation
+    const response = await this.doSendRequest(request);
+    
+    // Update statistics
+    this.updateStatistics(response);
+    
+    return response;
+  }
+  
+  // Abstract methods for provider-specific implementation
+  protected abstract doSendRequest(request: AIRequest): Promise<AIResponse>;
+  protected abstract doTestConnection(config: ProviderConfig): Promise<ConnectionTestResult>;
+  protected abstract doCalculateConfidence(request: AIRequest, context: ProviderContext): Promise<number>;
+  protected abstract doInitialize(config: ProviderConfig): Promise<void>;
+  protected abstract doCleanup(): Promise<void>;
+}
+
+// ALWAYS implement specialized error classes
+export class RateLimitError extends AIProviderError {
+  public readonly retryAfter?: number;
+  
+  constructor(message: string, retryAfter?: number, cause?: Error) {
+    super(message, 'rateLimit', cause);
+    this.name = 'RateLimitError';
+    
+    if (retryAfter !== undefined) {
+      this.retryAfter = retryAfter;
+    }
   }
 }
 ```
