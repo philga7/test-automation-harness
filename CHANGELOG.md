@@ -1,3 +1,9 @@
+## [0.10.0-develop.5](https://github.com/philga7/test-automation-harness/compare/v0.10.0-develop.4...v0.10.0-develop.5) (2025-10-02)
+
+### Features
+
+* **ai:** add Claude Provider with Anthropic API integration ([#41](https://github.com/philga7/test-automation-harness/issues/41)) ([e3c1775](https://github.com/philga7/test-automation-harness/commit/e3c1775832b4721fb4779c1652a6a9827fb55752))
+
 ## [0.10.0-develop.4](https://github.com/philga7/test-automation-harness/compare/v0.10.0-develop.3...v0.10.0-develop.4) (2025-10-02)
 
 ### Features
