@@ -16,11 +16,14 @@ This is a **Self-Healing Test Automation Harness** that orchestrates multiple te
 - **TestScenarioGenerator**: Converts analysis results into Playwright test scenarios
 - **AITestGenerator**: AI-powered intelligent test generation with LLM integration
 - **AI Provider Abstraction**: Swappable AI provider implementations (OpenAI, Claude, Local models)
+- **PromptTemplateManager**: Structured prompt engineering with 9 operation-specific templates
+- **PromptSchemaValidator**: Ajv-based JSON Schema validation for AI inputs/outputs
 - **TestGenerator**: Comprehensive test case generation from user interactions, specifications, and templates
 - **TestExporter**: Multi-format test export system with framework-specific code generation
 - **GenericExporter**: JSON, YAML, CSV, Markdown export formats with filtering and transformation
 - **PlaywrightExporter**: Generates syntactically correct Playwright test code (.spec.ts files)
 - **JestExporter**: Generates syntactically correct Jest test code (.test.ts files)
+- **Ajv**: JSON Schema validation library for production-grade input/output validation
 - **Docker**: Containerization
 - **OpenTelemetry**: Observability
 
@@ -39,6 +42,9 @@ This is a **Self-Healing Test Automation Harness** that orchestrates multiple te
 src/
 ├── ai/             # AI provider abstraction layer
 │   ├── providers/  # AI provider implementations (AIProviderStrategy)
+│   ├── prompts/    # Prompt engineering system
+│   │   ├── PromptTemplateManager.ts   # 9 operation-specific templates with optimal parameters
+│   │   └── PromptSchemaValidator.ts   # Ajv-based input/output validation
 │   └── types.ts    # AI provider interfaces and type definitions
 ├── analysis/       # App analysis engine implementation (WebAppAnalyzer, UserFlowDetector, TestScenarioGenerator, AITestGenerator)
 ├── core/           # Test orchestration and coordination
@@ -72,9 +78,9 @@ src/
 
 ### TDD Methodology (PROVEN SUCCESS)
 
-**LATEST ACHIEVEMENT:** Test Case Generation and Export System implementation using strict TDD achieved 62/62 tests (100% success rate) with zero regressions across all project tests. Successfully implemented comprehensive test generation from user interactions, specifications, and templates with multi-format export capabilities including Playwright, Jest, JSON, YAML, CSV, and Markdown. Features advanced filtering, transformation, and syntactically correct framework-specific code generation through 13 complete RED-GREEN-REFACTOR cycles.
+**LATEST ACHIEVEMENT:** Prompt Template System implementation using strict TDD achieved 33/33 tests (100% success rate) with zero regressions across 1032 total project tests. Successfully implemented production-ready prompt engineering system with 9 operation-specific templates (PromptTemplateManager) and Ajv-based JSON Schema validation (PromptSchemaValidator). Features optimal temperature/maxTokens tuning per operation, regex-based placeholder extraction, and comprehensive error handling with retry capability. Discovered critical TypeScript strict mode patterns for regex type guards, error class inheritance with override modifier, and Ajv production configuration.
 
-**PREVIOUS ACHIEVEMENTS:** Analysis Configuration and Types implementation using strict TDD achieved 14/14 tests (100% success rate) with zero regressions across 917 total project tests. AppAnalysisEngine Plugin System Integration using strict TDD achieved 53/53 tests (100% success rate) with zero regressions across 903 total project tests. App Analysis API Endpoints implementation using strict TDD achieved 32/32 tests (100% success rate) with zero regressions across 863 total project tests. Healing Statistics Dashboard implementation using strict TDD achieved 17/17 tests (100% success rate) with zero regressions across 668 total project tests.
+**PREVIOUS ACHIEVEMENTS:** Test Case Generation and Export System (62/62 tests, 13 RED-GREEN-REFACTOR cycles), Analysis Configuration and Types (14/14 tests), AppAnalysisEngine Plugin System Integration (53/53 tests), App Analysis API Endpoints (32/32 tests), AITestGenerator Component (25/25 tests), Shared HTTP Client with Retry Logic (25/25 tests), TestScenarioGenerator (22/22 tests), UserFlowDetector (31/31 tests), WebAppAnalyzer (36/36 tests), Healing Statistics Dashboard (17/17 tests).
 
 #### Core TDD Principles
 1. **RED PHASE**: Write failing test that defines expected behavior FIRST
@@ -524,6 +530,56 @@ try {
 
 // ALWAYS reuse existing RetryConfig interface from types.ts
 // NEVER duplicate the RetryConfig interface
+```
+
+### Prompt Template System with Schema Validation
+```typescript
+// ALWAYS use PromptTemplateManager for consistent AI interactions
+import { PromptTemplateManager } from '@/ai/prompts/PromptTemplateManager';
+import { PromptSchemaValidator, PromptValidationError } from '@/ai/prompts/PromptSchemaValidator';
+
+// Initialize template manager (loads all 9 operation templates)
+const templateManager = new PromptTemplateManager();
+
+// Build prompts with parameter substitution
+const builtPrompt = templateManager.buildPrompt('generate_scenarios', {
+  userStory: 'As a user, I want to reset my password',
+  domain: 'authentication',
+  applicationType: 'web-app'
+});
+
+// Use with AI provider
+const aiResponse = await aiProvider.complete({
+  system: builtPrompt.systemMessage,
+  user: builtPrompt.userMessage,
+  temperature: builtPrompt.config.temperature,  // 0.7 for generate_scenarios
+  maxTokens: builtPrompt.config.maxTokens       // 3000 for generate_scenarios
+});
+
+// ALWAYS validate AI responses against schemas
+const validator = new PromptSchemaValidator();
+try {
+  validator.validateOutput('generate_scenarios', aiResponse, outputSchema);
+} catch (error) {
+  if (error instanceof PromptValidationError) {
+    // Implement retry logic with refined prompt
+    logger.error('Validation failed:', error.getDetailedMessage());
+  }
+}
+
+// ALWAYS configure Ajv with ALL strict flags for production
+import Ajv from 'ajv';
+
+const ajv = new Ajv({
+  allErrors: true,        // Collect all errors, not just first
+  verbose: true,          // Include detailed error information
+  strict: true,           // Strict schema validation
+  strictSchema: true,     // Strict schema checking
+  strictNumbers: true,    // Strict number validation
+  strictTypes: true,      // Strict type checking
+  strictTuples: true,     // Strict tuple validation
+  strictRequired: true    // Strict required property validation
+});
 ```
 
 ## Service Layer Standards
