@@ -1,3 +1,9 @@
+## [0.10.0-develop.3](https://github.com/philga7/test-automation-harness/compare/v0.10.0-develop.2...v0.10.0-develop.3) (2025-10-02)
+
+### Features
+
+* **ai:** implement prompt template system with schema validation ([#39](https://github.com/philga7/test-automation-harness/issues/39)) ([859e582](https://github.com/philga7/test-automation-harness/commit/859e582772f6397501b7d70352b689ec5fa46344))
+
 ## [0.10.0-develop.2](https://github.com/philga7/test-automation-harness/compare/v0.10.0-develop.1...v0.10.0-develop.2) (2025-10-01)
 
 ### Features
