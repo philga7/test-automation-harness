@@ -16,8 +16,10 @@ This is a **Self-Healing Test Automation Harness** that orchestrates multiple te
 - **TestScenarioGenerator**: Converts analysis results into Playwright test scenarios
 - **AITestGenerator**: AI-powered intelligent test generation with LLM integration
 - **AI Provider Abstraction**: Swappable AI provider implementations (OpenAI, Claude, Local models)
+- **OpenAIProvider**: Production-ready OpenAI Chat Completions API integration (openai@^4.20.0)
 - **PromptTemplateManager**: Structured prompt engineering with 9 operation-specific templates
 - **PromptSchemaValidator**: Ajv-based JSON Schema validation for AI inputs/outputs
+- **HTTPClient**: Shared HTTP client with retry logic and timeout handling for all providers
 - **TestGenerator**: Comprehensive test case generation from user interactions, specifications, and templates
 - **TestExporter**: Multi-format test export system with framework-specific code generation
 - **GenericExporter**: JSON, YAML, CSV, Markdown export formats with filtering and transformation
@@ -78,9 +80,9 @@ src/
 
 ### TDD Methodology (PROVEN SUCCESS)
 
-**LATEST ACHIEVEMENT:** Prompt Template System implementation using strict TDD achieved 33/33 tests (100% success rate) with zero regressions across 1032 total project tests. Successfully implemented production-ready prompt engineering system with 9 operation-specific templates (PromptTemplateManager) and Ajv-based JSON Schema validation (PromptSchemaValidator). Features optimal temperature/maxTokens tuning per operation, regex-based placeholder extraction, and comprehensive error handling with retry capability. Discovered critical TypeScript strict mode patterns for regex type guards, error class inheritance with override modifier, and Ajv production configuration.
+**LATEST ACHIEVEMENT:** OpenAI Provider implementation using strict TDD achieved 14/14 tests (100% success rate) with zero regressions across 1046 total project tests. Successfully implemented production-ready OpenAI Chat Completions API integration with comprehensive error handling for rate limits (429 with retry-after), quota exceeded (insufficient_quota), and invalid API keys (401). Features connection testing via /v1/models endpoint, token usage tracking from response.usage.total_tokens, HTTPClient integration with retry logic, and environment-based API key configuration. Follows established AIProviderStrategy pattern with proper inheritance and abstract method implementation.
 
-**PREVIOUS ACHIEVEMENTS:** Test Case Generation and Export System (62/62 tests, 13 RED-GREEN-REFACTOR cycles), Analysis Configuration and Types (14/14 tests), AppAnalysisEngine Plugin System Integration (53/53 tests), App Analysis API Endpoints (32/32 tests), AITestGenerator Component (25/25 tests), Shared HTTP Client with Retry Logic (25/25 tests), TestScenarioGenerator (22/22 tests), UserFlowDetector (31/31 tests), WebAppAnalyzer (36/36 tests), Healing Statistics Dashboard (17/17 tests).
+**PREVIOUS ACHIEVEMENTS:** Prompt Template System (33/33 tests), Test Case Generation and Export System (62/62 tests, 13 RED-GREEN-REFACTOR cycles), Analysis Configuration and Types (14/14 tests), AppAnalysisEngine Plugin System Integration (53/53 tests), App Analysis API Endpoints (32/32 tests), AITestGenerator Component (25/25 tests), Shared HTTP Client with Retry Logic (25/25 tests), TestScenarioGenerator (22/22 tests), UserFlowDetector (31/31 tests), WebAppAnalyzer (36/36 tests), Healing Statistics Dashboard (17/17 tests).
 
 #### Core TDD Principles
 1. **RED PHASE**: Write failing test that defines expected behavior FIRST
