@@ -29,6 +29,7 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 ### AI Provider System
 - **AIProviderStrategy**: Abstract base class for AI provider implementations following the Strategy pattern
 - **OpenAIProvider**: Production-ready OpenAI Chat Completions API integration with comprehensive error handling
+- **ClaudeProvider**: Production-ready Anthropic Claude Messages API integration with comprehensive error handling
 - **AI Provider Interfaces**: IAIProvider, IAIProviderStrategy with comprehensive type definitions
 - **Error Handling**: Specialized error classes (AIProviderError, RateLimitError, QuotaExceededError, TimeoutError)
 - **Provider Management**: Statistics tracking, health monitoring, and confidence-based provider selection
