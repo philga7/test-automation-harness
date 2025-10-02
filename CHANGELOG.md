@@ -1,3 +1,9 @@
+## [0.10.0-develop.4](https://github.com/philga7/test-automation-harness/compare/v0.10.0-develop.3...v0.10.0-develop.4) (2025-10-02)
+
+### Features
+
+* **ai:** implement OpenAI provider with Chat Completions API integration ([#40](https://github.com/philga7/test-automation-harness/issues/40)) ([c118ba5](https://github.com/philga7/test-automation-harness/commit/c118ba5083584beed7ab4bdebf82c8ab16ce4acf))
+
 ## [0.10.0-develop.3](https://github.com/philga7/test-automation-harness/compare/v0.10.0-develop.2...v0.10.0-develop.3) (2025-10-02)
 
 ### Features
