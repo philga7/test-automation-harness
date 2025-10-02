@@ -298,3 +298,22 @@ export interface ProviderStatistics {
   lastUsed?: Date;
 }
 
+/**
+ * Prompt Template Types
+ * 
+ * Types for the Prompt Engineering System used by AI operations
+ */
+
+// Re-export prompt template types for convenient imports
+export {
+  PromptTemplate,
+  BuiltPrompt,
+  TemplateStatistics
+} from './prompts/PromptTemplateManager';
+
+export {
+  PromptSchemaValidator,
+  PromptValidationError,
+  ValidationErrorDetail
+} from './prompts/PromptSchemaValidator';
+

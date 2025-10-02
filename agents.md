@@ -31,6 +31,8 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **AI Provider Interfaces**: IAIProvider, IAIProviderStrategy with comprehensive type definitions
 - **Error Handling**: Specialized error classes (AIProviderError, RateLimitError, QuotaExceededError, TimeoutError)
 - **Provider Management**: Statistics tracking, health monitoring, and confidence-based provider selection
+- **Prompt Template System**: PromptTemplateManager with 9 operation-specific templates for consistent AI interactions
+- **Schema Validation**: PromptSchemaValidator with Ajv-based input/output validation for production quality
 
 ## AI Agent Responsibilities
 
@@ -147,6 +149,41 @@ class AnalysisConfigurationError extends AnalysisError {
     }
   }
 }
+
+// ✅ CORRECT: Regex match type guards for TypeScript strict mode
+// When using regex.exec(), match groups can be undefined
+private extractPlaceholders(template: string): string[] {
+  const regex = /\{([^}]+)\}/g;
+  const placeholders: string[] = [];
+  let match;
+  
+  while ((match = regex.exec(template)) !== null) {
+    // Type guard: match[1] exists because regex has capturing group
+    if (match[1]) {
+      placeholders.push(match[1]);
+    }
+  }
+  
+  return placeholders;
+}
+
+// ✅ CORRECT: Error class inheritance with override modifier
+// Custom error classes require proper prototype chain and override modifier
+export class PromptValidationError extends Error {
+  public override readonly name: string;  // override modifier required
+  public readonly operation: string;
+  public readonly errors: ValidationErrorDetail[];
+
+  constructor(operation: string, errors: ValidationErrorDetail[]) {
+    super(`Validation failed for ${operation}`);
+    this.name = 'PromptValidationError';
+    this.operation = operation;
+    this.errors = errors;
+    
+    // CRITICAL: Maintain proper prototype chain for instanceof checks
+    Object.setPrototypeOf(this, PromptValidationError.prototype);
+  }
+}
 ```
 
 ### Plugin Registration Pattern
@@ -245,6 +282,40 @@ export interface AppAnalysisResult {
   userFlows?: AnalysisUserFlow[];
   artifacts?: { screenshots: string[]; reports: string[] };
   performance?: { analysisTime: number; elementExtractionTime: number };
+}
+```
+
+### Prompt Template System Patterns
+```typescript
+// ALWAYS use PromptTemplateManager for AI operations
+import { PromptTemplateManager, BuiltPrompt } from '@/ai/prompts/PromptTemplateManager';
+import { PromptSchemaValidator, PromptValidationError } from '@/ai/prompts/PromptSchemaValidator';
+
+// Build prompts with proper parameter substitution
+const templateManager = new PromptTemplateManager();
+const builtPrompt = templateManager.buildPrompt('generate_scenarios', {
+  userStory: 'As a user, I want to login',
+  domain: 'authentication',
+  applicationType: 'web-app'
+});
+
+// Use built prompt with AI provider
+const aiResponse = await aiProvider.complete({
+  system: builtPrompt.systemMessage,
+  user: builtPrompt.userMessage,
+  temperature: builtPrompt.config.temperature,
+  maxTokens: builtPrompt.config.maxTokens
+});
+
+// ALWAYS validate AI responses against schemas
+const validator = new PromptSchemaValidator();
+try {
+  validator.validateOutput('generate_scenarios', aiResponse, outputSchema);
+} catch (error) {
+  if (error instanceof PromptValidationError) {
+    // Implement retry logic with refined prompt
+    console.error('Validation errors:', error.errors);
+  }
 }
 ```
 
@@ -524,6 +595,9 @@ src/
 ├── ai/             # AI provider abstraction layer
 │   ├── providers/  # AI provider implementations
 │   │   └── AIProviderStrategy.ts  # Abstract base class for AI providers
+│   ├── prompts/    # Prompt engineering system
+│   │   ├── PromptTemplateManager.ts   # 9 operation-specific templates
+│   │   └── PromptSchemaValidator.ts   # Ajv-based input/output validation
 │   └── types.ts    # AI provider interfaces and type definitions
 ├── analysis/       # App analysis engine implementation
 │   ├── AppAnalysisEngine.ts      # Analysis engine implementation
