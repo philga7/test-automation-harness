@@ -30,6 +30,7 @@ This is a **Self-Healing Test Automation Harness** built with TypeScript/Node.js
 - **AIProviderStrategy**: Abstract base class for AI provider implementations following the Strategy pattern
 - **OpenAIProvider**: Production-ready OpenAI Chat Completions API integration with comprehensive error handling
 - **ClaudeProvider**: Production-ready Anthropic Claude Messages API integration with comprehensive error handling
+- **OpenRouterProvider**: Production-ready OpenRouter API integration supporting 200+ models with OpenAI-compatible Chat Completions API
 - **AI Provider Interfaces**: IAIProvider, IAIProviderStrategy with comprehensive type definitions
 - **Error Handling**: Specialized error classes (AIProviderError, RateLimitError, QuotaExceededError, TimeoutError)
 - **Provider Management**: Statistics tracking, health monitoring, and confidence-based provider selection
@@ -427,6 +428,118 @@ const config: ProviderConfig = {
   parameters: { 'apiKey': 'test-key', 'model': 'gpt-4' }
 };
 const apiKey = config.parameters['apiKey'] as string;
+```
+
+### OpenRouter Provider Implementation Patterns
+```typescript
+// ALWAYS implement OpenRouter provider extending AIProviderStrategy
+export class OpenRouterProvider extends AIProviderStrategy {
+  private apiKey?: string | undefined;
+  private baseUrl: string = 'https://openrouter.ai/api/v1';
+  private defaultModel: string = 'openai/gpt-4o-mini';
+  private httpClient: HTTPClient;
+
+  constructor() {
+    super(
+      'openrouter',
+      '1.0.0',
+      ['chat-completion', 'text-generation'],
+      ['rate-limit', 'model-unavailable', 'billing-error', 'authentication', 'invalid-request']
+    );
+    
+    // Initialize HTTP client with retry logic
+    this.httpClient = new HTTPClient({
+      maxRetries: 3,
+      delay: 1000,
+      backoffMultiplier: 2,
+      maxDelay: 10000
+    }, 30000); // 30 second timeout
+  }
+
+  // ALWAYS implement OpenAI-compatible Chat Completions API
+  protected async doSendRequest(request: AIRequest): Promise<AIResponse> {
+    const requestBody = {
+      model: request.parameters['model'] || this.defaultModel,
+      messages: [{ role: 'user', content: request.prompt }],
+      temperature: Math.max(0, Math.min(2, request.parameters['temperature'] || 0.7)),
+      max_tokens: Math.max(1, Math.min(4096, request.parameters['maxTokens'] || 2000))
+    };
+
+    const response = await this.httpClient.request<any>(`${this.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://test-automation-harness.com',
+        'X-Title': 'Self-Healing Test Automation Harness'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    // Parse OpenAI-compatible response format
+    const content = response.choices?.[0]?.message?.content || '';
+    const tokensUsed = response.usage?.total_tokens || 0;
+
+    return {
+      id: request.id,
+      content: content,
+      status: 'success',
+      metadata: {
+        model: requestBody.model,
+        provider: 'openrouter',
+        tokensUsed: tokensUsed,
+        responseTime: Date.now() - startTime,
+        timestamp: new Date()
+      }
+    };
+  }
+
+  // ALWAYS handle OpenRouter-specific error codes
+  private handleOpenRouterError(error: any): never {
+    if (error.status === 429) {
+      const retryAfter = error.headers?.get?.('retry-after');
+      throw new RateLimitError(
+        'OpenRouter rate limit exceeded',
+        retryAfter ? parseInt(retryAfter) : undefined,
+        error
+      );
+    }
+
+    if (error.status === 400) {
+      throw new AIProviderError(
+        `OpenRouter request error: ${error.body?.error?.message || error.message}`,
+        'request',
+        error
+      );
+    }
+
+    if (error.status === 401) {
+      throw new AIProviderError(
+        'OpenRouter authentication failed. Check your API key.',
+        'authentication',
+        error
+      );
+    }
+
+    if (error.status === 402) {
+      throw new AIProviderError(
+        'OpenRouter billing error. Check your account credits.',
+        'billing',
+        error
+      );
+    }
+
+    if (error.status === 404) {
+      throw new AIProviderError(
+        'OpenRouter model not found. Check model availability.',
+        'model',
+        error
+      );
+    }
+
+    throw new AIProviderError(`OpenRouter API error: ${error.message}`, 'api', error);
+  }
+}
 ```
 
 ### AI-Powered Test Generation Patterns
