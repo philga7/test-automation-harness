@@ -1,3 +1,9 @@
+## [0.10.0-develop.6](https://github.com/philga7/test-automation-harness/compare/v0.10.0-develop.5...v0.10.0-develop.6) (2025-10-03)
+
+### Features
+
+* **ai:** implement OpenRouter Provider with TDD methodology ([#42](https://github.com/philga7/test-automation-harness/issues/42)) ([3a41a8e](https://github.com/philga7/test-automation-harness/commit/3a41a8e9c23dac6e6e2bcb0d5624421cc01cbf51))
+
 ## [0.10.0-develop.5](https://github.com/philga7/test-automation-harness/compare/v0.10.0-develop.4...v0.10.0-develop.5) (2025-10-02)
 
 ### Features
